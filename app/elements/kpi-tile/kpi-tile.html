@@ -1,0 +1,376 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+<link rel="import" href="..\..\bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="..\..\bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="..\..\bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
+<link rel="import" href="..\..\bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="..\..\bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="..\..\bower_components/neon-animation/neon-animations.html">
+
+
+<dom-module id="reveal-content">
+  <style>
+    :host {
+      display: block;
+      overflow: hidden;
+
+    }
+    #placeholder {
+      opacity: 0;
+      background-color: grey;
+    }
+    :host ::content .tile-content {
+      padding: 16px;
+      padding-top:0;
+      position:relative;
+    @apply(--kpi-tile-content);
+    }
+
+  </style>
+  <template>
+
+    <div id="placeholder" class="fit"></div>
+
+    <div id="container">
+      <content select="div"></content>
+    </div>
+
+  </template>
+</dom-module>
+<dom-module id="kpi-content">
+  <style>
+    :host {
+      display: block;
+      overflow: hidden;
+    }
+    #placeholder {
+      opacity: 0;
+      background-color: grey;
+    }
+    :host ::content .tile-content {
+      padding: 16px;
+      padding-top:0;
+      position:relative;
+    @apply(--kpi-tile-content);
+    }
+
+    :host ::content .tile-actions {
+      border-top: 1px solid #e8e8e8;
+      padding: 5px 16px;
+      position:relative;
+    @apply(--kpi-tile-actions);
+    }
+  </style>
+  <template>
+
+    <div id="placeholder" class="fit"></div>
+
+    <div id="container">
+      <content select="div"></content>
+    </div>
+
+  </template>
+</dom-module>
+
+<script>
+  (function() {
+    Polymer({
+      is: 'kpi-content',
+      behaviors: [
+        Polymer.NeonSharedElementAnimatableBehavior
+      ],
+      properties: {
+        animationConfig: {
+          value: function() {
+            return {
+              'entry': [{
+                name: 'reverse-ripple-animation',
+                id: 'reverse-ripple',
+                toPage: this
+              }],
+              'exit': [{
+                name: 'fade-out-animation',
+                node: this.$.container,
+                timing: {
+                  delay: 150,
+                  duration: 0
+                }
+              }, {
+                name: 'ripple-animation',
+                id: 'ripple',
+                fromPage: this
+              }]
+            };
+          }
+        }
+      }
+    });
+  })();
+  (function() {
+    Polymer({
+      is: 'reveal-content',
+      behaviors: [
+        Polymer.NeonSharedElementAnimatableBehavior
+      ],
+      properties: {
+        animationConfig: {
+          value: function() {
+            return {
+              'entry': [{
+                name: 'ripple-animation',
+                id: 'ripple',
+                toPage: this
+              }, {
+                name: 'fade-out-animation',
+                node: this.$.placeholder,
+                timing: {
+                  delay: 250
+                }
+              }, {
+                name: 'fade-in-animation',
+                node: this.$.container,
+                timing: {
+                  delay: 50
+                }
+              }],
+              'exit': [{
+                name: 'opaque-animation',
+                node: this.$.placeholder
+              }, {
+                name: 'fade-out-animation',
+                node: this.$.container,
+                timing: {
+                  duration: 0
+                }
+              }, {
+                name: 'reverse-ripple-animation',
+                id: 'reverse-ripple',
+                fromPage: this
+              }]
+            };
+          }
+        },
+        sharedElements: {
+          value: function() {
+            return {
+              'ripple': this.$.placeholder,
+              'reverse-ripple': this.$.placeholder
+            };
+          }
+        }
+      }
+    });
+  })();
+</script>
+
+<dom-module id="kpi-tile">
+  <template>
+    <style>
+      :host {
+        display: block;
+        position: relative;
+        box-sizing: border-box;
+
+        background: #fff;
+        border-radius: 2px;
+        @apply(--layout-flex);
+        min-width:200px;
+      @apply(--kpi-tile);
+
+      }
+
+      neon-animated-pages {
+      height:100%
+      }
+
+      paper-material {
+        border-radius: inherit;
+      @apply(--layout-fit);
+      }
+
+      /* IE 10 support for HTML5 hidden attr */
+      [hidden] {
+        display: none !important;
+      }
+
+      .header {
+        position: relative;
+        @apply(--layout-horizontal);
+        @apply(--layout-center)
+      @apply(--kpi-tile-header);
+      }
+      .header iron-icon {
+        padding:16px;
+        --iron-icon-height:20px;
+        --iron-icon-width:20px;
+      }
+
+      .header img {
+        width: 100%;
+        pointer-events: none;
+      @apply(--kpi-tile-header-image);
+      }
+
+      .header .title-text {
+        padding: 16px;
+        font-size: 20px;
+        font-weight: 500;
+        color: var(--kpi-tile-header-color, #000);
+      @apply(--layout-flex);
+      @apply(--kpi-tile-header-text);
+      }
+
+      .header .title-text.over-image {
+        position: absolute;
+        bottom: 0px;
+      @apply(--kpi-tile-header-image-text);
+      }
+      .header .title-text.pl0{
+        padding-left:0 !important;
+      }
+      .header .title-text.pr0{
+        padding-right:0 !important;
+      }
+      .header .title-text.pr0.pl0{
+        text-align: center;
+      }
+      .button {cursor:pointer}
+      .button iron-icon{
+        padding:12px;
+        --iron-icon-height:24px;
+        --iron-icon-width:24px;}
+
+
+
+    </style>
+    <paper-material animated$="[[animatedShadow]]" elevation="[[elevation]]"></paper-material>
+    <neon-animated-pages id="pages" selected="0">
+      <kpi-content id="tile">
+        <div class="header">
+          <iron-icon hidden$="[[!icon]]" icon="[[icon]]"></iron-icon>
+          <div hidden$="[[!heading]]" class$="[[_computeHeadingClass(icon,info)]]">[[heading]]</div>
+          <div hidden$="[[!info]]" class="button" on-click="_displayInfo">
+            <iron-icon  icon="info-outline" id="infoIcon"></iron-icon>
+            <paper-tooltip for="infoIcon" position="bottom" offset="0">[[tooltip]]</paper-tooltip>
+          </div>
+        </div>
+        <content id="helloWorld"></content>
+      </kpi-content>
+
+      <reveal-content>
+        <div class="header">
+          <div class="button" on-click="_hideInfo">
+            <iron-icon icon="arrow-back" id="backIcon"></iron-icon>
+            <paper-tooltip for="backIcon" position="bottom" offset="0">Return</paper-tooltip>
+          </div>
+          <div hidden$="[[!heading]]" class$="[[_computeHeadingClass(info)]]">[[heading]]</div>
+        </div>
+        <div class="tile-content" id="revealContent"></div>
+      </reveal-content>
+    </neon-animated-pages>
+
+  </template>
+</dom-module>
+  <script>
+  (function() {
+    'use strict';
+
+    Polymer({
+      is: 'kpi-tile',
+      properties: {
+
+        /**
+         * The title of the card.
+         */
+        heading: {
+          type: String,
+          value: '',
+          observer: '_headingChanged'
+        },
+
+        /**
+         * The left icon on the title of the tile.
+         */
+        icon: {
+          type: String,
+          value: ''
+        },
+        height:{
+          type: String,
+          value: '260px'
+        },
+        /**
+         * The info section.
+         */
+        info: {
+          type: String,
+          value: ''
+        },
+
+        tooltip:{
+          type: String,
+          value: 'Press for info'
+        },
+
+        /**
+         * The z-depth of the card, from 0-5.
+         */
+        elevation: {
+          type: Number,
+          value: 1
+        },
+
+        /**
+         * Set this to true to animate the card shadow when setting a new
+         * `z` value.
+         */
+        animatedShadow: {
+          type: Boolean,
+          value: false
+        }
+      },
+      ready :function(){
+        this.setAttribute('style','height:'+ this.height);
+        this._computeInfo(this.info);
+      },
+      _displayInfo : function(event) {
+        this.$.tile.sharedElements = {
+          'ripple': event.target,
+          'reverse-ripple': event.target
+        };
+        this.$.pages.selected = 1;
+      },
+      _hideInfo : function(event) {
+        this.$.pages.selected = 0;
+      },
+
+      _headingChanged: function(heading) {
+        var label = this.getAttribute('aria-label');
+        this.setAttribute('aria-label', heading);
+      },
+
+      _computeHeadingClass: function(icon,info) {
+        var cls = 'title-text';
+        //remove extra paddings on title and justify if both icons
+        if (icon && info){cls += ' center-justified pl0 pr0';}
+        else if (icon) {cls += ' pl0'}
+        else if (info) {cls += ' pr0'}
+        return cls;
+      },
+      _computeInfo: function(info) {
+        this.$.revealContent.innerHTML = info;
+      }
+    });
+  })();
+  </script>
+
+
