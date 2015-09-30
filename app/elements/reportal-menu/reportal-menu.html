@@ -14,6 +14,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="..\..\bower_components/paper-item/paper-item.html">
 <link rel="import" href="..\..\bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="..\..\bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="..\..\bower_components/iron-selector/iron-selectable.html">
+<link rel="import" href="..\..\bower_components/iron-selector/iron-selection.html">
+<link rel="import" href="..\..\bower_components/iron-selector/iron-selector.html">
 <dom-module id="reportal-menu">
   <template>
     <style>
@@ -85,7 +88,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           'iron-select':'goTO'
         },
         created:function(){
-          var menu = Polymer.dom(this.root).querySelector('ul');
+          var menu = Polymer.dom(this.root).querySelector('div');
+          menu= Polymer.dom(menu).querySelector('div ul');
+          console.log(menu);
+
           var host = document.createElement('div');
           Polymer.dom(host).setAttribute('class','menu-container');
           this._iteration(Polymer.dom(menu).childNodes, host);

@@ -53,13 +53,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     border-bottom: var(--drawer-toolbar-border-color);
   }
 
+  reportal-sidebar{
+    --paper-tabs-selection-bar-color: var(--default-primary-color);
+    --paper-tab-ink: var(--light-primary-color);
+  }
+
   paper-scroll-header-panel {
     height: 100%;
   }
 
+
   paper-material {
     border-radius: 2px;
-    height: 100%;
+    height: auto;
     padding: 16px 0 16px 0;
     width: calc(98.66% - 16px);
     margin: 16px auto;
@@ -176,7 +182,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       border-right: 1px solid rgba(0, 0, 0, 0.14);
     }
 
-    iron-pages {
+    .content {
       padding: 48px 62px;
     }
 
