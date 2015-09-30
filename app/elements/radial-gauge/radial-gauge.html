@@ -219,7 +219,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       (function() {
         'use strict';
 
-        Polymer({
+        new Polymer({
           is: 'radial-gauge',
           behaviors: [
             Polymer.NeonAnimatableBehavior,
@@ -271,11 +271,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
 
           ready: function(){
-            if(this.labels===true){ this.querySelector('.radial-progress').classList.add(this.labelposition) } // define label position class
+            if(this.labels===true){// define label position class
+              this.querySelector('.radial-progress').classList.add(this.labelposition);
+            }
 
-            this.computePrimaryGauge(this.primary);if(this.secondary){this.computeSecondaryGauge(this.secondary)} // define label position class
+            this.computePrimaryGauge(this.primary);
+            if(this.secondary){
+              this.computeSecondaryGauge(this.secondary);
+            } // define label position class
             this.computeMainDigit(this.primary); // evaluate main number
-            if(this.dynamics)this.computeDynamics(this.dynamics);
+            if(this.dynamics){
+              this.computeDynamics(this.dynamics);
+            }
           },
           computePrimaryGauge:function(primary){
             if(primary.color)this.querySelector('.radial-progress').classList.add(primary.color);

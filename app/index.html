@@ -86,36 +86,8 @@
     <paper-drawer-panel id="paperDrawerPanel">
       <!-- Drawer Scroll Header Panel -->
       <paper-scroll-header-panel drawer fixed>
-
-        <!-- Drawer Toolbar -->
-        <paper-toolbar id="drawerToolbar">
-          <span class="paper-font-title">Menu</span>
-        </paper-toolbar>
-
-
-
-
-        <!-- Drawer Content -->
-        <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
-          <a data-route="home" href="/">
-            <iron-icon icon="home"></iron-icon>
-            <span>Home</span>
-          </a>
-          <iron-collapse id="collapse">
-            <div>Content goes here...</div>
-          </iron-collapse>
-
-          <a data-route="users" href="/users">
-            <iron-icon icon="info"></iron-icon>
-            <span>Users</span>
-          </a>
-
-          <a data-route="contact" href="/contact">
-            <iron-icon icon="mail"></iron-icon>
-            <span>Contact</span>
-          </a>
-        </paper-menu>
-        <reportal-menu legacy-icons="polymer|warning|settings" legacy-icons-separator="|">
+      <reportal-sidebar >
+        <reportal-menu id="reportMenu" legacy-icons="polymer|warning|settings" legacy-icons-separator="|">
           <div id="ctl02_ctl00" class="yui3-menu yui3-menu-horizontal css-menu reportal_hide_print" role="menu">
             <div class="yui3-menu-content" role="presentation" id="yui_3_8_0_2_1443094933740_72">
               <ul class="first-of-type reportal-clearfix" role="presentation" id="yui_3_8_0_2_1443094933740_79">
@@ -187,6 +159,38 @@
             </div>
           </div>
         </reportal-menu>
+      </reportal-sidebar>
+
+      <!--
+
+         Drawer Toolbar -->
+        <!--<paper-toolbar id="drawerToolbar">
+          <span class="paper-font-title">Menu</span>
+        </paper-toolbar>
+
+
+
+
+        <!-- Drawer Content
+        <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
+          <a data-route="home" href="/">
+            <iron-icon icon="home"></iron-icon>
+            <span>Home</span>
+          </a>
+          <iron-collapse id="collapse">
+            <div>Content goes here...</div>
+          </iron-collapse>
+
+          <a data-route="users" href="/users">
+            <iron-icon icon="info"></iron-icon>
+            <span>Users</span>
+          </a>
+
+          <a data-route="contact" href="/contact">
+            <iron-icon icon="mail"></iron-icon>
+            <span>Contact</span>
+          </a>
+        </paper-menu>-->
       </paper-scroll-header-panel>
 
       <!-- Main Area -->

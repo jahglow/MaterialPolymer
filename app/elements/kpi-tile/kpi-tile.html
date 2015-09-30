@@ -284,7 +284,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   (function() {
     'use strict';
 
-    Polymer({
+    new Polymer({
       is: 'kpi-tile',
       properties: {
 
@@ -349,12 +349,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         };
         this.$.pages.selected = 1;
       },
-      _hideInfo : function(event) {
+      _hideInfo : function() {
         this.$.pages.selected = 0;
       },
 
       _headingChanged: function(heading) {
-        var label = this.getAttribute('aria-label');
         this.setAttribute('aria-label', heading);
       },
 
@@ -362,8 +361,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var cls = 'title-text';
         //remove extra paddings on title and justify if both icons
         if (icon && info){cls += ' center-justified pl0 pr0';}
-        else if (icon) {cls += ' pl0'}
-        else if (info) {cls += ' pr0'}
+        else if (icon) {cls += ' pl0';}
+        else if (info) {cls += ' pr0';}
         return cls;
       },
       _computeInfo: function(info) {

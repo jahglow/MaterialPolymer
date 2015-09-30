@@ -71,7 +71,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     (function() {
       'use strict';
 
-      Polymer({
+      new Polymer({
         is: 'reportal-menu',
         properties: {
           icons:{
@@ -92,15 +92,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           Polymer.dom(this.root).appendChild(host);
         },
         ready:function(){
-          var topIcons=this.querySelectorAll('iron-icon.placeholder');
-          if(this.icons.length>0){
+          var topIcons=Polymer.dom(this).querySelectorAll('iron-icon.placeholder');
+          if(this.icons && this.icons.length>0){
             for(var i=0;i<topIcons.length;i++){
               if(this.icons[i]){
                 topIcons[i].classList.remove('placeholder');
                 topIcons[i].setAttribute('icon',this.icons[i]);
               }
             }
-          } else if (this.legacyIcons.length>0){ //aid reportal requotation
+          } else if (this.legacyIcons && this.legacyIcons.length>0){ //aid reportal requotation
             var legacyIcons = this.legacyIcons.split(this.legacyIconsSeparator ? this.legacyIconsSeparator : ' ');
             for(var li=0;li<topIcons.length;li++){
               if(legacyIcons[li]){
@@ -120,7 +120,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
           for (var i=0;i<items.length;i++){
             curItem = items[i];
-            if(curItem.tagName == "LI"){
+            if(curItem.tagName === 'LI'){
               localChildnodes = curItem.childNodes;
               label = this._contains(localChildnodes,'tagName', 'A');
               submenu = this._contains(localChildnodes,'tagName', 'DIV');
@@ -147,7 +147,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 Polymer.dom(menuitemNode).appendChild(menuitemBody);
                 Polymer.dom(menuitemNode).appendChild(menuitemArrow);
                 Polymer.dom(submenuNode).appendChild(menuitemNode);
-                this._iteration(localChildnodes[submenu[1]].querySelector('ul').childNodes, submenuNode, [["class","menu-content"]] ); //next level iteration
+                this._iteration(localChildnodes[submenu[1]].querySelector('ul').childNodes, submenuNode, [['class','menu-content']] ); //next level iteration
                 Polymer.dom(menuNode).appendChild(submenuNode);
               } else { // it's a single item
                 menuitemNode = document.createElement('paper-item');
@@ -162,7 +162,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
                 menuitemBody = document.createElement('paper-item-body');
                 Polymer.dom(menuitemBody).textContent = Polymer.dom(localChildnodes[label[1]]).textContent;
-                Polymer.dom(menuitemNode).setAttribute('action',Polymer.dom(localChildnodes[label[1]]).node.href.split(':').reverse()[0])
+                Polymer.dom(menuitemNode).setAttribute('action',Polymer.dom(localChildnodes[label[1]]).node.href.split(':').reverse()[0]);
                 Polymer.dom(menuitemNode).appendChild(menuitemBody);
                 Polymer.dom(menuNode).appendChild(menuitemNode);
               }
@@ -174,7 +174,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           var allIrons = this.querySelectorAll('paper-item.iron-selected:not(.menu-trigger)[role="listitem"]');
           if(allIrons.length>1){
             for(var i=0;i<allIrons.length;i++){
-              if(allIrons[i] != e.target.selectedItem) allIrons[i].classList.remove('iron-selected');
+              if(allIrons[i] !== e.target.selectedItem){allIrons[i].classList.remove('iron-selected')}
             }
           }
           eval(e.target.selectedItem.getAttribute('action'));
