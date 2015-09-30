@@ -86,7 +86,7 @@
     <paper-drawer-panel id="paperDrawerPanel">
       <!-- Drawer Scroll Header Panel -->
       <paper-scroll-header-panel drawer fixed>
-      <reportal-sidebar >
+      <reportal-sidebar filters selected="0" logo="https://www.confirmit.com/Confirmit/media/confirmit-corporate/templates/global-nav-logo.png">
         <reportal-menu id="reportMenu" legacy-icons="polymer|warning|settings" legacy-icons-separator="|">
           <div id="ctl02_ctl00" class="yui3-menu yui3-menu-horizontal css-menu reportal_hide_print" role="menu">
             <div class="yui3-menu-content" role="presentation" id="yui_3_8_0_2_1443094933740_72">
@@ -161,17 +161,6 @@
         </reportal-menu>
       </reportal-sidebar>
 
-      <!--
-
-         Drawer Toolbar -->
-        <!--<paper-toolbar id="drawerToolbar">
-          <span class="paper-font-title">Menu</span>
-        </paper-toolbar>
-
-
-
-
-        <!-- Drawer Content
         <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-select="onMenuSelect">
           <a data-route="home" href="/">
             <iron-icon icon="home"></iron-icon>
@@ -190,7 +179,10 @@
             <iron-icon icon="mail"></iron-icon>
             <span>Contact</span>
           </a>
-        </paper-menu>-->
+        </paper-menu>
+
+
+        <!-- Drawer Content-->
       </paper-scroll-header-panel>
 
       <!-- Main Area -->
