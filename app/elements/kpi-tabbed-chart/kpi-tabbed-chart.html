@@ -1,0 +1,251 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+<link rel="import" href="..\..\bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="..\..\bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="..\..\bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="..\..\bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="..\..\bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="..\..\bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="..\..\bower_components/iron-icon/iron-icon.html">
+
+<link rel="import" href="..\kpi-tile/kpi-tile.html">
+<link rel="import" href="..\kpi-tile-behavior/kpi-tile-behavior.html">
+
+
+<dom-module id="kpi-tabbed-chart">
+  <template>
+    <style>
+
+      :host {
+        display: block;
+        width:100%
+
+      }
+
+      .tile-content{
+        padding:0;
+      }
+      kpi-tile{
+        --kpi-tile-header:{
+          background-color: var(--default-primary-color);
+          color: var(--text-primary-color);
+           border-top-left-radius: 2px;
+           border-top-right-radius: 2px;
+         };
+          --kpi-tile-header-text:{
+           color: var(--text-primary-color);
+          font-weight:400
+         };
+      --kpi-tile{
+         min-width:300px;
+         width: calc(100% - 20px);
+       };
+
+      }
+      paper-tabs {
+        --paper-tabs-selection-bar-color:{
+          @apply(--accent-color);
+       };
+      }
+      paper-tab{
+      --paper-tab:{
+         background-color: var(--default-primary-color);
+         color: var(--text-primary-color);
+       };
+      --paper-tab-ink:{@apply(--light-primary-color);};
+      }
+      .top-content{
+        background-color: var(--default-primary-color);
+        color: var(--text-primary-color);
+        padding: 0 16px;
+        @apply(--layout-horizontal);
+        @apply(--layout-wrap);
+      @apply(--layout-end);
+      }
+      .top-content .digit{
+        @apply(--layout-flex-3);
+
+        font-size: 3.5rem;
+        font-weight:400;
+      }
+      .top-content .dynamics {
+          @apply(--layout-flex-2);
+          @apply(--layout-end);
+      }
+      .chart-area{
+        overflow:hidden;
+        height:100%;
+      }
+      #chartWrapper{
+        overflow:hidden;
+        position:relative;
+        width:100%;
+        height:250px;
+
+      }
+      .red{ color: var(--conditional-formatting-red, --paper-red-500);}
+      .amber{ color: var(--conditional-formatting-amber, --paper-amber-500);}
+      .grey{ color: var(--conditional-formatting-grey, --paper-grey-500);}
+      .green{ color: var(--conditional-formatting-green, --paper-green-500);}
+    </style>
+    <kpi-tile heading="{{heading}}" id="lol" info="{{info}}" height="{{height}}" >
+      <div class="tile-content">
+        <div class="top-content">
+          <div class="digit">53</div>
+          <div class="dynamics">
+            <iron-icon icon="{{dynamics.icon}}" class="{{dynamics.color}}"></iron-icon><span>{{dynamics.val}}</span>
+          </div>
+        </div>
+        <paper-tabs selected="{{selected}}" hidden$="[[!filters]]">
+          <template is="dom-repeat" items="{{charts}}">
+            <paper-tab>{{item.title}}</paper-tab>
+          </template>
+        </paper-tabs>
+        <div id="chartWrapper">
+        <iron-pages selected="{{selected}}">
+          <template is="dom-repeat" items="{{charts}}">
+            <div class="chart-area" style="width:100%; height:240px;" id='{{item.id}}'></div>
+          </template>
+        </iron-pages>
+        </div>
+      </div>
+    </kpi-tile>
+  </template>
+  <script>
+  (function() {
+    Polymer({
+      is: 'kpi-tabbed-chart',
+      behaviors: [
+        Polymer.KpiTileBehavior
+      ],
+      properties: {
+        selected: {
+          type:String,
+          value:0, //default selected is the first tab
+          notify:true
+        },
+        charts:{
+          type:Array,
+          value:[
+            {"title":"Month","id":"chart1","chart":[["Jan",75],["Feb",42],["Mar",46],["Apr",78],["May",81],["Jun",42],["Jul",62],["Aug",15],["Sep",-10],["Oct",35],["Nov",42],["Dec",53]]},
+            {"title":"Quarter","id":"chart2","chart":[["Jan",65],["Feb",42],["Mar",46],["Apr",78],["May",81],["Jun",42],["Jul",62],["Aug",15],["Sep",-10],["Oct",35],["Nov",42],["Dec",53]]},
+            {"title":"Year","id":"chart3","chart":[["Jan",55],["Feb",42],["Mar",46],["Apr",78],["May",81],["Jun",42],["Jul",62],["Aug",15],["Sep",-10],["Oct",35],["Nov",42],["Dec",53]]}],
+          notify:true
+        },
+        dynamics:{
+          type:Object,
+          value:{'icon':'expand-less','val':'13%','color':'grey'}
+        }
+      },
+      created:function(){
+        if (typeof Highcharts == "undefined") {
+          //this.prependScript('/cf_clientutil/highcharts/highcharts.js?v=2619');
+          //this.prependScript('/cf_clientutil/highcharts/highcharts-more.js?v=2619');
+          this.prependScript('http://code.highcharts.com/highcharts.js');
+         // this.prependScript('http://code.highcharts.com/modules/exporting.js');
+
+        }
+      },
+      attached:function(){
+
+
+//
+     Polymer.dom.flush();
+        this.updateStyles();
+          for(var i=0;i<this.charts.length;i++){
+            var chart = this.charts[i];
+            console.log(getComputedStyle(this.$.chartWrapper).width);
+            Polymer.dom(this.$$('#'+chart.id)).setAttribute('style', "height:240px; width: " + getComputedStyle(this.$.chartWrapper).width);
+            this._composeChart(this.$$('#'+chart.id),chart.chart);
+            //console.log(this.$$('#'+chart.id).getComputedStyle());
+            console.log(Polymer.dom(this.$$('#'+chart.id)));
+            Highcharts.charts[i].reflow();
+          }
+        var charts = this.querySelectorAll('.chart-area>div');
+        for(var i=0;i<charts.length;i++){
+          //Highcharts.charts[i].reflow();
+        }
+      },
+
+      prependScript: function(pathToScript) {
+        var head = document.getElementsByTagName('head')[0];
+        var js = document.createElement('script');
+        // js.type = "text/javascript";
+        js.src = pathToScript;
+        head.appendChild(js);
+      },
+      _composeChart:function(host,chart){
+        var tmp = new Highcharts.Chart({
+            chart: {
+              renderTo: host,
+              type: 'line',
+              animation: Highcharts.svg, // don't animate in old IE
+              //marginRight: 10,
+              events: {
+                load: function () {
+                  var series = this.series[0],
+                    len = series.data.length;
+                  this.xAxis[0].update({max: len - 1.5});
+                }}
+            },
+            title: {
+              text: ''
+            },
+            xAxis: {
+              enabled: true,
+              tickmarkPlacement: 'on',
+              type: 'category',
+              min: 0.5
+            },
+            yAxis: {
+              plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+              }],
+              title: {enabled: false}
+            },
+
+            legend: {
+              enabled: false
+            },
+            exporting: {
+              enabled: false
+            },
+            plotOptions: {
+              area: {lineWidth: 1, pointPadding: 0},
+              series: {
+                //color: chartLineColor,
+                connectNulls: true,
+                marker: {
+                  radius: 5,
+                  //fillColor: markerColor,
+                  lineWidth: 0
+                }
+              }
+            },
+            series: [{
+              name: 'NPS',
+              data: chart,
+              marker: {
+                enabled: false,
+                states: {hover: {enabled: true}}
+              }
+            }]
+
+        });
+
+      }
+    });
+  })();
+  </script>
+</dom-module>

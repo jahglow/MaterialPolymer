@@ -15,6 +15,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="..\..\bower_components/paper-styles/paper-styles.html">
 <link rel="import" href="..\..\bower_components/neon-animation/neon-animated-pages.html">
 <link rel="import" href="..\..\bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="..\kpi-tile-behavior/kpi-tile-behavior.html">
 
 
 <dom-module id="reveal-content">
@@ -205,13 +206,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       .header {
         position: relative;
         @apply(--layout-horizontal);
-        @apply(--layout-center)
+        @apply(--layout-center);
       @apply(--kpi-tile-header);
       }
       .header iron-icon {
         padding:16px;
         --iron-icon-height:20px;
         --iron-icon-width:20px;
+        color:inherit
       }
 
       .header img {
@@ -249,11 +251,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --iron-icon-height:24px;
         --iron-icon-width:24px;}
 
+      #tile>::content{
+        @apply{--kpi-tile-content}
+      }
+      #revealContent{
+        @apply{--kpi-tile-reveal}
+      }
+
 
 
     </style>
     <paper-material animated$="[[animatedShadow]]" elevation="[[elevation]]"></paper-material>
-    <neon-animated-pages id="pages" selected="0">
+    <neon-animated-pages id="revealPage" selected="0">
       <kpi-content id="tile">
         <div class="header">
           <iron-icon hidden$="[[!icon]]" icon="[[icon]]"></iron-icon>
@@ -272,7 +281,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <iron-icon icon="arrow-back" id="backIcon"></iron-icon>
             <paper-tooltip for="backIcon" position="bottom" offset="0">Return</paper-tooltip>
           </div>
-          <div hidden$="[[!heading]]" class$="[[_computeHeadingClass(info)]]">[[heading]]</div>
+          <div hidden$="[[!heading]]" class$="[[_computeHeadingClass('',info)]]">[[heading]]</div>
         </div>
         <div class="tile-content" id="revealContent"></div>
       </reveal-content>
@@ -286,75 +295,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     new Polymer({
       is: 'kpi-tile',
-      properties: {
-
-        /**
-         * The title of the card.
-         */
-        heading: {
-          type: String,
-          value: '',
-          observer: '_headingChanged'
-        },
-
-        /**
-         * The left icon on the title of the tile.
-         */
-        icon: {
-          type: String,
-          value: ''
-        },
-        height:{
-          type: String,
-          value: '260px'
-        },
-        /**
-         * The info section.
-         */
-        info: {
-          type: String,
-          value: ''
-        },
-
-        tooltip:{
-          type: String,
-          value: 'Press for info'
-        },
-
-        /**
-         * The z-depth of the card, from 0-5.
-         */
-        elevation: {
-          type: Number,
-          value: 1
-        },
-
-        /**
-         * Set this to true to animate the card shadow when setting a new
-         * `z` value.
-         */
-        animatedShadow: {
-          type: Boolean,
-          value: false
-        }
-      },
-      ready :function(){
-        this.setAttribute('style','height:'+ this.height);
+      behaviors: [
+        Polymer.KpiTileBehavior
+      ],
+      ready:function(){
         this._computeInfo(this.info);
+        this.setAttribute('style','height:'+ this.height);
       },
       _displayInfo : function(event) {
         this.$.tile.sharedElements = {
           'ripple': event.target,
           'reverse-ripple': event.target
         };
-        this.$.pages.selected = 1;
+        this.$.revealPage.selected = 1;
       },
       _hideInfo : function() {
-        this.$.pages.selected = 0;
-      },
-
-      _headingChanged: function(heading) {
-        this.setAttribute('aria-label', heading);
+        this.$.revealPage.selected = 0;
       },
 
       _computeHeadingClass: function(icon,info) {
@@ -368,6 +324,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _computeInfo: function(info) {
         this.$.revealContent.innerHTML = info;
       }
+
     });
   })();
   </script>
