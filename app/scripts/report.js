@@ -13,8 +13,8 @@ var bclist = body.classList;
 bclist.add('fullbleed');
 bclist.add('layout');
 bclist.add('vertical');
-if(bclist.contains('sl-skin')){bcList.remove('sl-skin')}
-if(bclist.contains('reportal-viewmode')){bcList.remove('reportal-viewmode')}
+if(bclist.contains('sl-skin')){bclist.remove('sl-skin');}
+if(bclist.contains('reportal-viewmode')){bclist.remove('reportal-viewmode');}
 body.setAttribute('unresolved','');
 // end of do not change
 
@@ -26,7 +26,7 @@ function prependScript(pathToScript) {
   head.insertBefore(js, head.firstChild);
 }
 //change to the location of the script !IMPORTANT
-prependScript('/isa/BDJPFRDMEYBPBKLVADAYFQCDAVIOEQJR/polymer-elements/webcomponents.min.js');
+//prependScript('/isa/BDJPFRDMEYBPBKLVADAYFQCDAVIOEQJR/polymer-elements/webcomponents.min.js');
 
 //meta-creator, pass array of arrays [['paramName', 'paramValue']]
   function metaCycle(params){
@@ -40,7 +40,7 @@ prependScript('/isa/BDJPFRDMEYBPBKLVADAYFQCDAVIOEQJR/polymer-elements/webcompone
       head.insertBefore(meta, head.firstChild);
     }
   }
-
+/*
 //This script assumes that the icons are placed in the same folder as the script itself
 //make reportal a web-app via  tags
   metaCycle([['name','viewport'],['content','width=device-width, initial-scale=1']]);
@@ -55,5 +55,5 @@ prependScript('/isa/BDJPFRDMEYBPBKLVADAYFQCDAVIOEQJR/polymer-elements/webcompone
   metaCycle([['name','apple-mobile-web-app-capable'],['content','yes']]);
   metaCycle([['name','apple-mobile-web-app-status-bar-style'],['content','black']]);
   metaCycle([['name','apple-mobile-web-app-title'],['content','Confirmit Material Dream']]);
-
+*/
 

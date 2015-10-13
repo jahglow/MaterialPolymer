@@ -26,13 +26,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         padding-bottom:0px;
         max-width: calc(100% - 28px);
         height:auto;
-      @apply(--reportal-sidebar-logo);
+        @apply(--reportal-sidebar-logo);
       }
       .logo{
         position:relative;
         width:100%;
         text-align: center;
         height:auto;
+      }
+      paper-tabs{
+        --paper-tabs-selection-bar-color: var(--default-primary-color);
+        @apply(--reportal-sidebar-paper-tabs);
+      }
+      paper-tab{
+        --paper-tab-ink: var(--light-primary-color);
+        @apply(--reportal-sidebar-paper-tab);
       }
       .hidden {display:none}
     </style>
@@ -56,13 +64,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
   <script>
     (function() {
-      'use strict';
       Polymer({
         is: 'reportal-sidebar',
         properties: {
           logo: {
             type: String,
-            value:""
+            value:''
           },
           filters: {
             type:Boolean,

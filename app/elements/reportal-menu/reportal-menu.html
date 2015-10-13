@@ -90,8 +90,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         created:function(){
           var menu = Polymer.dom(this.root).querySelector('div');
           menu= Polymer.dom(menu).querySelector('div ul');
-          console.log(menu);
-
+          //console.log(menu);
           var host = document.createElement('div');
           Polymer.dom(host).setAttribute('class','menu-container');
           this._iteration(Polymer.dom(menu).childNodes, host);

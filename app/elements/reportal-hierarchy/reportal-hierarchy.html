@@ -1,0 +1,629 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+<link rel="import" href="..\..\bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="..\..\bower_components/paper-button/paper-button.html">
+
+<dom-module id="reportal-hierarchy">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      #hierarchyWrapper>::content .dd-target-button {
+        display: inherit;
+        zoom: 1;
+        font-size: auto;
+        padding: auto;
+        line-height: inherit;
+        white-space: nowrap;
+        vertical-align: inherit;
+        text-align: left;
+        -webkit-user-drag: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+        background-color: inherit;
+        background-image: none ;
+        border: inherit;
+        -webkit-border-radius: inherit;
+        -moz-border-radius: inherit;
+        border-radius: inherit;
+      @apply(--layout-horizontal);
+      @apply(--layout-center);
+        --iron-icon-height:16px;
+        --iron-icon-width:16px;
+
+      }
+      #hierarchyWrapper>::content .dd-target-button-arrow {display:none !important}
+      #hierarchyWrapper>::content .dd-target-button-text {
+        font-size: inherit;
+        font-family: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+        text-align: left;
+        padding: inherit;
+      @apply(--layout-flex);
+      }
+      #hierarchyWrapper>::content .dd-drilldown{
+        position:fixed;
+      @apply(--layout-horizontal);
+      @apply(--layout-center-justified);
+      @apply(--layout-center);
+        width:100vw;
+        height:100vh;
+        top: 0 !important;
+        left:0 !important;
+        background:rgba(0, 0, 0, 0.4);
+
+      }
+      #hierarchyWrapper>::content .dd-wrapper{
+        width:600px;border: 0 !important;
+        -webkit-border-radius: 0 !important;
+        -moz-border-radius: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14), 0 6px 30px 5px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.4);
+      }
+      #hierarchyWrapper>::content .dd-header{
+      @apply(--layout-vertical-reverse);
+        padding:12px;
+        background-color:transparent !important;
+      }
+      #hierarchyWrapper>::content .dd-search-input{
+        border: 0 !important;
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+        height: 32px;
+        line-height: 32px;
+        padding: 0 16px;
+        width:100%;
+        margin: 6 px 16px;
+      }
+
+      #hierarchyWrapper>::content .dd-header ul{
+        line-height: 32px;
+        height: 32px;
+        font-size: 16px;
+        font-family: Roboto;
+        font-weight: 400;
+      }
+      #hierarchyWrapper>::content .dd-button-select, #hierarchyWrapper>::content .dd-cancel{
+        font-size: 14px;
+        font-family: Roboto;
+        text-transform: uppercase;
+        height: 34px;
+        width: 100px;
+        text-align: center;
+      }
+
+      #hierarchyWrapper>::content .dd-button-select{
+        background-color: var(--default-primary-color);
+        color: #FFF;
+        border: 0 !important;
+
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+      }
+      #hierarchyWrapper>::content .dd-button-select:active{
+        box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12), 0 5px 5px -3px rgba(0, 0, 0, 0.4);
+      }
+
+      #hierarchyWrapper>::content a.dd-cancel{
+        margin: 5px;
+        border-radius: 3px;
+        text-decoration: none;
+        color: var(--primary-text-color,grey);
+        transition: box-shadow 0.2s;
+        box-shadow:0 0 0 0 rgba(0,0,0,0);
+        line-height: 34px;
+      }
+      #hierarchyWrapper>::content a.dd-cancel:active{
+        box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12), 0 5px 5px -3px rgba(0, 0, 0, 0.4);
+      }
+
+      #hierarchyWrapper>::content .dd-button-menu>div{
+      @apply(--layout-horizontal);
+      @apply(--layout-end-justified);
+      }
+
+      #hierarchyWrapper>::content .dd-items ul{
+      @apply(--layout-vertical);
+      }
+      #hierarchyWrapper>::content .dd-items ul>li {
+      @apply(--layout-flex-none);
+      }
+      #hierarchyWrapper>::content .dd-items ul>li>a {
+      @apply(--layout-horizontal);
+      }
+      #hierarchyWrapper>::content .dd-items ul>li>a>span {
+        line-height: 42px;
+        font-size: 14px;
+        font-family: Roboto;
+        padding: 0 16px;
+        font-weight: 400;
+        min-width:42px;
+        width:auto;
+      }
+      #hierarchyWrapper>::content .dd-item-text{
+      @apply(--layout-flex);
+      }
+      #hierarchyWrapper>::content .dd-selected a .dd-item-text{
+        background-color:var(--light-primary-color,#d8ebf8)
+      }
+    </style>
+
+    <div id="hierarchyWrapper">
+      <content></content>
+    </div>
+
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'reportal-hierarchy',
+        listeners:{'tap':'addBackdrop'},
+        properties: {
+          icon: {
+            type: String,
+            value: 'exit-to-app'
+          },
+          backdrop:{
+            type:Boolean,
+            value:false
+          }
+        },
+        created: function(){
+          this._wrapButton();
+        },
+        _wrapButton: function(){
+          var button = document.createElement('paper-button');
+          var source = Polymer.dom(this).querySelector('div.dd-target-button');
+          console.log(source.childNodes);
+          Polymer.dom(button).setAttribute('raised','');
+          Polymer.dom(button).setAttribute('id',source.id);
+          for(var i=0;i<source.childNodes.length;i++){
+            if(source.childNodes[i].localName != null){
+              Polymer.dom(button).appendChild(source.childNodes[i]);
+            }
+          }
+          var icon = document.createElement('iron-icon');
+          this.async(function(){
+            Polymer.dom(icon).setAttribute('icon',this.icon);
+            if(this.backdrop){
+              Polymer.dom(Polymer.dom(this).querySelector('.dd-target-container')).classList.add('backdrop');
+            }
+          });
+          Polymer.dom(button).appendChild(icon);
+          Polymer.dom(button).classList.add('dd-target-button');
+          Polymer.dom(Polymer.dom(this).querySelector('.dd-target-container')).removeChild(source);
+          Polymer.dom(Polymer.dom(this).querySelector('.dd-target-container')).appendChild(button);
+        },
+        addBackdrop:function(){
+          var that=this;
+          window.setTimeout(function(){
+            var dd = document.querySelector('.dd-drilldown');
+            dd.addEventListener('tap',that.ddClick);
+          },200);
+
+        },
+        ddClick:function(e){
+          if(e.target.className == 'dd-drilldown'){document.querySelector('.dd-cancel').click();} else {return false}
+        }
+      });
+    })();
+  </script>
+</dom-module>
+
+<script>
+  YUI.add("confirmit-drilldown-target", function(a) {
+      var Pressed = "Pressed", host = "host", ddButtonSelected = "dd-button-selected", ddDrilldown = "dd-drilldown", ddTargetButtonArrow = "dd-target-button-arrow", O = "dd-block-counter", I = "dd-block", s = "dd-new-block", G = "dd-deleted-block", m = "dd-checked", A = "rootNodeText", L = "rootNodeId", S = "gotoTopText", j = "serviceUrl", u = "startNodeId", P = "selectedNodeId", M = "selectedNodeText", c = "searchPlaceholder", w = "noResultsMessage", q = "info", k = "path", B = "version", l = "cancelText", n = "setButtonText", K = "selectedNodes", J = "topNodes", Q = "isMultiSelect", o, E = function() {
+          var T = this;
+          T.set(Pressed, !T.get(Pressed));
+          y.call(T);
+          f.call(T);
+        }
+        , y = function() {
+          var T = this;
+          T.get(host).toggleClass(ddButtonSelected, T.get(Pressed));
+        }
+        , f = function() {
+          if (o) {
+            return;
+          }
+          var T = this;
+          if (T.get(Pressed)) {
+            b.call(T);
+            D.call(T);
+          } else {
+            d.call(T);
+            p.call(T);
+          }
+        }
+        , C = function(U, V, T) {
+          U.set("title", !V ? "<empty>" : a.Array.map(V.length == 0 ? V.concat([{
+              title: T
+            }]) : V, function(W) {
+              return W.title;
+            }
+          ).concat([T]).join(" --> "));
+          return U;
+        }
+        , r = null , D = function() {
+          var W = this, Y = W.get(host), Z = Y.ancestor().one("." + ddDrilldown), T, V = W.get(K) || [], X = function() {
+              Z.one(".dd-search-input").focus();
+            }
+            , U = function() {
+              var aa = Y.getXY();
+              Z.setXY(a.CbLib.ensureXYInViewport(aa[0], aa[1] + Y.get("offsetHeight"), Z.getDOMNode()));
+            }
+            ;
+          if (Z) {
+            Z.drilldown.setSelectedNodeId(W.get(P));
+            Z.show();
+            U();
+            X();
+            return;
+          }
+          o = true;
+          a.use("node-screen", "confirmit-drilldown", function() {
+              Z = a.Node.create('<div class="' + ddDrilldown + '" />');
+              W.get(host).ancestor().append(Z);
+              a.use("confirmit-cblib", function() {
+                  U();
+                  a.use("event-resize", "yui-later", function() {
+                      a.on("windowresize", U);
+                    }
+                  );
+                }
+              );
+              Z.addClass(W.get("OverlayCssClass"));
+              Z.plug(a.DrillDown, {
+                isMultiSelect: W.get(Q),
+                rootNodeText: W.get(A),
+                rootNodeId: W.get(L),
+                gotoTopText: W.get(S),
+                serviceUrl: W.get(j),
+                startNodeId: W.get(u),
+                selectedNodeId: W.get(P),
+                selectedNodeText: W.get(M),
+                searchPlaceholder: W.get(c),
+                noResultsMessage: W.get(w),
+                info: W.get(q),
+                path: W.get(k),
+                version: W.get(B),
+                cancelText: W.get(l),
+                setButtonText: W.get(n),
+                selectedNodes: V.slice(),
+                topNodes: W.get(J) || [],
+                isReportBase: W.getReportBase(),
+                reportParameter: W.getReportParameter()
+              });
+              T = Z.drilldown;
+              W.drilldown = T;
+              r = T.on({
+                select: function(aa) {
+                  W.set(P, aa.id);
+                  W.set(K, aa.selectedNodes.slice());
+                  if (W.get(Q) == false) {
+                    C.call(W, Y, aa.path, aa.title).one(".dd-target-button-text").set("text", aa.title);
+                  }
+                  Y.all(".dd-deleted-block").remove(true);
+                  Y.all(".dd-new-block").removeClass("dd-new-block");
+                  E.call(W);
+                },
+                add: function(ab) {
+                  var aa = Y.one('a[data-id="' + ab.nodeRefExtended.id + '"]');
+                  if (aa) {
+                    aa.removeClass("dd-deleted-block");
+                    return;
+                  }
+                  N.call(W, ab.nodeRefExtended, true);
+                  U();
+                },
+                remove: function(ab) {
+                  var aa = Y.one('a[data-id="' + ab.id + '"]');
+                  if (aa && aa.hasClass("dd-new-block")) {
+                    aa.remove(true);
+                    U();
+                    return;
+                  }
+                  aa.addClass("dd-deleted-block");
+                },
+                hide: function(aa) {
+                  E.call(W);
+                  if (!W.get(Q)) {
+                    return;
+                  }
+                  F.call(W);
+                }
+              });
+              T.once({
+                ready: function() {
+                  X();
+                  a.use("event-outside", function() {
+                      Y.ancestor(".dd-target-container").one("." + ddDrilldown).on("clickoutside", function(aa) {
+                          if (W.get(Pressed)) {
+                            E.call(W);
+                          }
+                        }
+                      );
+                    }
+                  );
+                }
+              });
+              o = false;
+            }
+          );
+        }
+        , F = function() {
+          var U = this
+            , W = U.get("host")
+            , T = U.get(K) || [];
+          W.all(".dd-block").remove(true);
+          W.all(".dd-block-counter").remove(true);
+          a.each(T, function(X) {
+              N.call(U, X, false);
+            }
+          );
+          if (U.drilldown) {
+            U.drilldown.set(K, T.slice());
+            U.drilldown.get(host).all("." + m).removeClass(m);
+            var V = W.all(".dd-block").getData("id");
+            U.drilldown.get(host).all("li[data-table]").each(function(Y) {
+                var X = Y.one("a");
+                if (V.indexOf(X.getData("id")) > -1) {
+                  X.addClass(m);
+                }
+              }
+            );
+          }
+          p.call(U);
+        }
+        , d = function() {
+          this.get("host").ancestor().one("." + ddDrilldown).hide();
+        }
+        , N = function(V, T) {
+          var U = this
+            , X = U.get("host")
+            , W = a.Node.create(a.Lang.sub('<a href="" class="{cls}{newCls}" data-id="{id}">{text}<span class=\'dd-block-x-close\'>x</span></a>', {
+              cls: I,
+              id: V.id,
+              text: V.title,
+              newCls: T ? " dd-new-block" : ""
+            }));
+          W.setData("title", V.title);
+          X.append(W);
+          C.call(U, W, V.path, V.title);
+          W.one("span").on("click", function(Y) {
+              Y.halt();
+              U.drilldown.removeNode(V.id);
+            }
+          );
+          W.on("click", function(Y) {
+              Y.halt();
+              if (!U.get(Pressed)) {
+                E.call(U);
+              }
+              H.call(U, function(Z) {
+                  Z.showChildNodes(V, true);
+                }
+              );
+            }
+          );
+        }
+        , H = function(T) {
+          if (this.drilldown) {
+            T(this.drilldown);
+            return;
+          }
+          a.later(500, this, H, T);
+        }
+        , p = function() {
+          var V = this
+            , X = V.get("host")
+            , W = 3
+            , U = X.all("." + I);
+          if (U.size() <= W) {
+            return;
+          }
+          U = U.slice(W);
+          U.hide();
+          var Y = U.getData("title").join(", ") || "&nbsp;&nbsp;";
+          var T = X.one("." + O);
+          if (T) {
+            T.remove(true);
+          }
+          T = a.Node.create('<div class="dd-block-counter">+' + U.size() + "</div>");
+          X.append(T);
+          T.on("mouseenter", function() {
+              var Z = a.Node.create('<div class="dd-tooltip">' + Y + "</div>");
+              this.append(Z);
+            }
+          );
+          T.on("mouseleave", function() {
+              X.one(".dd-tooltip").remove(true);
+            }
+          );
+        }
+        , b = function() {
+          var V = this
+            , W = V.get("host")
+            , U = W.all("." + I);
+          U.show();
+          var T = W.one("." + O);
+          if (T) {
+            T.remove(true);
+          }
+        }
+        , x = function(T) {
+          var V = this
+            , X = V.get(host)
+            , Z = V.get(host).ancestor().getData("parentId")
+            , U = V.get(Q) ? (V.get(K) || []) : [{
+              id: V.get(P)
+            }]
+            , W = X.all(".dd-deleted-block").size() + X.all(".dd-new-block").size()
+            , Y = (W > 0);
+          if (Y) {
+            return true;
+          }
+          a.each(U, function(ab) {
+              var aa = T.indexOf(ab.id);
+              if (aa == -1) {
+                Y = true;
+                return false;
+              }
+              T.splice(aa, 1);
+            }
+          );
+          if (T.length > 0) {
+            return true;
+          }
+          return Y;
+        }
+        , t = function() {
+          var T = this
+            , U = T.get(host);
+          if (r) {
+            r.detach();
+          }
+          r = null ;
+          U.ancestor().all("." + ddDrilldown).each(function(V) {
+              if (a.DrillDown && V.hasPlugin("drilldown")) {
+                V.unplug(a.DrillDown);
+              }
+              V.remove();
+            }
+          );
+          delete T.drilldown;
+        }
+        , R = function() {
+          var T = a.one("#PageStateId");
+          return T ? T.get("value") : "";
+        }
+        , h = function() {
+          h.superclass.constructor.apply(this, arguments);
+        }
+        ;
+      a.extend(h, a.Plugin.Base, {
+        initializer: function() {
+          var T = this
+            , U = T.get(host);
+          U.on("click", function(V) {
+              if (V.target && !a.one(V.target).ancestor("." + I)) {
+                V.halt();
+                E.call(T);
+              }
+            }
+          );
+          a.use("confirmit-drilldown-css");
+          a.Global.on("reportcontroller:viewModeDataUpdate", function(Z, Y) {
+              var V = T.getReportBase()
+                , W = T.getReportParameter()
+                , aa = function(ab) {
+                  return ab.split(":")[2];
+                }
+                , X = V ? a.Array.map(Y.getPersonalizedNodes() || [], function(ab) {
+                    return ab.NodeId;
+                  }
+                ) : a.Array.map(Y.getParameterValue(W) || [], function(ab) {
+                    return aa(ab);
+                  }
+                );
+              if (!X.length || !x.call(T, X.slice())) {
+                return;
+              }
+              a.use("querystring-stringify-simple", function() {
+                  a.io(T.get(j) + "GetNodesByIds?" + a.QueryString.stringify({
+                      ids: X.join("|"),
+                      isRepBase: V,
+                      info: T.get(q),
+                      PageStateId: R.call(T)
+                    }), {
+                    method: "GET",
+                    headers: {
+                      "Content-Type": "application/json; charset=UTF-8"
+                    },
+                    on: {
+                      success: function(ae, ac) {
+                        var ab = a.JSON.parse(ac.responseText)
+                          , ad = T.get(Q);
+                        T.set(P, ab[P]);
+                        T.set(M, ab[M]);
+                        T.set(k, ab[k]);
+                        T.set(u, ab[u]);
+                        T.set(L, ab[L]);
+                        T.set(A, ab[A]);
+                        if (ad) {
+                          T.set(K, ab[K]);
+                          F.call(T);
+                          return;
+                        }
+                        T.set(K, []);
+                        U.one(".dd-target-button-text").setHTML(ab[M]);
+                        t.call(T);
+                      },
+                      complete: function() {},
+                      failure: function(ac, ab) {}
+                    }
+                  });
+                }
+              );
+            }
+            , this);
+          if (!T.get(Q)) {
+            C.call(T, U, T.get(k), T.get(M)).one(".dd-target-button-text").set("text", T.get(M));
+            return;
+          }
+          T.get("host").one(".dd-target-button-text").hide();
+          F.call(T);
+        },
+        getReportBase: function() {
+          var T = this.get(host);
+          return !!T.ancestor().getData("reportBase");
+        },
+        getReportParameter: function() {
+          var T = this.get(host);
+          return T.ancestor().getData("parameter");
+        },
+        destructor: function() {
+          t.call(this);
+        }
+      }, {
+        NS: "drilldown-ddt",
+        NAME: "drilldown-ddt",
+        ATTRS: {
+          isMultiSelect: false,
+          serviceUrl: "",
+          startNodeId: "",
+          selectedNodeId: "",
+          selectedNodeText: "",
+          searchPlaceholder: "",
+          noResultsMessage: "",
+          path: [],
+          info: "",
+          rootNodeId: "",
+          rootNodeText: "",
+          gotoTopText: "",
+          setButtonText: "",
+          cancelText: "",
+          overlayCssClass: "",
+          version: "",
+          pressed: false,
+          selectedNodes: [],
+          topNodes: []
+        }
+      });
+      a.DrillDownTarget = h;
+    }
+    , "1", {
+      requires: ["confirmitcss-drilldown", "plugin", "node-base", "node-style", "node-pluginhost", "attribute-base", "array-extras", "io-base", "json"]
+    });
+
+</script>

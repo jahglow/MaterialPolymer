@@ -4,304 +4,726 @@
 <head>
   <meta charset="utf-8">
   <meta name="description" content="">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="generator" content="Polymer Starter Kit" />
-  <title>Polymer Starter Kit</title>
-  <!-- Place favicon.ico in the `app/` directory -->
-
-  <!-- Chrome for Android theme color -->
-  <meta name="theme-color" content="#303F9F">
-
-  <!-- Web Application Manifest -->
-  <link rel="manifest" href="manifest.json">
-
-  <!-- Tile color for Win8 -->
-  <meta name="msapplication-TileColor" content="#3372DF">
-
-  <!-- Add to homescreen for Chrome on Android -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="application-name" content="PSK">
-  <link rel="icon" sizes="192x192" href="images/touch/chrome-touch-icon-192x192.png">
-
-  <!-- Add to homescreen for Safari on iOS -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="Polymer Starter Kit">
-  <link rel="apple-touch-icon" href="images/touch/apple-touch-icon.png">
-
-  <!-- Tile icon for Win8 (144x144) -->
-  <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-  <script src="http://code.highcharts.com/highcharts.js"></script>
-  <script src="http://code.highcharts.com/modules/exporting.js"></script>
   <!-- build:css styles/main.css -->
   <link rel="stylesheet" href="styles/main.css">
   <!-- endbuild-->
 
-  <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
+  <!-- build:js bower_components/webcomponentsjs/webcomponents.min.modified.js -->
   <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
   <!-- endbuild -->
 
   <!-- will be replaced with elements/elements.vulcanized.html -->
   <link rel="import" href="elements/elements.html">
-  <link rel="import" href="bower_components/iron-icons/device-icons.html">
-  <link rel="import" href="bower_components/paper-card/paper-card.html">
-  <link rel="import" href="bower_components/paper-button/paper-button.html">
-  <link rel="import" href="bower_components/paper-input/paper-input.html">
-  <link rel="import" href="bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-  <link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html">
-
-
   <!-- endreplace-->
+  <link rel="import" href="styles/app-theme.html">
+  <style>
+    .dd-drilldown
+    {
+      position: absolute;
+      z-index: 9999;
+    }
 
+
+    .dd-search
+    {
+      margin: 4px 0;
+    }
+
+    .dd-search-input
+    {
+      text-align: left;
+      width: 99%;
+      height:26px;
+      border-radius:3px;
+      border:1px solid #ccc !important;
+      padding:3px;
+      -webkit-appearance: textfield;
+    }
+
+    .dd-items
+    {
+      width: 100%;
+      height: 208px;
+      overflow-x: hidden;
+      overflow-y: auto;
+      margin: 0;
+      padding: 0;
+      position: relative;
+    }
+
+    .dd-err-msg {
+      color: red;
+    }
+    .dd-err-msg-container {
+      text-align:left;
+      margin: 0 4px 4px 4px
+    }
+
+    .dd-button-menu
+    {
+      text-align: right;
+      border-top: 1px solid #ccc;
+    }
+
+    .dd-button-menu a
+    {
+      display: inline-block;
+      line-height: 40px;
+      margin-right: 12px;
+      text-decoration: none;
+      color: #1144bb;
+    }
+
+    .dd-button-menu a:hover
+    {
+      text-decoration: underline;
+      color: #ff6600;
+    }
+
+    .dd-button-select
+    {
+      margin: 5px;
+    }
+
+    .dd-wrapper
+    {
+      background: #FFF;
+      border: 1px solid;
+      margin: 0;
+      padding: 0;
+      width: 400px;
+      text-align: left;
+      overflow: hidden;
+      font: normal 10px Verdana, Arial, sans-serif;
+    }
+
+    .dd-wrapper, .dd-wrapper *
+    {
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -ms-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+
+    .dd-wrapper li
+    {
+      list-style: none;
+      display: none;
+    }
+
+    .dd-header
+    {
+      padding: 4px;
+      min-height: 24px;
+      font-size: 11px;
+    }
+
+    .dd-header ul
+    {
+      overflow: hidden;
+      line-height: 1.5em;
+      padding: 0;
+      margin: 0;
+    }
+
+    .dd-header ul li
+    {
+      display: inline-block;
+      float: left;
+      padding: 0;
+    }
+
+    .dd-header li a
+    {
+      background: url(/cf_clientutil/images/drilldown/arrow_gray_right.gif) no-repeat 100% center;
+      color: #3a3a3a;
+      white-space: nowrap;
+      display: inline-block;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-decoration: none;
+      padding: 1px 15px 1px 5px;
+    }
+
+    .dd-header li a:hover
+    {
+      text-decoration: underline;
+    }
+
+    /*.dd-header li:last-child a*/
+    .dd-header li.dd-bc-current a
+    {
+      background: transparent;
+      font-weight: bold;
+    }
+
+    /*.dd-header li:last-child a:hover*/
+    .dd-header li.dd-bc-current a:hover
+    {
+      text-decoration: none;
+      cursor: default;
+    }
+
+    .dd-expand
+    {
+      display: none;
+    }
+
+    .dd-parent-a .dd-expand
+    {
+      position: absolute;
+      display: block;
+      top: 0px;
+      right: 0px;
+      width: 10%;
+      height: 100%;
+      *height: 26px;
+      border-left: 1px solid #ccc;
+    }
+
+    .dd-item-marker
+    {
+      position: absolute;
+      display: none;
+      top: 0px;
+      right: 35px;
+      width: 10%;
+      height: 100%;
+      *height: 26px;
+      font-size: 18px;
+      text-align: center;
+      color: #454545;
+    }
+
+    @media \0screen\,screen\9 {
+      .dd-item-marker {
+        padding-top:4px;
+        height: 21px;
+        top: 0px;
+      }
+
+      .dd-cancel {
+        line-height:30px !important;
+        height: 40px;
+      }
+    }
+
+    .dd-checked .dd-item-marker {
+      display:block;
+    }
+
+    .dd-expand-icon
+    {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      width: 100%;
+      height: 100%;
+      *width: 30px;
+      *height: 30px;
+      background: url(/cf_clientutil/images/drilldown/arrow_grey_right.png) no-repeat center;
+    }
+
+    .dd-menu
+    {
+      margin: 0;
+      padding: 0;
+      position: relative;
+    }
+
+    ul.dd-sub-menu.dd-current
+    {
+      *overflow-y: auto;
+      *overflow-x: hidden;
+      *height: 208px;
+      *width: 398px;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .dd-sub-menu
+    {
+      margin: 0;
+      padding: 0;
+      position: static;
+      width: 100%;
+    }
+
+    .dd-submenu li, .dd-submenu a
+    {
+      height: 40px;
+    }
+
+    .dd-item-text
+    {
+      color: #444;
+      width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: inline-block;
+      padding: 6px 0 7px 10px;
+      font-size: 10px;
+    }
+
+    .dd-noresults
+    {
+      padding: 10px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .dd-parent-a > .dd-item-text
+    {
+      width: 90%;
+    }
+
+    .dd-checked .dd-item-text
+    {
+      width: 80%;
+    }
+
+
+    ul.dd-current li.dd-current-item
+    {
+      display: block;
+    }
+
+    li.dd-subitems-visible
+    {
+      display: block;
+    }
+
+    .dd-wrapper a.dd-subitems-visible-link
+    {
+      display: none;
+    }
+
+    .dd-items a
+    {
+      outline:none;
+      text-decoration: none;
+      display: block;
+      position: relative;
+    }
+
+    .dd-header a.link-back
+    {
+      text-decoration: none;
+      display: block;
+      padding: 5px 10px 0 20px;
+    }
+
+    /* DEFAULT THEME */
+    .light-grey .dd-wrapper
+    {
+      background: #FFF;
+      border: 1px solid #c7c7c7;
+      -webkit-border-radius: 0px 6px 6px 6px;
+      -moz-border-radius: 0px 6px 6px 6px;
+      border-radius: 0px 6px 6px 6px;
+      box-shadow: 0px 2px 2px rgba(0, 0, 0, .3);
+    }
+
+    .light-grey .dd-header
+    {
+      background-color: #e8e8e8;
+      border-bottom: 1px solid #c7c7c7;
+    }
+
+    .light-grey .dd-items a
+    {
+      text-decoration: none;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .light-grey .dd-item-text,
+    .light-grey .dd-expand,
+    .light-grey .dd-item-marker,
+    .light-grey .dd-menu li
+    {
+      background-color: #fcfcfc;
+    }
+
+    .light-grey .dd-item-text:hover,
+    .light-grey .dd-expand:hover,
+    .light-grey .dd-items .dd-selectable a .dd-item-text:active,
+    .light-grey .dd-items .dd-selectable a .dd-expand:active
+    {
+      background-color: #efefef;
+    }
+
+    .light-grey .dd-items .dd-selected a .dd-item-text
+    {
+      background-color: #d8ebf8;
+    }
+
+    .light-grey .dd-target-button:hover
+    {
+      cursor: pointer;
+      background: #ededed;
+      background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ededed), color-stop(100%,#e0e0e0));
+      background: -webkit-linear-gradient(top, #ededed 0%,#e0e0e0 100%);
+      background: -moz-linear-gradient(top, #ededed 0%, #e0e0e0 100%);
+      background: -ms-linear-gradient(top, #ededed 0%,#e0e0e0 100%);
+      background: -o-linear-gradient(top, #ededed 0%,#e0e0e0 100%);
+      background: linear-gradient(to bottom, #ededed 0%,#e0e0e0 100%);
+    }
+
+    .dd-block-counter {
+      font-size:10px;
+      float: left;
+      margin-right: 8px;
+      font-weight: bold;
+      margin-top: 10px;
+      position: relative;
+    }
+
+    div a.dd-block:hover {
+      color: #74DFFF;
+      text-decoration:none;
+    }
+
+    div a.dd-block {
+      float: left;
+      background-color: #3a3a3a;
+      color: white;
+      padding: 6px 0px 6px 6px;
+      margin-right: 8px;
+      margin-bottom: 3px;
+      margin-top: 3px;
+      border-radius: 3px;
+      cursor:pointer;
+      text-decoration:none;
+    }
+
+    div a.dd-new-block {
+      background-color: rgba(0, 0, 0, 0.5);
+      -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+      filter: alpha(opacity=60);
+    }
+
+    div a.dd-deleted-block {
+      text-decoration: line-through;
+    }
+
+    div a.dd-deleted-block:hover {
+      text-decoration: line-through;
+    }
+
+    .dd-tooltip {
+      position:absolute;
+      left: 30px;
+      top: -7px;
+      background-color: #3a3a3a;
+      color: white;
+      padding: 7px;
+      border-radius: 6px;
+    }
+
+    .dd-tooltip:before {
+      content:"\A";
+      border-style: solid;
+      border-width: 10px 15px 10px 0;
+      border-color: transparent #3a3a3a transparent transparent;
+      position: absolute;
+      top: 3px;
+      left: -10px;
+    }
+
+    .dd-target-button-arrow {
+      float: left;
+    }
+
+    .dd-block-wrapper {
+      float: right;
+      -webkit-padding-start: 0;
+      -webkit-margin-before: 0;
+      -webkit-margin-after: 0;
+    }
+
+    .dd-block span {
+      text-align: center;
+      margin-left: 7px;
+      visibility: hidden;
+      color: #fff !important;
+      padding: 6px;
+    }
+
+    .dd-block span:hover {
+      color:red !important;
+    }
+
+    .dd-button-selected .dd-block span {
+      visibility: visible;
+    }
+
+    .dd-deleted-block span {
+      visibility: hidden !important;
+    }
+
+
+    .light-grey .dd-button-select
+    {
+      background-color: #333;
+      color: #FFF;
+      border-bottom: none;
+    }
+
+    .light-grey .dd-cancel
+    {
+      color: #345FCB;
+    }
+
+    .light-grey li.dd-current-item a:focus .dd-item-text
+    {
+      background-color: #ededed;
+    }
+  </style>
 </head>
 
-<body unresolved class="fullbleed layout vertical">
-<style is="custom-style">
-  #firstRow>kpi-tile{
-  --kpi-tile:{
-     display: block;
-     width: calc(50% - 20px);
-     min-width: 220px;
-     margin: 10px;
-   };
-  }
-  #firstRow> div,#secondRow> div{
-    height:440px;
-    width: calc(50% - 20px);
-    min-width: 220px;
-    }
-  #firstRow> div> kpi-tile{
-  --kpi-tile:{
-     display: block;
-     width: calc(100% - 20px) !important;
-     min-width: 220px;
-     margin: 10px;
-   };}
-  #secondRow kpi-tile{
-  --kpi-tile:{
-    display: block;
-    width: calc(100% - 20px) !important;
-    min-width: 220px;
-    margin: 10px;
-  };
-  }
-#reportFilters{padding:16px}
-  .checkboxes{padding:5px}
-  .checkboxes span{padding: 5px 0 10px 0}
-  .checkboxes paper-checkbox{padding: 5px 0}
-
-</style>
-  <span id="browser-sync-binding"></span>
-  <template is="dom-bind" id="app">
-
-    <paper-drawer-panel id="paperDrawerPanel">
-      <!-- Drawer Scroll Header Panel -->
-      <paper-scroll-header-panel drawer fixed>
-      <reportal-sidebar filters selected="0" logo="https://www.confirmit.com/Confirmit/media/confirmit-corporate/templates/global-nav-logo.png">
-        <reportal-menu id="reportMenu" legacy-icons="polymer|warning|settings" legacy-icons-separator="|">
-          <div id="ctl02_ctl00" class="yui3-menu yui3-menu-horizontal css-menu reportal_hide_print" role="menu">
-            <div class="yui3-menu-content" role="presentation" id="yui_3_8_0_2_1443094933740_72">
-              <ul class="first-of-type reportal-clearfix" role="presentation" id="yui_3_8_0_2_1443094933740_79">
-                <li class="css-menu-child-selected css-menu-topitem" role="presentation" id="yui_3_8_0_2_1443094933740_81">
-                  <a href="#bdf1cffa-9826-4788-af77-2a36955c77b6_items" class="yui3-menuitem-content yui3-menu-label css-menu-toplabel" id="bdf1cffa-9826-4788-af77-2a36955c77b6_toggle" data-level="0" role="menuitem" aria-haspopup="true" tabindex="-1">Polygon</a>
-                  <div id="bdf1cffa-9826-4788-af77-2a36955c77b6_items" class="yui3-menu css-menu-submenu yui3-menu-hidden" role="menu" aria-labelledby="yui_3_8_0_2_1443094933740_14" aria-hidden="true" style="height: 28px; width: 21px;">
-                    <div class="yui3-menu-content" role="presentation" id="yui_3_8_0_2_1443094933740_92">
-                      <ul role="presentation" class="first-of-type" id="yui_3_8_0_2_1443094933740_91">
-                        <li id="f1571161-501d-4a17-ad7b-5944941bec88" class="yui3-menuitem css-menu-selected css-menu-subitem" data-info="report_page" role="presentation"><a class="yui3-menuitem-content css-menu-sublabel" href="javascript:viewmode.changePageNoSubmit( '17414_6A42C109151486D7336FDBE570BD025D4FF923A4', 'f1571161-501d-4a17-ad7b-5944941bec88', false, false )" role="menuitem">test</a></li>
-                        <li id="63d3b35b-89e3-424f-a893-c0aabda8e91f" class="yui3-menuitem css-menu-subitem" data-info="report_page" role="presentation"><a class="yui3-menuitem-content css-menu-sublabel" href="javascript:viewmode.changePageNoSubmit( '17414_6A42C109151486D7336FDBE570BD025D4FF923A4', '63d3b35b-89e3-424f-a893-c0aabda8e91f', false, false )" role="menuitem">test</a></li>
-                      </ul>
-                    </div>
-                  </div>
-                </li>
-                <li class="css-menu-topitem" role="presentation" id="yui_3_8_0_2_1443094933740_83">
-                  <a href="#29783056-d183-401b-91c1-c8eef249b337_items" class="yui3-menuitem-content yui3-menu-label css-menu-toplabel" id="29783056-d183-401b-91c1-c8eef249b337_toggle" data-level="0" role="menuitem" aria-haspopup="true" tabindex="-1">Old</a>
-                  <div id="29783056-d183-401b-91c1-c8eef249b337_items" class="yui3-menu css-menu-submenu yui3-menu-hidden" role="menu" aria-labelledby="yui_3_8_0_2_1443094933740_16" aria-hidden="true" style="height: 140px; width: 112px;">
-                    <div class="yui3-menu-content" role="presentation">
-                      <ul role="presentation" class="first-of-type">
-                        <li id="2ae4aaac-b04d-4b3a-9ab4-f67c90601d13" class="yui3-menuitem css-menu-subitem" data-info="report_page" role="presentation"><a class="yui3-menuitem-content css-menu-sublabel" href="javascript:viewmode.changePageNoSubmit( '17414_6A42C109151486D7336FDBE570BD025D4FF923A4', '2ae4aaac-b04d-4b3a-9ab4-f67c90601d13', false, false )" role="menuitem">Welcome</a></li>
-                        <li id="dabf8970-79dc-475d-a4a2-84aa4977f5f3" class="yui3-menuitem css-menu-subitem" data-info="report_page" role="presentation"><a class="yui3-menuitem-content css-menu-sublabel" href="javascript:viewmode.changePageNoSubmit( '17414_6A42C109151486D7336FDBE570BD025D4FF923A4', 'dabf8970-79dc-475d-a4a2-84aa4977f5f3', false, false )" role="menuitem">test</a></li>
-                        <li id="ee8686ed-d194-4f9b-aa2d-afc2e19d6e5f" class="yui3-menuitem css-menu-subitem" data-info="report_page" role="presentation"><a class="yui3-menuitem-content css-menu-sublabel" href="javascript:viewmode.changePageNoSubmit( '17414_6A42C109151486D7336FDBE570BD025D4FF923A4', 'ee8686ed-d194-4f9b-aa2d-afc2e19d6e5f', false, false )" role="menuitem">Dashboard</a></li>
-                        <li id="257ea242-b3b1-4ed7-aa47-6c1e2ce23653" class="yui3-menuitem css-menu-subitem" data-info="report_page" role="presentation"><a class="yui3-menuitem-content css-menu-sublabel" href="javascript:viewmode.changePageNoSubmit( '17414_6A42C109151486D7336FDBE570BD025D4FF923A4', '257ea242-b3b1-4ed7-aa47-6c1e2ce23653', false, false )" role="menuitem">Scorecard</a></li>
-                        <li class="css-menu-subitem" role="presentation" id="yui_3_8_0_2_1443094933740_85">
-                          <a href="#218baca2-65f3-4879-85ef-e95a09712902_items" class="yui3-menuitem-content yui3-menu-label css-menu-sublabel" id="218baca2-65f3-4879-85ef-e95a09712902_toggle" data-level="1" role="menuitem" aria-haspopup="true">Questions</a>
-                          <div id="218baca2-65f3-4879-85ef-e95a09712902_items" class="yui3-menu yui3-menu-hidden css-menu-submenu" role="menu" aria-labelledby="yui_3_8_0_2_1443094933740_18" aria-hidden="true">
-                            <div class="yui3-menu-content" role="presentation">
-                              <ul role="presentation" class="first-of-type">
-                                <li id="e8f803cd-590a-47a2-bb46-a190b17cffc7" class="yui3-menuitem css-menu-subitem" data-info="report_page" role="presentation"><a class="yui3-menuitem-content css-menu-sublabel" href="javascript:viewmode.changePageNoSubmit( '17414_6A42C109151486D7336FDBE570BD025D4FF923A4', 'e8f803cd-590a-47a2-bb46-a190b17cffc7', false, false )" role="menuitem">Individual Questions</a></li>
-                                <li id="bb8ac0ff-03cc-4221-b1ae-e4e90581fee8" class="yui3-menuitem css-menu-subitem" data-info="report_page" role="presentation"><a class="yui3-menuitem-content css-menu-sublabel" href="javascript:viewmode.changePageNoSubmit( '17414_6A42C109151486D7336FDBE570BD025D4FF923A4', 'bb8ac0ff-03cc-4221-b1ae-e4e90581fee8', false, false )" role="menuitem">All Questions in One Table</a></li>
-                              </ul>
-                            </div>
-                          </div>
-                        </li>
-                        <li id="603069e2-ac65-4b1d-b5a8-b02adf02d861" class="yui3-menuitem css-menu-subitem" data-info="report_page" role="presentation"><a class="yui3-menuitem-content css-menu-sublabel" href="javascript:viewmode.changePageNoSubmit( '17414_6A42C109151486D7336FDBE570BD025D4FF923A4', '603069e2-ac65-4b1d-b5a8-b02adf02d861', false, false )" role="menuitem">Crosstab</a></li>
-                        <li id="482ec628-dd10-470a-a424-5d7745c6c71b" class="yui3-menuitem css-menu-subitem" data-info="report_page" role="presentation"><a class="yui3-menuitem-content css-menu-sublabel" href="javascript:viewmode.changePageNoSubmit( '17414_6A42C109151486D7336FDBE570BD025D4FF923A4', '482ec628-dd10-470a-a424-5d7745c6c71b', false, false )" role="menuitem">Trending</a></li>
-                        <li class="css-menu-subitem" role="presentation" id="yui_3_8_0_2_1443094933740_87">
-                          <a href="#6cc507f1-2e5e-43ae-bc4d-86aeeb83216f_items" class="yui3-menuitem-content yui3-menu-label css-menu-sublabel" id="6cc507f1-2e5e-43ae-bc4d-86aeeb83216f_toggle" data-level="1" role="menuitem" aria-haspopup="true">All Verbatim</a>
-                          <div id="6cc507f1-2e5e-43ae-bc4d-86aeeb83216f_items" class="yui3-menu yui3-menu-hidden css-menu-submenu" role="menu" aria-labelledby="yui_3_8_0_2_1443094933740_20" aria-hidden="true">
-                            <div class="yui3-menu-content" role="presentation">
-                              <ul role="presentation" class="first-of-type">
-                                <li id="d6e0a965-3a5c-4b33-9c34-4feec4ed12dc" class="yui3-menuitem css-menu-subitem" data-info="report_page" role="presentation"><a class="yui3-menuitem-content css-menu-sublabel" href="javascript:viewmode.changePageNoSubmit( '17414_6A42C109151486D7336FDBE570BD025D4FF923A4', 'd6e0a965-3a5c-4b33-9c34-4feec4ed12dc', false, false )" role="menuitem">All Verbatim by Respondent</a></li>
-                                <li id="50a35c30-e63b-43c6-a72b-c03922291565" class="yui3-menuitem css-menu-subitem" data-info="report_page" role="presentation"><a class="yui3-menuitem-content css-menu-sublabel" href="javascript:viewmode.changePageNoSubmit( '17414_6A42C109151486D7336FDBE570BD025D4FF923A4', '50a35c30-e63b-43c6-a72b-c03922291565', false, false )" role="menuitem">Q9</a></li>
-                                <li id="b69026c7-bb8a-46e6-85bf-cc639833a1c2" class="yui3-menuitem css-menu-subitem" data-info="report_page" role="presentation"><a class="yui3-menuitem-content css-menu-sublabel" href="javascript:viewmode.changePageNoSubmit( '17414_6A42C109151486D7336FDBE570BD025D4FF923A4', 'b69026c7-bb8a-46e6-85bf-cc639833a1c2', false, false )" role="menuitem">Q10</a></li>
-                              </ul>
-                            </div>
-                          </div>
-                        </li>
-                        <li id="7dc85e5a-e7a1-4b1b-96d9-5b76749fd7f3" class="yui3-menuitem css-menu-subitem" data-info="report_page" role="presentation"><a class="yui3-menuitem-content css-menu-sublabel" href="javascript:viewmode.changePageNoSubmit( '17414_6A42C109151486D7336FDBE570BD025D4FF923A4', '7dc85e5a-e7a1-4b1b-96d9-5b76749fd7f3', false, false )" role="menuitem">Completion Tracking</a></li>
-                        <li id="e248f1ed-87f4-4d95-8ea1-027b830da78e" class="yui3-menuitem css-menu-subitem" data-info="report_page" role="presentation"><a class="yui3-menuitem-content css-menu-sublabel" href="javascript:viewmode.changePageNoSubmit( '17414_6A42C109151486D7336FDBE570BD025D4FF923A4', 'e248f1ed-87f4-4d95-8ea1-027b830da78e', false, false )" role="menuitem">Filters</a></li>
-                      </ul>
-                    </div>
-                  </div>
-                </li>
-                <li class="css-menu-topitem" role="presentation" id="yui_3_8_0_2_1443094933740_78">
-                  <a href="#_adminmenu_items" class="yui3-menuitem-content yui3-menu-label css-menu-toplabel yui3-menu-label-active" id="_adminmenu_toggle" data-level="0" role="menuitem" aria-haspopup="true" tabindex="0">Admin Menu</a>
-                  <div id="_adminmenu_items" class="yui3-menu css-menu-submenu yui3-menu-hidden" role="menu" aria-labelledby="yui_3_8_0_2_1443094933740_22" aria-hidden="true" style="height: 56px; width: 64px;">
-                    <div class="yui3-menu-content" role="presentation" id="yui_3_8_0_2_1443094933740_98">
-                      <ul role="presentation" class="first-of-type" id="yui_3_8_0_2_1443094933740_97">
-                        <li id="_reportlist" class="yui3-menuitem css-menu-subitem" data-info="_reportlist" role="presentation"><a class="yui3-menuitem-content css-menu-sublabel" href="javascript:viewmode.reportList('/reportal/ReportList.aspx')" role="menuitem" tabindex="-1" id="yui_3_8_0_2_1443094933740_100">Report List</a></li>
-                        <li id="_preferences" class="yui3-menuitem css-menu-subitem" data-info="_preferences" role="presentation"><a class="yui3-menuitem-content css-menu-sublabel" href="javascript:SetPreferences();" role="menuitem" tabindex="-1" id="yui_3_8_0_2_1443094933740_102">Preferences</a></li>
-                        <li id="_export" class="yui3-menuitem css-menu-subitem" data-info="_export" role="presentation"><a class="yui3-menuitem-content css-menu-sublabel" href="javascript:ExportReport();" role="menuitem" tabindex="-1" id="yui_3_8_0_2_1443094933740_104">Export</a></li>
-                        <li id="_logoff" class="yui3-menuitem css-menu-subitem" data-info="_logoff" role="presentation"><a class="yui3-menuitem-content css-menu-sublabel" href="/reportal/logoff.aspx?logoff=true" role="menuitem" tabindex="-1" id="yui_3_8_0_2_1443094933740_106">Log off</a></li>
-                      </ul>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
+<body>
+<span id="browser-sync-binding"></span>
+<script src="scripts/report.js"></script>
+<dom-module id="global-scope">
+<template>
+  <report-master>
+    <reportal-sidebar id="reportalSidebar" filters selected="0" logo="https://www.confirmit.com/Confirmit/media/confirmit-corporate/templates/global-nav-logo.png">
+      <div id="reportMenu" >
+        <reportal-menu legacy-icons="polymer|warning|settings" legacy-icons-separator="|">
+          <content select="#menu"></content>
         </reportal-menu>
-        <div id="reportFilters">
-          <paper-dropdown-menu label="Filter by">
-            <paper-menu class="dropdown-content">
-              <paper-item>NPS</paper-item>
-              <paper-item>NES</paper-item>
-              <paper-item>Overall Satisfaction</paper-item>
-              <paper-item>Response Rate</paper-item>
-            </paper-menu>
-          </paper-dropdown-menu>
-          <div class="checkboxes"><span>Responses to include</span>
-          <div class="horizontal-section">
-            <paper-checkbox checked>Complete</paper-checkbox><br>
-            <paper-checkbox>Incomplete</paper-checkbox><br>
-            <paper-checkbox >Screened</paper-checkbox>
-          </div></div>
-        </div>
-      </reportal-sidebar>
-
-
-
-        <!-- Drawer Content-->
-      </paper-scroll-header-panel>
-
+      </div>
+      <div id="reportFilters"><content select="#filters"></content></div>
+    </reportal-sidebar>
+    <div id="reportalPage">
       <!-- Main Area -->
-      <paper-scroll-header-panel main condenses keep-condensed-header>
+        <content></content>
+    </div>
 
-        <!-- Main Toolbar -->
-        <paper-toolbar id="mainToolbar" class="tall">
-          <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
-          <span class="flex"></span>
+  </report-master>
+</template>
+<script>
+  window.addEventListener('WebComponentsReady', function() {
+    Polymer({
+      is:'global-scope'
+    })
+  });
+</script>
+</dom-module>
 
-          <!-- Toolbar icons -->
-          <paper-icon-button icon="refresh"></paper-icon-button>
-          <paper-icon-button icon="search"></paper-icon-button>
+<global-scope>
+  <div id="menu">
+</div>
 
-          <!-- Application name -->
-          <div class="middle middle-container center horizontal layout">
-            <div class="app-name">Reportal + Polymer</div>
-          </div>
+  <div id="filters">
+    <div> filters go here </div>
+  </div>
 
-          <!-- Application sub title -->
-          <div class="bottom bottom-container center horizontal layout">
-            <div class="bottom-title paper-font-subhead">The future of the templating today</div>
-          </div>
+    <!-- Main Toolbar -->
+    <paper-scroll-header-panel condenses keep-condensed-header id="shp">
+      <paper-toolbar id="mainToolbar" class="tall">
+        <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
+        <span class="flex"></span>
 
-        </paper-toolbar>
+        <!-- Toolbar icons -->
+        <paper-icon-button icon="refresh"></paper-icon-button>
+        <paper-icon-button icon="search"></paper-icon-button>
 
-        <!-- Main Content -->
-        <div class="content">
+        <!-- Application name -->
+        <div class="middle middle-container center horizontal layout">
+          <div class="app-name">Polymer Starter Kit</div>
+        </div>
 
-          <div class="layout horizontal wrap" id="firstRow">
-            <kpi-tile heading="NPS&reg;" icon="thumbs-up-down" info="Hello, this is some info about<br> NPS" height="420px">
+        <!-- Application sub title -->
+        <div class="bottom bottom-container center horizontal layout">
+          <div class="bottom-title paper-font-subhead">The future of the web today</div>
+        </div>
+
+      </paper-toolbar>
+
+      <div class="content">
+
+        <div class="layout horizontal wrap" id="firstRow">
+          <kpi-tile heading="NPS&reg;" icon="thumbs-up-down" info="Hello, this is some info about<br> NPS" height="420px">
+            <div class="tile-content">
+              <radial-gauge min="-100" max="100" primary='{"val":"70","decimal":"0","color":"green","animated":"true","prefix":"","suffix":""}' secondary='{"val":"10","color":"amber","label":"true","icon":"device:gps-fixed"}' labels></radial-gauge>
+              <radial-gauge min="0" max="10" primary='{"val":"6.2","decimal":"1","color":"amber","animated":"true","prefix":"","suffix":""}' secondary='{"val":"9.1","color":"green","label":"true","icon":"undo"}' dynamics='{"icon":"trending-down","color":"red","val":"36%"}' labels labelposition="bottom" style="padding-top:20px"></radial-gauge>
+            </div>
+            <div class="tile-actions">
+              <paper-button>VIEW DETAILS</paper-button>
+            </div>
+          </kpi-tile>
+          <div class="layout vertical wrap flex">
+            <kpi-tile heading="NPS&reg;" icon="thumbs-up-down" info="Hello, this is some info about<br> NPS" height="200px">
               <div class="tile-content">
-                <radial-gauge min="-100" max="100" primary='{"val":"20","decimal":"0","color":"red","animated":"true","prefix":"","suffix":""}' secondary='{"val":"56","color":"grey","label":"true","icon":"device:gps-fixed"}' labels></radial-gauge>
-                <radial-gauge min="0" max="10" primary='{"val":"6.2","decimal":"1","color":"amber","animated":"true","prefix":"","suffix":""}' secondary='{"val":"9.1","color":"green","label":"true","icon":"undo"}' dynamics='{"icon":"trending-down","color":"red","val":"36%"}' labels labelposition="bottom" style="padding-top:20px"></radial-gauge>
+                <radial-gauge min="-100" max="100" primary='{"val":"70","decimal":"0","color":"green","animated":"true","prefix":"","suffix":""}' secondary='{"val":"10","color":"amber","label":"true","icon":"device:gps-fixed"}' labels></radial-gauge>
               </div>
-              <div class="tile-actions">
-                <paper-button>VIEW DETAILS</paper-button>
-              </div>
+
             </kpi-tile>
-            <div class="layout vertical wrap flex">
-              <kpi-tile heading="NPS&reg;" info="Hello, this is some info about<br> NPS" height="200px">
-                <div class="tile-content">
-                  <radial-gauge min="-100" max="100" primary='{"val":"70","decimal":"0","color":"green","animated":"true","prefix":"","suffix":""}' secondary='{"val":"10","color":"amber","label":"true","icon":"device:gps-fixed"}' labels></radial-gauge>
-                </div>
-
-              </kpi-tile>
-              <kpi-tile heading="Response rate" icon="assessment" info="This is some info about Response rate..." height="200px">
-                <div class="tile-content">
-                  <radial-gauge min="0" max="100" primary='{"val":"56.3","decimal":"1","color":"green","animated":"true","prefix":"","suffix":"%"}' secondary='{"val":"33%","color":"red","label":"true","icon":"undo"}' dynamics='{"icon":"trending-up","color":"green","val":"48%"}' labels></radial-gauge>
-                </div>
-
-              </kpi-tile></div>
-          </div>
-
-
-          <div class="layout horizontal wrap" id="secondRow">
-            <kpi-tabbed-chart heading="NPS&reg; Trending" info="NPS trending shown over different periods" height="420px" selected=""></kpi-tabbed-chart>
-
-           <!-- <kpi-tile heading="NPS&reg;" icon="thumbs-up-down" info="Hello, this is some info about<br> NPS" height="420px">
+            <kpi-tile heading="NPS&reg;" icon="thumbs-up-down" info="Hello, this is some info about<br> NPS" height="200px">
               <div class="tile-content">
-                <radial-gauge min="-100" max="100" primary='{"val":"20","decimal":"0","color":"red","animated":"true","prefix":"","suffix":""}' secondary='{"val":"56","color":"grey","label":"true","icon":"device:gps-fixed"}' labels></radial-gauge>
-                <radial-gauge min="0" max="10" primary='{"val":"6.2","decimal":"1","color":"amber","animated":"true","prefix":"","suffix":""}' secondary='{"val":"9.1","color":"green","label":"true","icon":"undo"}' dynamics='{"icon":"trending-down","color":"red","val":"36%"}' labels labelposition="bottom" style="padding-top:20px"></radial-gauge>
+                <radial-gauge min="-100" max="100" primary='{"val":"70","decimal":"0","color":"green","animated":"true","prefix":"","suffix":""}' secondary='{"val":"10","color":"amber","label":"true","icon":"device:gps-fixed"}' labels></radial-gauge>
               </div>
-              <div class="tile-actions">
-                <paper-button>VIEW DETAILS</paper-button>
+
+            </kpi-tile></div>
+        </div>
+        <div class="layout horisontal wrap">
+          <reportal-hierarchy>
+
+            <div class="light-grey dd-target-container reportal_hide_print" id="ctl06_drilldown_container" data-parentid="ctl06" data-reportbase="true" data-parameter="">
+              <div role="button" id="ctl06_drilldown" class="dd-target-button dd-button-selected" title="Global --> Global">
+                <span class="dd-target-button-arrow"></span>
+                <span class="dd-target-button-text">Global</span>
               </div>
-            </kpi-tile> -->
 
-          </div>
+                <div class="dd-drilldown" style="left: 15px; top: 54px;" id="yui_3_8_0_3_1444658011575_77"><div class="dd-wrapper" id="yui_3_8_0_3_1444658011575_148">
+                <div class="dd-header" id="yui_3_8_0_3_1444658011575_145">
+                  <div class="dd-search">
+                    <input type="search" class="dd-search-input" placeholder="Search">
+                  </div>
+                  <ul class="reportal-clearfix" id="yui_3_8_0_3_1444658011575_152"><li class=""><a href="#" title="Top">Top</a></li><li class="" id="yui_3_8_0_3_1444658011575_252"><a href="#" title="Global" data-id="Global" id="yui_3_8_0_3_1444658011575_251">Global</a></li><li class="dd-bc-current" id="yui_3_8_0_3_1444658011575_755"><a href="#" title="Continental Europe" data-id="ContEU" id="yui_3_8_0_3_1444658011575_754">Continental Europe</a></li></ul></div>
+                <div class="dd-items" id="yui_3_8_0_3_1444658011575_192"><ul class="dd-menu " id="yui_3_8_0_3_1444658011575_568">
 
+                  <li class="dd-selectable dd-parent dd-lazy-load dd-subitems-visible" data-table="RSMarketHierarchy" data-relation="" id="yui_3_8_0_3_1444658011575_579">
+                    <a title="Global" class="dd-parent-a dd-subitems-visible-link" data-id="Global" data-info="" href="#">
+                      <span class="dd-item-text">Global</span>
+                      <span class="dd-item-marker">✓</span>
+                      <span class="dd-expand"><span class="dd-expand-icon"></span></span>
+                    </a>
+                    <ul class="dd-sub-menu" id="yui_3_8_0_3_1444658011575_582" style="left: 0px;">
 
-              <paper-material elevation="1">
-                <my-greeting></my-greeting>
+                      <li class="dd-selectable dd-parent dd-lazy-load" data-table="RSMarketHierarchy" data-relation="" id="yui_3_8_0_3_1444658011575_620">
+                        <a title="APAC" class="dd-parent-a" data-id="APAC" data-info="" href="#">
+                          <span class="dd-item-text">APAC</span>
+                          <span class="dd-item-marker">✓</span>
+                          <span class="dd-expand"><span class="dd-expand-icon"></span></span>
+                        </a>
+                      </li>
 
-                <p class="paper-font-subhead">You now have:</p>
-                <my-list></my-list>
+                      <li class="dd-selectable dd-parent dd-subitems-visible" data-table="RSMarketHierarchy" data-relation="" id="yui_3_8_0_3_1444658011575_623">
+                        <a title="Continental Europe" class="dd-parent-a dd-subitems-visible-link" data-id="ContEU" data-info="" href="#" id="yui_3_8_0_3_1444658011575_632">
+                          <span class="dd-item-text">Continental Europe</span>
+                          <span class="dd-item-marker">✓</span>
+                          <span class="dd-expand" id="yui_3_8_0_3_1444658011575_636"><span class="dd-expand-icon" id="yui_3_8_0_3_1444658011575_635"></span></span>
+                        </a>
+                        <ul class="dd-sub-menu dd-current" id="yui_3_8_0_3_1444658011575_640" style="left: 0px;">
 
-                <p class="paper-font-body2">Looking for more Web App layouts? Check out our <a href="https://github.com/PolymerElements/app-layout-templates">layouts</a> collection. You can also <a href="http://polymerelements.github.io/app-layout-templates/">preview</a> them live.</p>
-              </paper-material>
-              <paper-material elevation="1">
-                <p class="paper-font-body2">This is another card.</p>
-              </paper-material>
+                          <li class="dd-selectable dd-parent dd-lazy-load dd-current-item" data-table="RSMarketHierarchy" data-relation="" id="yui_3_8_0_3_1444658011575_727">
+                            <a title="Benelux" class="dd-parent-a" data-id="Benelux" data-info="" href="#">
+                              <span class="dd-item-text">Benelux</span>
+                              <span class="dd-item-marker">✓</span>
+                              <span class="dd-expand"><span class="dd-expand-icon"></span></span>
+                            </a>
+                          </li>
 
+                          <li class="dd-selectable dd-parent dd-lazy-load dd-current-item" data-table="RSMarketHierarchy" data-relation="" id="yui_3_8_0_3_1444658011575_730">
+                            <a title="Scandinavia" class="dd-parent-a" data-id="Scandinavia" data-info="" href="#">
+                              <span class="dd-item-text">Scandinavia</span>
+                              <span class="dd-item-marker">✓</span>
+                              <span class="dd-expand"><span class="dd-expand-icon"></span></span>
+                            </a>
+                          </li>
+
+                          <li class="dd-selectable dd-current-item" data-table="RSMarketHierarchy" data-relation="" id="yui_3_8_0_3_1444658011575_733">
+                            <a title="Austria" class="" data-id="AT01" data-info="" href="#">
+                              <span class="dd-item-text">Austria</span>
+                              <span class="dd-item-marker">✓</span>
+                              <span class="dd-expand"><span class="dd-expand-icon"></span></span>
+                            </a>
+                          </li>
+
+                          <li class="dd-selectable dd-current-item" data-table="RSMarketHierarchy" data-relation="" id="yui_3_8_0_3_1444658011575_736">
+                            <a title="France" class="" data-id="FR01" data-info="" href="#">
+                              <span class="dd-item-text">France</span>
+                              <span class="dd-item-marker">✓</span>
+                              <span class="dd-expand"><span class="dd-expand-icon"></span></span>
+                            </a>
+                          </li>
+
+                          <li class="dd-selectable dd-current-item" data-table="RSMarketHierarchy" data-relation="" id="yui_3_8_0_3_1444658011575_739">
+                            <a title="Germany" class="" data-id="DE01" data-info="" href="#">
+                              <span class="dd-item-text">Germany</span>
+                              <span class="dd-item-marker">✓</span>
+                              <span class="dd-expand"><span class="dd-expand-icon"></span></span>
+                            </a>
+                          </li>
+
+                          <li class="dd-selectable dd-parent dd-lazy-load dd-current-item" data-table="RSMarketHierarchy" data-relation="" id="yui_3_8_0_3_1444658011575_742">
+                            <a title="Iberia" class="dd-parent-a" data-id="Iberia" data-info="" href="#">
+                              <span class="dd-item-text">Iberia</span>
+                              <span class="dd-item-marker">✓</span>
+                              <span class="dd-expand"><span class="dd-expand-icon"></span></span>
+                            </a>
+                          </li>
+
+                          <li class="dd-selectable dd-current-item" data-table="RSMarketHierarchy" data-relation="" id="yui_3_8_0_3_1444658011575_745">
+                            <a title="Ireland" class="" data-id="IE01" data-info="" href="#">
+                              <span class="dd-item-text">Ireland</span>
+                              <span class="dd-item-marker">✓</span>
+                              <span class="dd-expand"><span class="dd-expand-icon"></span></span>
+                            </a>
+                          </li>
+
+                          <li class="dd-selectable dd-current-item" data-table="RSMarketHierarchy" data-relation="" id="yui_3_8_0_3_1444658011575_748">
+                            <a title="Italy" class="" data-id="IT01" data-info="" href="#">
+                              <span class="dd-item-text">Italy</span>
+                              <span class="dd-item-marker">✓</span>
+                              <span class="dd-expand"><span class="dd-expand-icon"></span></span>
+                            </a>
+                          </li>
+
+                          <li class="dd-selectable dd-current-item" data-table="RSMarketHierarchy" data-relation="" id="yui_3_8_0_3_1444658011575_751">
+                            <a title="Switzerland" class="" data-id="CH01" data-info="" href="#">
+                              <span class="dd-item-text">Switzerland</span>
+                              <span class="dd-item-marker">✓</span>
+                              <span class="dd-expand"><span class="dd-expand-icon"></span></span>
+                            </a>
+                          </li>
+
+                        </ul></li>
+
+                      <li class="dd-selectable dd-parent dd-lazy-load" data-table="RSMarketHierarchy" data-relation="" id="yui_3_8_0_3_1444658011575_626">
+                        <a title="High Growth Markets" class="dd-parent-a" data-id="HGM" data-info="" href="#">
+                          <span class="dd-item-text">High Growth Markets</span>
+                          <span class="dd-item-marker">✓</span>
+                          <span class="dd-expand"><span class="dd-expand-icon"></span></span>
+                        </a>
+                      </li>
+
+                      <li class="dd-selectable" data-table="RSMarketHierarchy" data-relation="" id="yui_3_8_0_3_1444658011575_629">
+                        <a title="United Kingdom" class="" data-id="GB01" data-info="" href="#">
+                          <span class="dd-item-text">United Kingdom</span>
+                          <span class="dd-item-marker">✓</span>
+                          <span class="dd-expand"><span class="dd-expand-icon"></span></span>
+                        </a>
+                      </li>
+
+                    </ul></li>
+
+                </ul></div>
+                <div class="dd-button-menu">
+                  <div>
+                    <a href="#" class="dd-cancel">Cancel</a>
+                    <button type="button" class="yui3-button yui3-button-selected dd-button-select" disabled="">Apply</button>
+                  </div>
+                  <div class="dd-err-msg-container">
+                    <span class="dd-err-msg" style="display: none;"></span>
+                  </div>
+                </div>
+              </div></div>
+
+            </div>
+          </reportal-hierarchy>
 
         </div>
-      </paper-scroll-header-panel>
-    </paper-drawer-panel>
 
-    <!-- Uncomment next block to enable Service Worker support (1/2) -->
-    <!--
-    <paper-toast id="caching-complete"
-                 duration="6000"
-                 text="Caching complete! This app will work offline.">
-    </paper-toast>
+      </div>
+    </paper-scroll-header-panel>
+</global-scope>
 
-    <platinum-sw-register auto-register
-                          clients-claim
-                          skip-waiting
-                          on-service-worker-installed="displayInstalledToast">
-      <platinum-sw-cache default-cache-strategy="networkFirst"
-                         precache-file="precache.json">
-      </platinum-sw-cache>
-    </platinum-sw-register>
-    -->
-
-  </template>
-
-  <!-- build:js scripts/app.js -->
-  <script src="scripts/app.js"></script>
-  <!-- endbuild-->
 </body>
 
 </html>
