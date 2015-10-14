@@ -37,11 +37,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         -webkit-border-radius: inherit;
         -moz-border-radius: inherit;
         border-radius: inherit;
-      @apply(--layout-horizontal);
-      @apply(--layout-center);
-        --iron-icon-height:16px;
-        --iron-icon-width:16px;
-
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+        @apply(--reportal-hierarchy-button);
       }
       #hierarchyWrapper>::content .dd-target-button-arrow {display:none !important}
       #hierarchyWrapper>::content .dd-target-button-text {
@@ -51,31 +49,43 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         line-height: inherit;
         text-align: left;
         padding: inherit;
-      @apply(--layout-flex);
+        @apply(--layout-flex);
+        @apply(--reportal-hierarchy-button-text);
       }
       #hierarchyWrapper>::content .dd-drilldown{
         position:fixed;
-      @apply(--layout-horizontal);
-      @apply(--layout-center-justified);
-      @apply(--layout-center);
+        @apply(--layout-horizontal);
+        @apply(--layout-center-justified);
+        @apply(--layout-center);
         width:100vw;
         height:100vh;
         top: 0 !important;
         left:0 !important;
         background:rgba(0, 0, 0, 0.4);
-
+        @apply(--reportal-hierarchy-backdrop);
       }
       #hierarchyWrapper>::content .dd-wrapper{
-        width:600px;border: 0 !important;
+        width:600px;
+        border: 0 !important;
         -webkit-border-radius: 0 !important;
         -moz-border-radius: 0 !important;
         border-radius: 0 !important;
         box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14), 0 6px 30px 5px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.4);
+        font-family:inherit;
+        @apply(--layout-vertical);
+        @apply(--layout-center);
+      }
+      @media all and (min-width: 0) and (max-width: 480px) {
+        #hierarchyWrapper>::content .dd-wrapper{
+          height:100%;
+          width:100%;
+        }
       }
       #hierarchyWrapper>::content .dd-header{
-      @apply(--layout-vertical-reverse);
+        @apply(--layout-vertical);
         padding:12px;
         background-color:transparent !important;
+        width:100%;
       }
       #hierarchyWrapper>::content .dd-search-input{
         border: 0 !important;
@@ -84,19 +94,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         line-height: 32px;
         padding: 0 16px;
         width:100%;
-        margin: 6 px 16px;
       }
 
       #hierarchyWrapper>::content .dd-header ul{
         line-height: 32px;
         height: 32px;
         font-size: 16px;
-        font-family: Roboto;
         font-weight: 400;
       }
       #hierarchyWrapper>::content .dd-button-select, #hierarchyWrapper>::content .dd-cancel{
         font-size: 14px;
-        font-family: Roboto;
         text-transform: uppercase;
         height: 34px;
         width: 100px;
@@ -104,16 +111,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       #hierarchyWrapper>::content .dd-button-select{
-        background-color: var(--default-primary-color);
+        background-color: var(--default-primary-color,#2196F3);
         color: #FFF;
         border: 0 !important;
-
+        padding: 0;
+        background-image: none;
+        border-radius: 3px;
         box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
       }
       #hierarchyWrapper>::content .dd-button-select:active{
         box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12), 0 5px 5px -3px rgba(0, 0, 0, 0.4);
       }
-
+      #hierarchyWrapper>::content .dd-expand-icon{
+        opacity:0.6;
+      }
       #hierarchyWrapper>::content a.dd-cancel{
         margin: 5px;
         border-radius: 3px;
@@ -128,30 +139,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       #hierarchyWrapper>::content .dd-button-menu>div{
-      @apply(--layout-horizontal);
-      @apply(--layout-end-justified);
+        @apply(--layout-horizontal);
+        @apply(--layout-end-justified);
+      }
+      #hierarchyWrapper>::content .dd-button-menu{
+        width:100%;
+        @apply(--layout-end-justified);
       }
 
       #hierarchyWrapper>::content .dd-items ul{
-      @apply(--layout-vertical);
+        @apply(--layout-vertical);
+      }
+      #hierarchyWrapper>::content .dd-items{
+        @apply(--layout-flex-auto);
       }
       #hierarchyWrapper>::content .dd-items ul>li {
-      @apply(--layout-flex-none);
+        @apply(--layout-flex-none);
       }
       #hierarchyWrapper>::content .dd-items ul>li>a {
-      @apply(--layout-horizontal);
+        @apply(--layout-horizontal);
+      }
+      #hierarchyWrapper>::content .dd-header li.dd-bc-current a{
+        font-weight:500 !important;
       }
       #hierarchyWrapper>::content .dd-items ul>li>a>span {
         line-height: 42px;
         font-size: 14px;
-        font-family: Roboto;
+        font-family: inherit;
         padding: 0 16px;
         font-weight: 400;
         min-width:42px;
         width:auto;
       }
       #hierarchyWrapper>::content .dd-item-text{
-      @apply(--layout-flex);
+        @apply(--layout-flex);
       }
       #hierarchyWrapper>::content .dd-selected a .dd-item-text{
         background-color:var(--light-primary-color,#d8ebf8)
