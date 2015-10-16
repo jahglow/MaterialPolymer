@@ -12,53 +12,147 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="..\..\bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="..\..\bower_components/paper-radio-button/paper-radio-button.html">
 <link rel="import" href="..\..\bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="..\..\bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="..\..\bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="..\..\bower_components/paper-item/paper-item.html">
+<link rel="import" href="..\..\bower_components/iron-list/iron-list.html">
 
 <dom-module id="reportal-wrap-list">
   <template>
     <style>
       :host {
         display: block;
+        padding: 8px;
       }
       paper-checkbox{
         display: block;
-        @apply(--reportal-wrap-list-checkbox);
+        padding: 8px 0px;
+      @apply(--reportal-wrap-list-checkbox);
       }
       paper-radio-group{
         display: block;
+        padding: 8px 0;
         @apply(--reportal-wrap-list-radio-group);
       }
       paper-radio-group paper-radio-button{
         display: block;
+        padding: 8px 0px;
         @apply(--reportal-wrap-list-radio-button);
       }
       #listWrapper{
-        display:block;
+        display:none;
+      }
+      #wrapperLabel{
+        padding-bottom: 8px;
+        display: block;
+        position: relative;
+       @apply(--reportal-wrap-list-label);
+      }
+      div.selected{
+        background-color:var(--light-primary-color);
+        @apply(--reportal-wrap-list-multiselect-selected)
+      }
+      paper-dropdown-menu paper-menu-button{
+        padding:0
       }
     </style>
     <span id="listWrapper">
       <content></content>
     </span>
+    <span id="wrapperLabel">
+      <content select=".wrapper-label"></content>
+    </span>
+
+    <iron-list id="dropDownList" hidden$="{{!multi}}" items="{{ddData}}" selection-enabled multi-selection selected-items="{{selectedItems}}" as="item">
+        <template>
+            <div on-tap="_reflectToList" tabindex="0" aria-label$="[[_getAriaLabel(item, selected)]]" class$="[[_computedClass(item, selected)]]">{{item.textContent}}</div>
+        </template>
+       </iron-list>
   </template>
   <script>
     (function() {
       Polymer({
         is: 'reportal-wrap-list',
         listeners:{
-          'change':'_reflectToOriginal'
+          'change':'_reflectToOriginal',
+          'iron-select':'_reflectToOriginal'
         },
         properties: {
-          listType: String
+          listType: String,
+          multi: {
+            type: Boolean,
+            value: false
+          },
+          label:{
+            type:String
+          },
+          isDropdown:{
+            type:Boolean,
+            value:false,
+            notify:true
+          },
+          ddData:{
+            type:Array,
+            notify:true
+          },
+          selectedItems: {
+            type: Object
+          }
         },
         created:function(){
+          var el;
           this.async(
             function(){
-              if(this.listType){
+              if(Polymer.dom(this).querySelector('input')){
+                if(this.label){this._computeLabel(this.label)}
+                el = Polymer.dom(this).querySelector('input');
+                this.listType = el.type;
+                this._computeCheckboxRadio();
+              }
+              else if(Polymer.dom(this).querySelector('select')){
+                if(Polymer.dom(this).querySelector('select').multiple){
+                  if(this.label){this._computeLabel(this.label)}
+                  this.multi = true;
+                  this._computeList();
+                } else {
+                  this.isDropdown=true;
+                  this.listType = 'dropdown';
+                  this._computeDropdown();
+                }
+
+              }
+              /*if(this.listType){
                 switch(this.listType){
                   case 'checkbox':case 'radio': this._computeCheckboxRadio();break;
+                  case 'dropdown': this.isDropdown=true;this._computeDropdown();break;
                 }
-              }
+              }*/
             }
           );
+        },
+        _computeList:function(){
+          console.log(Polymer.dom(this).querySelectorAll('option'));
+          this.ddData=Polymer.dom(this).querySelectorAll('option'); //option[i].value (String), option[i].textContent (String), option[i].selected (Bool)
+          console.log(this.ddData);
+
+        },
+        _computeDropdown:function(){
+          var pdm = document.createElement('paper-dropdown-menu');
+          if(this.label){Polymer.dom(pdm).setAttribute('label',this.label);}
+          var pm = document.createElement('paper-menu');
+          Polymer.dom(pdm).setAttribute('on-paper-dropdown-close','_reflectToDropdown');
+          Polymer.dom(pm).classList.add('dropdown-content');
+          Polymer.dom(pm).setAttribute('attr-for-selected','value');
+          var item,items=Polymer.dom(this).querySelectorAll('option');//option[i].value (String), option[i].textContent (String), option[i].selected (Bool)
+          for(var i=0;i<items.length;i++){
+            item=document.createElement('paper-item');
+            Polymer.dom(item).textContent = items[i].textContent;
+            Polymer.dom(item).setAttribute('value',items[i].value);
+            if(items[i].selected){Polymer.dom(pm).setAttribute('selected',items[i].value);}
+            Polymer.dom(pm).appendChild(item);
+          }
+          Polymer.dom(pdm).appendChild(pm);
+          Polymer.dom(this.root).appendChild(pdm);
         },
         _computeCheckboxRadio:function(){
           if(this.listType == 'radio'){
@@ -91,7 +185,37 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           switch(this.listType){
             case 'checkbox': this._reflectToCheckbox(e);break;
             case 'radio': this._reflectToRadio(e);break;
+            case 'dropdown': this._reflectToDropdown(e);break;
           }
+        },
+        _reflectToList:function(e){
+          console.log('_reflectToList');
+          var hostInput = Polymer.dom(this).querySelector('select option[value="'+e.model.item.value+'"]');
+          console.log(this.$.dropDownList.selectedItems);
+          //   if(Polymer.dom(this).querySelector('select').multiple){hostInput.selected = !hostInput.selected} else {hostInput.selected = true};
+          //hostInput.selected = !hostInput.selected;
+          if(!hostInput.selected){
+            hostInput.selected = true;
+            hostInput.setAttribute('selected','selected');
+          } else {
+            hostInput.selected = false;
+            hostInput.removeAttribute('selected')
+          }
+        },
+        _reflectToDropdown:function(e){
+          console.log(e.target.selected);
+          Polymer.dom(this).querySelector('select option[value="'+e.target.selected+'"]').selected=true;
+          /*var hostInput = Polymer.dom(this).querySelector('select option[value="'+e.model.item.value+'"]');
+          console.log(this.$.dropDownList.selectedItems);
+          //   if(Polymer.dom(this).querySelector('select').multiple){hostInput.selected = !hostInput.selected} else {hostInput.selected = true};
+          //hostInput.selected = !hostInput.selected;
+          if(!hostInput.selected){
+            hostInput.selected = true;
+            hostInput.setAttribute('selected','selected');
+          } else {
+            hostInput.selected = false;
+            hostInput.removeAttribute('selected')
+          }*/
         },
         _reflectToCheckbox:function(e){
           var hostInput = Polymer.dom(this).querySelector('input[id="'+e.target.attributes.target.value+'"]');
@@ -101,6 +225,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           Polymer.dom(this.$$('paper-radio-group')).setAttribute('selected',e.target.attributes.target.value);
           var hostInput = Polymer.dom(this).querySelector('input[id="'+e.target.attributes.target.value+'"]');
           hostInput.checked = true;
+        },
+
+        _getAriaLabel: function(item, selected) {
+          return selected ? 'Deselect ' + item.textContent : 'Select ' + item.textContent;
+        },
+        _computedClass: function(item,selected) {
+          console.log(item); // item.attributes.selected
+          if(item.attributes.selected && !selected){
+            //Polymer.dom(item).removeAttribute('selected');
+            this.$.dropDownList.selectItem(item);
+          }
+          var classes = 'item';
+          if (selected ) {
+            classes += ' selected';
+          }
+          return classes;
+        },
+        _computeLabel:function(labelText){
+          this.$.wrapperLabel.textContent = labelText;
         }
 
       });
