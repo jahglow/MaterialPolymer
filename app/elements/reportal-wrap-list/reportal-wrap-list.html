@@ -22,22 +22,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style>
       :host {
         display: block;
-      @apply(--reportal-wrap-list);
-
+        @apply(--reportal-wrap-list);
       }
       paper-checkbox{
         display: block;
-        padding: 8px 0px;
+        padding: 8px 8px;
       @apply(--reportal-wrap-list-checkbox);
       }
       paper-radio-group{
         display: block;
-        padding: 8px 0;
         @apply(--reportal-wrap-list-radio-group);
       }
       paper-radio-group paper-radio-button{
         display: block;
-        padding: 8px 0px;
+        padding: 8px 8px;
         @apply(--reportal-wrap-list-radio-button);
       }
       #listWrapper{
@@ -48,23 +46,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         padding-top: 16px;
         display: none;
         position: relative;
-       @apply(--reportal-wrap-list-label);
+        font-weight: 500;
+        color: var(--dark-primary-color);
+        @apply(--reportal-wrap-list-label);
       }
+
+      /* multiselect list*/
       div.selected{
         background-color:var(--light-primary-color);
-        @apply(--reportal-wrap-list-multiselect-selected)
+        @apply(--reportal-wrap-list-multiselect-selected);
       }
       iron-list .item{
         line-height: 36px;
         vertical-align: middle;
         padding: 0 16px ;
-      @apply(--reportal-wrap-list-multiselect-item)
-
+      @apply(--reportal-wrap-list-multiselect-item);
       }
       iron-list{
         height:200px;
         margin: 8px;
-        border-bottom: var(--light-primary-color);
+        border-bottom:1px solid;
+        border-bottom-color:  var(--dark-primary-color);
         @apply(--reportal-wrap-list-multiselect);
       }
 
@@ -74,11 +76,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         @apply(--reportal-wrap-list-dropdown);
       }
     </style>
-    <span id="listWrapper">
-      <content></content>
-    </span>
     <span id="wrapperLabel">
       <content select=".wrapper-label"></content>
+    </span>
+    <span id="listWrapper">
+      <content></content>
     </span>
 
     <iron-list id="dropDownList" hidden$="{{!multi}}" items="{{ddData}}" selection-enabled multi-selection selected-items="{{selectedItems}}" as="item">
@@ -92,7 +94,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       Polymer({
         is: 'reportal-wrap-list',
         listeners:{
-          'change':'_reflectToOriginal',
+          'change':'_reflectToCheckbox',
           'iron-select':'_reflectToOriginal'
         },
         properties: {
@@ -115,14 +117,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
           selectedItems: {
             type: Object
+          },
+          forceCustomLabel:{
+            type: Boolean,
+            value:false
           }
         },
         created:function(){
           var el;
           this.async(
             function(){
+              var inlineLabel = this.$.wrapperLabel.querySelector('.wrapper-label');
+              if(inlineLabel && !this.label){this.label=inlineLabel.textContent;}
+              console.log(inlineLabel + ' ' + this.label);
               if(Polymer.dom(this).querySelector('input')){
-                if(this.label){this._computeLabel(this.label)}
+                if(this.label){this._computeLabel(this.label);}
                 el = Polymer.dom(this).querySelector('input');
                 this.listType = el.type;
                 this._computeCheckboxRadio();
@@ -154,6 +163,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if(this.label){Polymer.dom(pdm).setAttribute('label',this.label);}
           var pm = document.createElement('paper-menu');
           Polymer.dom(pdm).setAttribute('on-paper-dropdown-close','_reflectToDropdown');
+          if(!this.forceCustomLabel){
+            Polymer.dom(pdm).setAttribute('always-float-label','');
+          } else{
+            Polymer.dom(pdm).setAttribute('no-label-float','');
+          }
           Polymer.dom(pm).classList.add('dropdown-content');
           Polymer.dom(pm).setAttribute('attr-for-selected','value');
           var item,items=Polymer.dom(this).querySelectorAll('option');//option[i].value (String), option[i].textContent (String), option[i].selected (Bool)
@@ -168,8 +182,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           Polymer.dom(this.root).appendChild(pdm);
         },
         _computeCheckboxRadio:function(){
-          if(this.listType == 'radio'){
-            var rg=document.createElement('paper-radio-group');
+          var rg;
+          if(this.listType === 'radio'){
+            rg=document.createElement('paper-radio-group');
             Polymer.dom(rg).setAttribute('attr-for-selected','target');
           }
           var cbr = Polymer.dom(this).querySelectorAll('input[type="'+this.listType+'"]');
@@ -187,14 +202,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   Polymer.dom(rg).setAttribute('selected',cbr[i].id);
                 }
               }
-              Polymer.dom(c).textContent = Polymer.dom(this).querySelector('label[for="'+cbr[i].id+'"]').textContent;
+              Polymer.dom(c).textContent = (Polymer.dom(this).querySelector('label[for="'+cbr[i].id+'"]')).textContent;
               rg ? Polymer.dom(rg).appendChild(c) : Polymer.dom(this.root).appendChild(c);
             }
             if(rg){Polymer.dom(this.root).appendChild(rg);}
           }
         },
         _reflectToOriginal:function(e){
-          console.log('iron-change fired');
           switch(this.listType){
             case 'checkbox': this._reflectToCheckbox(e);break;
             case 'radio': this._reflectToRadio(e);break;
@@ -210,7 +224,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             hostInput.setAttribute('selected','selected');
           } else {
             hostInput.selected = false;
-            hostInput.removeAttribute('selected')
+            hostInput.removeAttribute('selected');
           }
         },
         _reflectToDropdown:function(e){
@@ -225,8 +239,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         },
         _reflectToRadio:function(e){
-          Polymer.dom(this.$$('paper-radio-group')).setAttribute('selected',e.target.attributes.target.value);
-          var hostInput = Polymer.dom(this).querySelector('input[id="'+e.target.attributes.target.value+'"]');
+          Polymer.dom(this.$$('paper-radio-group')).setAttribute('selected',e.target.selectedItem.attributes.target.value);
+          var hostInput = Polymer.dom(this).querySelector('input[id="'+e.target.selectedItem.attributes.target.value+'"]');
           hostInput.checked = true;
         },
 
@@ -234,7 +248,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           return selected ? 'Deselect ' + item.textContent : 'Select ' + item.textContent;
         },
         _computedClass: function(item,selected) {
-          console.log(item); // item.attributes.selected
           if(item.attributes.selected && !selected){
             this.$.dropDownList.selectItem(item);
           }
