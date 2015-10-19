@@ -140,12 +140,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
 
               }
-              /*if(this.listType){
-                switch(this.listType){
-                  case 'checkbox':case 'radio': this._computeCheckboxRadio();break;
-                  case 'dropdown': this.isDropdown=true;this._computeDropdown();break;
-                }
-              }*/
             }
           );
         },
@@ -211,8 +205,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           console.log('_reflectToList');
           var hostInput = Polymer.dom(this).querySelector('select option[value="'+e.model.item.value+'"]');
           console.log(this.$.dropDownList.selectedItems);
-          //   if(Polymer.dom(this).querySelector('select').multiple){hostInput.selected = !hostInput.selected} else {hostInput.selected = true};
-          //hostInput.selected = !hostInput.selected;
           if(!hostInput.selected){
             hostInput.selected = true;
             hostInput.setAttribute('selected','selected');
@@ -224,17 +216,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         _reflectToDropdown:function(e){
           console.log(e.target.selected);
           Polymer.dom(this).querySelector('select option[value="'+e.target.selected+'"]').selected=true;
-          /*var hostInput = Polymer.dom(this).querySelector('select option[value="'+e.model.item.value+'"]');
-          console.log(this.$.dropDownList.selectedItems);
-          //   if(Polymer.dom(this).querySelector('select').multiple){hostInput.selected = !hostInput.selected} else {hostInput.selected = true};
-          //hostInput.selected = !hostInput.selected;
-          if(!hostInput.selected){
-            hostInput.selected = true;
-            hostInput.setAttribute('selected','selected');
-          } else {
-            hostInput.selected = false;
-            hostInput.removeAttribute('selected')
-          }*/
         },
         _reflectToCheckbox:function(e){
           if(this.listType === 'checkbox'){
@@ -255,7 +236,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         _computedClass: function(item,selected) {
           console.log(item); // item.attributes.selected
           if(item.attributes.selected && !selected){
-            //Polymer.dom(item).removeAttribute('selected');
             this.$.dropDownList.selectItem(item);
           }
           var classes = 'item';
