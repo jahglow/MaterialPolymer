@@ -34,10 +34,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         text-align: center;
         height:auto;
       }
-      .filters{
+      :host>::content #reportFilters{
         padding:8px;
         @apply(--reportal-sidebar-filters)
       }
+
+      :host>::content .section-title{
+        padding: 8px;
+        padding-top: 16px;
+        display: block;
+        position: relative;
+        font-weight: 500;
+        color: var(--dark-primary-color);
+        @apply(--reportal-sidebar-section-title);
+      }
+
+
       paper-tabs{
         --paper-tabs-selection-bar-color: var(--default-primary-color);
         @apply(--reportal-sidebar-paper-tabs);

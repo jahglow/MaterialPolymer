@@ -17,6 +17,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style>
       :host {
         display: block;
+      @apply(--reportal-hierarchy);
       }
       #hierarchyWrapper>::content .dd-target-button {
         display: inherit;
@@ -175,10 +176,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         @apply(--layout-flex);
       }
       #hierarchyWrapper>::content .dd-selected a .dd-item-text{
-        background-color:var(--light-primary-color,#d8ebf8)
+        background-color:var(--light-primary-color,#d8ebf8);
       }
-    </style>
+      #wrapperLabel{
+        padding: 8px;
+        padding-top: 16px;
+        display: none;
+        position: relative;
+        font-weight: 500;
+        color: var(--dark-primary-color);
+        @apply(--reportal-hierarchy-label);
+      }
 
+    </style>
+    <span id="wrapperLabel">
+      <content select=".wrapper-label"></content>
+    </span>
     <div id="hierarchyWrapper">
       <content></content>
     </div>
@@ -197,9 +210,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           backdrop:{
             type:Boolean,
             value:false
-          }
+          },
+          label:String
         },
         created: function(){
+          this.async(function(){
+            var inlineLabel = this.$.wrapperLabel.querySelector('.wrapper-label');
+            if(inlineLabel){this.label=inlineLabel.textContent;}
+            if(this.label && this.label.length>0){
+              this.$.wrapperLabel.textContent = this.label;
+            }
+            this.$.wrapperLabel.setAttribute('style','display:block');
+
+          });
           this._wrapButton();
         },
         _wrapButton: function(){
@@ -209,7 +232,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           Polymer.dom(button).setAttribute('raised','');
           Polymer.dom(button).setAttribute('id',source.id);
           for(var i=0;i<source.childNodes.length;i++){
-            if(source.childNodes[i].localName != null){
+            if(source.childNodes[i].localName !== null){
               Polymer.dom(button).appendChild(source.childNodes[i]);
             }
           }
@@ -234,7 +257,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         },
         ddClick:function(e){
-          if(e.target.className == 'dd-drilldown'){document.querySelector('.dd-cancel').click();} else {return false}
+          if(e.target.className === 'dd-drilldown'){document.querySelector('.dd-cancel').click();} else {return false;}
         }
       });
     })();

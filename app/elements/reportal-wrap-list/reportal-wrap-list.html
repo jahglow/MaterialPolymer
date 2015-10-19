@@ -22,45 +22,66 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style>
       :host {
         display: block;
-        padding: 8px;
+      @apply(--reportal-wrap-list);
+
       }
       paper-checkbox{
         display: block;
-        padding: 8px 0px;
+        padding: 8px 8px;
       @apply(--reportal-wrap-list-checkbox);
       }
       paper-radio-group{
         display: block;
-        padding: 8px 0;
         @apply(--reportal-wrap-list-radio-group);
       }
       paper-radio-group paper-radio-button{
         display: block;
-        padding: 8px 0px;
+        padding: 8px 8px;
         @apply(--reportal-wrap-list-radio-button);
       }
       #listWrapper{
         display:none;
       }
       #wrapperLabel{
-        padding-bottom: 8px;
-        display: block;
+        padding: 8px;
+        padding-top: 16px;
+        display: none;
         position: relative;
+        font-weight: 500;
+        color: var(--dark-primary-color);
        @apply(--reportal-wrap-list-label);
       }
+
+      /* multiselect list*/
       div.selected{
         background-color:var(--light-primary-color);
         @apply(--reportal-wrap-list-multiselect-selected)
       }
-      paper-dropdown-menu paper-menu-button{
-        padding:0
+      iron-list .item{
+        line-height: 36px;
+        vertical-align: middle;
+        padding: 0 16px ;
+      @apply(--reportal-wrap-list-multiselect-item)
+
+      }
+      iron-list{
+        height:200px;
+        margin: 8px;
+        border-bottom: var(--light-primary-color);
+        @apply(--reportal-wrap-list-multiselect);
+      }
+
+      paper-dropdown-menu{
+        width:100%;
+        display:block;
+        @apply(--reportal-wrap-list-dropdown);
       }
     </style>
-    <span id="listWrapper">
-      <content></content>
-    </span>
     <span id="wrapperLabel">
       <content select=".wrapper-label"></content>
+    </span>
+    <span id="listWrapper">
+      <content></content>
     </span>
 
     <iron-list id="dropDownList" hidden$="{{!multi}}" items="{{ddData}}" selection-enabled multi-selection selected-items="{{selectedItems}}" as="item">
@@ -74,7 +95,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       Polymer({
         is: 'reportal-wrap-list',
         listeners:{
-          'change':'_reflectToOriginal',
+          'change':'_reflectToCheckbox',
           'iron-select':'_reflectToOriginal'
         },
         properties: {
@@ -97,36 +118,39 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
           selectedItems: {
             type: Object
+          },
+          forceCustomLabel:{
+            type:Boolean,
+            value:false
           }
         },
         created:function(){
           var el;
           this.async(
             function(){
+
+              var inlineLabel = this.$.wrapperLabel.querySelector('.wrapper-label');
+              if(inlineLabel){this.label=inlineLabel.textContent;}
+
               if(Polymer.dom(this).querySelector('input')){
-                if(this.label){this._computeLabel(this.label)}
+                if(this.label){this._computeLabel(this.label);}
                 el = Polymer.dom(this).querySelector('input');
                 this.listType = el.type;
                 this._computeCheckboxRadio();
               }
               else if(Polymer.dom(this).querySelector('select')){
                 if(Polymer.dom(this).querySelector('select').multiple){
-                  if(this.label){this._computeLabel(this.label)}
+                  if(this.label){this._computeLabel(this.label);}
                   this.multi = true;
                   this._computeList();
                 } else {
                   this.isDropdown=true;
+                  if(this.forceCustomLabel){this._computeLabel(this.label);}
                   this.listType = 'dropdown';
                   this._computeDropdown();
                 }
 
               }
-              /*if(this.listType){
-                switch(this.listType){
-                  case 'checkbox':case 'radio': this._computeCheckboxRadio();break;
-                  case 'dropdown': this.isDropdown=true;this._computeDropdown();break;
-                }
-              }*/
             }
           );
         },
@@ -141,6 +165,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if(this.label){Polymer.dom(pdm).setAttribute('label',this.label);}
           var pm = document.createElement('paper-menu');
           Polymer.dom(pdm).setAttribute('on-paper-dropdown-close','_reflectToDropdown');
+          if(!this.forceCustomLabel){
+            Polymer.dom(pdm).setAttribute('always-float-label','');
+          } else{
+            Polymer.dom(pdm).setAttribute('no-label-float','');
+          }
           Polymer.dom(pm).classList.add('dropdown-content');
           Polymer.dom(pm).setAttribute('attr-for-selected','value');
           var item,items=Polymer.dom(this).querySelectorAll('option');//option[i].value (String), option[i].textContent (String), option[i].selected (Bool)
@@ -155,8 +184,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           Polymer.dom(this.root).appendChild(pdm);
         },
         _computeCheckboxRadio:function(){
-          if(this.listType == 'radio'){
-            var rg=document.createElement('paper-radio-group');
+          var rg;
+          if(this.listType === 'radio'){
+            rg=document.createElement('paper-radio-group');
             Polymer.dom(rg).setAttribute('attr-for-selected','target');
           }
           var cbr = Polymer.dom(this).querySelectorAll('input[type="'+this.listType+'"]');
@@ -174,14 +204,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   Polymer.dom(rg).setAttribute('selected',cbr[i].id);
                 }
               }
-              Polymer.dom(c).textContent = Polymer.dom(this).querySelector('label[for="'+cbr[i].id+'"]').textContent;
+              Polymer.dom(c).textContent = (Polymer.dom(this).querySelector('label[for="'+cbr[i].id+'"]')).textContent;
               rg ? Polymer.dom(rg).appendChild(c) : Polymer.dom(this.root).appendChild(c);
             }
             if(rg){Polymer.dom(this.root).appendChild(rg);}
           }
         },
         _reflectToOriginal:function(e){
-          console.log('iron-change fired');
+          console.log('iron-select fired');
+          console.log(e);
+          console.log(this.listType);
           switch(this.listType){
             case 'checkbox': this._reflectToCheckbox(e);break;
             case 'radio': this._reflectToRadio(e);break;
@@ -192,38 +224,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           console.log('_reflectToList');
           var hostInput = Polymer.dom(this).querySelector('select option[value="'+e.model.item.value+'"]');
           console.log(this.$.dropDownList.selectedItems);
-          //   if(Polymer.dom(this).querySelector('select').multiple){hostInput.selected = !hostInput.selected} else {hostInput.selected = true};
-          //hostInput.selected = !hostInput.selected;
           if(!hostInput.selected){
             hostInput.selected = true;
             hostInput.setAttribute('selected','selected');
           } else {
             hostInput.selected = false;
-            hostInput.removeAttribute('selected')
+            hostInput.removeAttribute('selected');
           }
         },
         _reflectToDropdown:function(e){
           console.log(e.target.selected);
           Polymer.dom(this).querySelector('select option[value="'+e.target.selected+'"]').selected=true;
-          /*var hostInput = Polymer.dom(this).querySelector('select option[value="'+e.model.item.value+'"]');
-          console.log(this.$.dropDownList.selectedItems);
-          //   if(Polymer.dom(this).querySelector('select').multiple){hostInput.selected = !hostInput.selected} else {hostInput.selected = true};
-          //hostInput.selected = !hostInput.selected;
-          if(!hostInput.selected){
-            hostInput.selected = true;
-            hostInput.setAttribute('selected','selected');
-          } else {
-            hostInput.selected = false;
-            hostInput.removeAttribute('selected')
-          }*/
         },
         _reflectToCheckbox:function(e){
-          var hostInput = Polymer.dom(this).querySelector('input[id="'+e.target.attributes.target.value+'"]');
-          hostInput.checked ? hostInput.checked = false : hostInput.checked = true;
+          if(this.listType === 'checkbox'){
+            var hostInput = Polymer.dom(this).querySelector('input[id="'+e.target.attributes.target.value+'"]');
+            hostInput.checked ? hostInput.checked = false : hostInput.checked = true;
+          }
+
         },
         _reflectToRadio:function(e){
-          Polymer.dom(this.$$('paper-radio-group')).setAttribute('selected',e.target.attributes.target.value);
-          var hostInput = Polymer.dom(this).querySelector('input[id="'+e.target.attributes.target.value+'"]');
+          Polymer.dom(this.$$('paper-radio-group')).setAttribute('selected',e.target.selectedItem.attributes.target.value);
+          var hostInput = Polymer.dom(this).querySelector('input[id="'+e.target.selectedItem.attributes.target.value+'"]');
           hostInput.checked = true;
         },
 
@@ -231,9 +253,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           return selected ? 'Deselect ' + item.textContent : 'Select ' + item.textContent;
         },
         _computedClass: function(item,selected) {
-          console.log(item); // item.attributes.selected
           if(item.attributes.selected && !selected){
-            //Polymer.dom(item).removeAttribute('selected');
             this.$.dropDownList.selectItem(item);
           }
           var classes = 'item';
@@ -243,7 +263,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           return classes;
         },
         _computeLabel:function(labelText){
-          this.$.wrapperLabel.textContent = labelText;
+          if(labelText && labelText.length>0){
+            this.$.wrapperLabel.textContent = labelText;
+          }
+          this.$.wrapperLabel.setAttribute('style','display:block');
         }
 
       });
