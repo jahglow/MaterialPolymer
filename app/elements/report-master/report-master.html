@@ -51,7 +51,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
   (function() {
     Polymer({
-      is: 'report-master'
+      is: 'report-master',
+      listeners:{
+        'paper-header-transform':'_condenseHeader',
+        'tap':'_panelToggle'
+      },
+      _panelToggle:function(e){
+        if(e.target.hasAttribute('paper-drawer-toggle') || e.target.parentNode.hasAttribute('paper-drawer-toggle')){
+          this.$.paperDrawerPanel.openDrawer();
+        }
+      },
+      _condenseHeader:function(e){
+        this.async(function() {
+          var appName = Polymer.dom(e.target).querySelector('.app-name');
+          var middleContainer = Polymer.dom(e.target).querySelector('.middle-container');
+          var bottomContainer = Polymer.dom(e.target).querySelector('.bottom-container');
+          var detail = e.detail;
+          var heightDiff = detail.height - detail.condensedHeight;
+          var yRatio = Math.min(1, detail.y / heightDiff);
+          var maxMiddleScale = 0.50;  // appName max size when condensed. The smaller the number the smaller the condensed size.
+          var scaleMiddle = Math.max(maxMiddleScale, (heightDiff - detail.y) / (heightDiff / (1 - maxMiddleScale)) + maxMiddleScale);
+          var scaleBottom = 1 - yRatio;
+
+          // Move/translate middleContainer
+          this.transform('translate3d(0,' + yRatio * 100 + '%,0)', middleContainer);
+
+          // Scale bottomContainer and bottom sub title to nothing and back
+          this.transform('scale(' + scaleBottom + ') translateZ(0)', bottomContainer);
+
+          // Scale middleContainer appName
+          this.transform('scale(' + scaleMiddle + ') translateZ(0)', appName);
+        });
+      }
     });
   })();
   </script>
