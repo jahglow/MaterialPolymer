@@ -11,11 +11,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="..\..\bower_components/polymer/polymer.html">
 <link rel="import" href="..\..\bower_components/paper-drawer-panel/paper-drawer-panel.html">
 <link rel="import" href="..\..\bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
+<link rel="import" href="..\..\bower_components/paper-progress/paper-progress.html">
 
 <dom-module id="report-master">
   <template>
 <style>
-  :host .content-container>::content #reportalPage{height:100%}
+  :host .content-container>::content #reportalPage{
+    height:100%
+  }
+  :host .content-container>::content #wait_c .underlay{
+    display:none !important;
+  }
+  :host .content-container>::content #wait_c{
+    left:0 !important;
+    top:0 !important;
+    position:relative !important;
+    width:100%;
+    margin: 0 !important;
+    visibility:hidden;
+    padding:0 !important;
+    @apply(--report-master-loading-progress);
+  }
+  :host .content-container>::content #wait_c paper-progress{
+    width:100%;
+  }
+  :host .content-container>::content #wait_c #primaryProgress{
+    background-color: var(--report-master-loading-progress-color, --dark-primary-color);
+  }
 </style>
     <paper-drawer-panel id="paperDrawerPanel">
       <!-- Drawer Scroll Header Panel -->
@@ -56,11 +78,64 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         'paper-header-transform':'_condenseHeader',
         'tap':'_panelToggle'
       },
+      properties:{
+      },
+      ready:function(){
+        this._replaceLoadingAnimation();
+      },
+
       _panelToggle:function(e){
         if(e.target.hasAttribute('paper-drawer-toggle') || e.target.parentNode.hasAttribute('paper-drawer-toggle')){
           this.$.paperDrawerPanel.openDrawer();
         }
       },
+
+      _replaceLoadingAnimation: function () {
+        this.async(function(){
+          var toolbar=this.querySelector('div[main] paper-scroll-header-panel div[id="headerContainer"]');
+          var progress = document.createElement('paper-progress');
+          Polymer.dom(progress).setAttribute('indeterminate','');
+          //Polymer.dom(toolbar).appendChild(progress);
+
+          this._poll(
+            function(){
+              console.log('looking for progress container');
+              return document.querySelector('#wait_c');
+            },
+            function(){
+              console.log('progress container found');
+              var container = document.querySelector('#wait_c');
+              container.setAttribute('style','');
+              container.innerHTML='';
+              container.appendChild(progress);
+              toolbar.appendChild(container);
+              Polymer.updateStyles();
+            },
+            function(){console.log('error polling for progress container');},
+            10000, //10 seconds total
+            1000 //check every second
+          );
+        });
+      },
+      _poll:function(fn, callback, errback, timeout, interval) {
+      var endTime = Number(new Date()) + (timeout || 2000);
+      interval = interval || 100;
+
+      (function p() {
+        // If the condition is met, we're done!
+        if(fn()) {
+          callback();
+        }
+        // If the condition isn't met but the timeout hasn't elapsed, go again
+        else if (Number(new Date()) < endTime) {
+          setTimeout(p, interval);
+        }
+        // Didn't match and too much time, reject!
+        else {
+          errback(new Error('timed out for ' + fn + ': ' + arguments));
+        }
+      })();
+    },
       _condenseHeader:function(e){
         this.async(function() {
           var appName = Polymer.dom(e.target).querySelector('.app-name');
