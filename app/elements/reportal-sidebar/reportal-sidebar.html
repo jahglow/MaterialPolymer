@@ -40,15 +40,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       :host>::content .section-title{
-        padding: 8px;
-        padding-top: 16px;
+        margin: 8px 8px 0 8px;
         display: block;
         position: relative;
         font-weight: 500;
-        color: var(--dark-primary-color);
+        color: var(--secondary-text-color);
+        font-size: 13px;
+        line-height: 32px;
+        text-transform: uppercase;
         @apply(--reportal-sidebar-section-title);
       }
-
 
       paper-tabs{
         --paper-tabs-selection-bar-color: var(--default-primary-color);
@@ -57,6 +58,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       paper-tab{
         --paper-tab-ink: var(--light-primary-color);
         @apply(--reportal-sidebar-paper-tab);
+      }
+      :host>::content reportal-button.apply{
+        background-color: var(--default-primary-color);
+        color: var(--text-primary-color);
+        font-size: 13px;
+        @apply(--reportal-sidebar-apply-filters-button);
+      }
+      :host>::content reportal-button.apply iron-icon{
+           width:15px;
+           height:15px;
+      }
+      :host>::content reportal-button.reset{
+        background-color: #FFFFFF;
+        font-size: 13px;
+      @apply(--reportal-sidebar-reset-filters-button);
+      }
+      :host>::content reportal-button.reset iron-icon{
+        width:15px;
+        height:15px;
       }
       .hidden {display:none}
     </style>
@@ -101,6 +121,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if(this.logo.length===0){
             Polymer.dom(this.root).querySelector('.logo').classList.add('hidden');
           }
+          // set custom style to multiple-injction content
+          var rwl = Polymer.dom(this.$$('#reportFilters')).querySelectorAll('reportal-list');
+          for(var i=0;i<rwl.length;i++){rwl[i].customStyle['--reportal-list-dropdown'] = 'margin:-8px 0';}
         }
       });
     })();

@@ -17,63 +17,66 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="..\..\bower_components/paper-item/paper-item.html">
 <link rel="import" href="..\..\bower_components/iron-list/iron-list.html">
 
-<dom-module id="reportal-wrap-list">
+<dom-module id="reportal-list">
   <template>
     <style>
       :host {
         display: block;
-        @apply(--reportal-wrap-list);
+        @apply(--reportal-list);
       }
       paper-checkbox{
         display: block;
         padding: 8px 8px;
-      @apply(--reportal-wrap-list-checkbox);
+      @apply(--reportal-list-checkbox);
       }
       paper-radio-group{
         display: block;
-        @apply(--reportal-wrap-list-radio-group);
+        @apply(--reportal-list-radio-group);
       }
       paper-radio-group paper-radio-button{
         display: block;
         padding: 8px 8px;
-        @apply(--reportal-wrap-list-radio-button);
+        @apply(--reportal-list-radio-button);
       }
       #listWrapper{
         display:none;
       }
       #wrapperLabel{
-        padding: 8px;
-        padding-top: 16px;
+        margin: 8px 8px 0 8px;
         display: none;
         position: relative;
         font-weight: 500;
-        color: var(--dark-primary-color);
+        color: var(--secondary-text-color);
+        font-size: 13px;
+        line-height: 32px;
+        text-transform: uppercase;
+      @apply(--reportal-sidebar-section-title);
         @apply(--reportal-wrap-list-label);
       }
 
       /* multiselect list*/
       div.selected{
         background-color:var(--light-primary-color);
-        @apply(--reportal-wrap-list-multiselect-selected);
+        @apply(--reportal-list-multiselect-selected);
       }
       iron-list .item{
         line-height: 36px;
         vertical-align: middle;
         padding: 0 16px ;
-      @apply(--reportal-wrap-list-multiselect-item);
+      @apply(--reportal-list-multiselect-item);
       }
       iron-list{
         height:200px;
         margin: 8px;
         border-bottom:1px solid;
         border-bottom-color:  var(--dark-primary-color);
-        @apply(--reportal-wrap-list-multiselect);
+        @apply(--reportal-list-multiselect);
       }
 
       paper-dropdown-menu{
         width:100%;
         display:block;
-        @apply(--reportal-wrap-list-dropdown);
+        @apply(--reportal-list-dropdown);
       }
     </style>
     <span id="wrapperLabel">
@@ -92,7 +95,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
     (function() {
       Polymer({
-        is: 'reportal-wrap-list',
+        is: 'reportal-list',
         listeners:{
           'change':'_reflectToCheckbox',
           'iron-select':'_reflectToOriginal'
@@ -129,7 +132,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             function(){
               var inlineLabel = this.$.wrapperLabel.querySelector('.wrapper-label');
               if(inlineLabel && !this.label){this.label=inlineLabel.textContent;}
-              console.log(inlineLabel + ' ' + this.label);
               if(Polymer.dom(this).querySelector('input')){
                 if(this.label){this._computeLabel(this.label);}
                 el = Polymer.dom(this).querySelector('input');
@@ -153,10 +155,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           );
         },
         _computeList:function(){
-          console.log(Polymer.dom(this).querySelectorAll('option'));
           this.ddData=Polymer.dom(this).querySelectorAll('option'); //option[i].value (String), option[i].textContent (String), option[i].selected (Bool)
-          console.log(this.ddData);
-
         },
         _computeDropdown:function(){
           var pdm = document.createElement('paper-dropdown-menu');
@@ -216,9 +215,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         },
         _reflectToList:function(e){
-          console.log('_reflectToList');
           var hostInput = Polymer.dom(this).querySelector('select option[value="'+e.model.item.value+'"]');
-          console.log(this.$.dropDownList.selectedItems);
           if(!hostInput.selected){
             hostInput.selected = true;
             hostInput.setAttribute('selected','selected');
@@ -228,7 +225,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         },
         _reflectToDropdown:function(e){
-          console.log(e.target.selected);
           Polymer.dom(this).querySelector('select option[value="'+e.target.selected+'"]').selected=true;
         },
         _reflectToCheckbox:function(e){

@@ -43,8 +43,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     /* paper-menu */
     --paper-menu-background-color: #fff;
     --menu-link-color: #111111;
-    --report-master-loading-progress-color: var(--accent-color);
 
+    /* color of page loading progress bar in header*/
+    --report-master-loading-progress-color: var(--accent-color);
   }
 
   /* General styles */
@@ -54,9 +55,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     background-color: var(--drawer-menu-color);
     border-bottom: var(--drawer-toolbar-border-color);
   }
-
-
-
 
   paper-scroll-header-panel {
     height: 100%;
@@ -129,12 +127,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   }
 
   /* Fix for reportal loading progress */
-  #wait_mask{display:none !important}
+  #wait_mask.mask{display:none !important;}
 
   /* Height of the scroll area */
-  .content {
+  /*.content {
     height: 900px;
-  }
+  }*/
 
   /* Breakpoints */
 

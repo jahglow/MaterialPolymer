@@ -79,8 +79,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         'tap':'_panelToggle'
       },
       properties:{
+
       },
-      ready:function(){
+      attached:function(){
         this._replaceLoadingAnimation();
       },
 
@@ -99,11 +100,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           this._poll(
             function(){
-              console.log('looking for progress container');
               return document.querySelector('#wait_c');
             },
             function(){
-              console.log('progress container found');
               var container = document.querySelector('#wait_c');
               container.setAttribute('style','');
               container.innerHTML='';
@@ -111,7 +110,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               toolbar.appendChild(container);
               Polymer.updateStyles();
             },
-            function(){console.log('error polling for progress container');},
+            function(){},
             10000, //10 seconds total
             1000 //check every second
           );

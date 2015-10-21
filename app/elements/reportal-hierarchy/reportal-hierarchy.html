@@ -179,12 +179,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         background-color:var(--light-primary-color,#d8ebf8);
       }
       #wrapperLabel{
-        padding: 8px;
-        padding-top: 16px;
+        margin: 8px 8px 0 8px;
         display: none;
         position: relative;
         font-weight: 500;
-        color: var(--dark-primary-color);
+        color: var(--secondary-text-color);
+        font-size: 13px;
+        line-height: 32px;
+        text-transform: uppercase;
         @apply(--reportal-hierarchy-label);
       }
 
@@ -228,7 +230,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         _wrapButton: function(){
           var button = document.createElement('paper-button');
           var source = Polymer.dom(this).querySelector('div.dd-target-button');
-          console.log(source.childNodes);
           Polymer.dom(button).setAttribute('raised','');
           Polymer.dom(button).setAttribute('id',source.id);
           for(var i=0;i<source.childNodes.length;i++){

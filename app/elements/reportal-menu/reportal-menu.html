@@ -90,7 +90,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         created:function(){
           var menu = Polymer.dom(this.root).querySelector('div');
           menu= Polymer.dom(menu).querySelector('div ul');
-          //console.log(menu);
           var host = document.createElement('div');
           Polymer.dom(host).setAttribute('class','menu-container');
           this._iteration(Polymer.dom(menu).childNodes, host);
@@ -144,7 +143,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 var menuitemArrow = document.createElement('iron-icon');
                 Polymer.dom(menuitemArrow).setAttribute('icon','expand-more');
                 if(this._hasClass(curItem.classList, 'css-menu-topitem')){
-                  console.log('creating');
                   itemIcon = document.createElement('iron-icon');
                   Polymer.dom(itemIcon).setAttribute('class','placeholder');
                   Polymer.dom(menuitemNode).appendChild(itemIcon);
@@ -160,7 +158,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   Polymer.dom(menuitemNode).classList.add('iron-selected');
                 }
                 if(this._hasClass(curItem.classList, 'css-menu-topitem')){
-                  console.log('creating');
                   itemIcon = document.createElement('iron-icon');
                   Polymer.dom(itemIcon).setAttribute('class','placeholder');
                   Polymer.dom(menuitemNode).appendChild(itemIcon);
