@@ -1,0 +1,164 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+<link rel="import" href="..\..\bower_components/paper-date-picker/paper-date-picker.html">
+<link rel="import" href="..\..\bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="..\..\bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="..\..\bower_components/paper-button/paper-button.html">
+
+<dom-module id="reportal-calendar">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <div>
+      <content select=".reportal-hide-print"></content>
+    </div>
+    <paper-input label="{{label}}" on-tap="showDialog" value="{{dateFormat(date, displayFormat)}}"></paper-input>
+    <paper-button class="btn" on-tap="showDialog" raised>Change Date</paper-button>
+    <paper-dialog id="dialog" class="paper-date-picker-dialog" modal on-iron-overlay-closed="dismissDialog">
+      <paper-date-picker id="picker"
+                         responsive-width="655px"
+                         locale="{{locale}}"
+                         date="{{date}}"
+                         min-date="{{minDate}}"
+                         max-date="{{maxDate}}"
+                         min-year="{{min-year}}"
+                         max-year="{{maxYear}}"
+                         force-narrow="{{forceNarrow}}" ></paper-date-picker>
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-confirm>OK</paper-button>
+      </div>
+    </paper-dialog>
+  </template>
+  <script>
+  (function() {
+    'use strict';
+
+    Polymer({
+      is: 'reportal-calendar',
+
+      properties: {
+        label: {
+          type:String,
+          value: "Date"
+        },
+        date: {
+          type: Date,
+          notify: true,
+          observer: 'dateChanged'
+        },
+        /**
+         * The current locale
+         * @attribute locale
+         * @type string
+         * @default 'en'
+         */
+        locale: {
+          type: String,
+          value: 'en'
+        },
+        /**
+         * The minimum allowed date
+         * @attribute minDate
+         * @type Date
+         */
+        minDate: {
+          type: Date,
+          value: null
+        },
+        /**
+         * The maximum allowed date
+         * @attribute minDate
+         * @type Date
+         */
+        maxDate: {
+          type: Date,
+          value: null
+        },
+        /*
+         * The minumum allowable year
+         * @attribute minYear
+         * @type int
+         * @default 1900
+         */
+        minYear: {
+          type: Number,
+          value: 1900
+        },
+        /*
+         * The maximum allowable year
+         * @attribute maxYear
+         * @type int
+         * @default 2100
+         */
+        maxYear: {
+          type: Number,
+          value: 2100
+        },
+        /**
+         * Force narrow layout
+         * @attribute forceNarrow
+         * @type boolean
+         * @default false
+         */
+        forceNarrow: {
+          type: Boolean,
+          value: false
+        },
+        format:{
+          type:String,
+          value:'DD/MM/YYYY'
+        },
+        displayFormat:{
+          type:String,
+          value:'ll'
+        }
+
+      },
+      dateFormat:function(date,format){
+        return this.$.picker.dateFormat(date,format);
+      },
+      ready:function(){
+
+        //TODO: retrieve date as string in input instead of date component because it's liable to change according to locale
+        //this.dateFormat = this.$.picker.dateFormat;
+        var inputDate = Polymer.dom(this).querySelector('input').value;
+        if(inputDate.length>0){
+          if(inputDate.split('/').length>0){
+            inputDate = inputDate.split('/').reverse();
+          }
+          this.date = new Date(parseInt(inputDate[0])-1,parseInt(inputDate[1]) -1,parseInt(inputDate[2]));
+          console.log(this.date);
+        }
+      },
+      dismissDialog: function(event) {
+      if (event.detail.confirmed) {
+        this.date = this.$.picker.date;
+        Polymer.dom(this).querySelector('input').setAttribute('value', this.dateFormat(this.date, this.format))
+      }
+    },
+    showDialog: function() {
+      this.$.dialog.toggle();
+
+    },
+      dateChanged:function(){
+        console.log(Polymer.dom(this).querySelector('input').value);
+        //Polymer.dom(this).querySelector('input').setAttribute('value', this.dateFormat(this.date, this.dateFormat));
+
+      }
+    });
+  })();
+  </script>
+</dom-module>
