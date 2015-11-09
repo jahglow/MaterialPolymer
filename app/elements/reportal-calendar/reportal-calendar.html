@@ -19,17 +19,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style>
       :host {
         display: block;
+        --primary-background-color:#FFFFFF;
+        padding:8px;
       }
+      #cw>::content .reportal_hide_print,#cw>::content .locale, #cw>::content .label{display:none}
+
     </style>
-    <div>
-      <content select=".reportal-hide-print"></content>
+    <div id="cw">
+      <content select=".reportal_hide_print"></content>
+      <content select=".locale"></content>
+      <content select=".label"></content>
     </div>
     <paper-input label="{{label}}" on-tap="showDialog" value="{{dateFormat(date, displayFormat)}}"></paper-input>
-    <paper-button class="btn" on-tap="showDialog" raised>Change Date</paper-button>
-    <paper-dialog id="dialog" class="paper-date-picker-dialog" modal on-iron-overlay-closed="dismissDialog">
+    <paper-dialog id="dialog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissDialog">
       <paper-date-picker id="picker"
+                         locale="{{computeLocale(locale)}}"
                          responsive-width="655px"
-                         locale="{{locale}}"
                          date="{{date}}"
                          min-date="{{minDate}}"
                          max-date="{{maxDate}}"
@@ -55,9 +60,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           value: "Date"
         },
         date: {
-          type: Date,
-          notify: true,
-          observer: 'dateChanged'
+          type: Date
         },
         /**
          * The current locale
@@ -69,6 +72,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: String,
           value: 'en'
         },
+
         /**
          * The minimum allowed date
          * @attribute minDate
@@ -119,7 +123,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         format:{
           type:String,
-          value:'DD/MM/YYYY'
+          value:'YYYY-MM-DD'
         },
         displayFormat:{
           type:String,
@@ -130,10 +134,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       dateFormat:function(date,format){
         return this.$.picker.dateFormat(date,format);
       },
+      computeLocale:function(locale){
+        // adjust calendar locale to current report language
+        var adjustLocale = Polymer.dom(this).querySelector('.locale');
+        if(adjustLocale && adjustLocale.textContent.length>0){
+          console.log(adjustLocale.textContent);
+          moment.locale(adjustLocale.textContent);
+          return adjustLocale.textContent;
+        } else {
+          console.log(locale);
+          return locale;}
+      },
       ready:function(){
-
-        //TODO: retrieve date as string in input instead of date component because it's liable to change according to locale
-        //this.dateFormat = this.$.picker.dateFormat;
+        //legacy multilang label
+        var adjustLabel = Polymer.dom(this).querySelector('.label');
+        if(adjustLabel && adjustLabel.textContent.length>0){this.label=adjustLabel.textContent;}
         var inputDate = Polymer.dom(this).querySelector('input').value;
         if(inputDate.length>0){
           if(inputDate.split('/').length>0){
@@ -148,14 +163,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.date = this.$.picker.date;
         Polymer.dom(this).querySelector('input').setAttribute('value', this.dateFormat(this.date, this.format))
       }
-    },
-    showDialog: function() {
-      this.$.dialog.toggle();
-
-    },
-      dateChanged:function(){
-        console.log(Polymer.dom(this).querySelector('input').value);
-        //Polymer.dom(this).querySelector('input').setAttribute('value', this.dateFormat(this.date, this.dateFormat));
+      },
+      showDialog: function() {
+        this.$.dialog.toggle();
 
       }
     });

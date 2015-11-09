@@ -492,7 +492,13 @@
 <dom-module id="global-scope">
 <template>
 <style>
-
+ #reportFilters>::content #filters .dateRange{
+   @apply(--layout-horizontal);
+   @apply(--layout-wrap);
+ }
+ #reportFilters>::content #filters .dateRange reportal-calendar{
+   @apply(--layout-flex);
+ }
 </style>
   <report-master>
     <reportal-sidebar id="reportalSidebar" filters selected="1" logo="https://www.confirmit.com/Confirmit/media/confirmit-corporate/templates/global-nav-logo.png">
@@ -525,11 +531,24 @@
 
   <div id="filters">
     <div>
-      <reportal-calendar label="Date from" format="YY-MM-DD" display-format="LL">
+      <div class="dateRange">
+        <reportal-calendar label="Date from" date="2015-11-19" format="YYYY-MM-DD" >
+          <div class="label">Date FROM</div>
+          <div class="locale">en</div>
         <span class="reportal_hide_print">
-          <span id="c6e9139ba_1011_4091_9d8e_4a03b5f8f3fe" style="vertical-align:middle;">
-            <input name="c6e9139ba_1011_4091_9d8e_4a03b5f8f3fe$textbox" type="text" value="22/01/2015" maxlength="10" id="c6e9139ba_1011_4091_9d8e_4a03b5f8f3fe_textbox" onfocus="DatePicker_Init(event, 'c6e9139ba_1011_4091_9d8e_4a03b5f8f3fe');" style="width:80px;"><img src="/cf_clientutil/images/calendar_16.png" id="c6e9139ba_1011_4091_9d8e_4a03b5f8f3fe_picker" style="cursor:pointer;vertical-align:top;margin:1px;" onclick="DatePicker_Init(event, 'c6e9139ba_1011_4091_9d8e_4a03b5f8f3fe', true);"><span id="c6e9139ba_1011_4091_9d8e_4a03b5f8f3fe_validator" style="color:Red;display:none;">Not a valid date</span><span id="c6e9139ba_1011_4091_9d8e_4a03b5f8f3fe_rv" style="color:Red;display:none;">The date is not within a valid range for dates (1/1/1753 to 12/31/9999)</span></span></span>
-      </reportal-calendar>
+          <input name="c763f34b5_5f31_425c_ba68_904b664ab2b9" type="text" size="10" id="c763f34b5_5f31_425c_ba68_904b664ab2b9">
+          <span id="c763f34b5_5f31_425c_ba68_904b664ab2b9_valid" style="color:Red;display:none;">Field contains invalid characters</span>
+        </span>
+        </reportal-calendar>
+        <reportal-calendar label="Date to" date="2015-11-19" format="YYYY-MM-DD" >
+          <div class="label">Date TO</div>
+          <div class="locale">en</div>
+        <span class="reportal_hide_print">
+          <input name="c763f34b5_5f31_425c_ba68_904b664ab2b9" type="text" size="10" id="c763f34b5_5f31_425c_ba68_904b664ab2b9">
+          <span id="c763f34b5_5f31_425c_ba68_904b664ab2b9_valid" style="color:Red;display:none;">Field contains invalid characters</span>
+        </span>
+        </reportal-calendar>
+      </div>
       <reportal-list label="Customer Group">
         <div class="wrapper-label">Customer Group</div>
 
