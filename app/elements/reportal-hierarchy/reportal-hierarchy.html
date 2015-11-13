@@ -10,16 +10,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="..\..\bower_components/polymer/polymer.html">
 <link rel="import" href="..\..\bower_components/paper-dialog/paper-dialog.html">
-<link rel="import" href="..\..\bower_components/paper-button/paper-button.html">
+<link rel="import" href="..\..\bower_components/paper-styles/shadow.html">
 
 <dom-module id="reportal-hierarchy">
   <template>
     <style>
       :host {
         display: block;
-      @apply(--reportal-hierarchy);
+        @apply(--reportal-hierarchy);
       }
       #hierarchyWrapper>::content .dd-target-button {
+        position:relative;
         display: inherit;
         zoom: 1;
         font-size: auto;
@@ -37,10 +38,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         border: inherit;
         -webkit-border-radius: inherit;
         -moz-border-radius: inherit;
-        border-radius: inherit;
+        border-radius: 2px;
         @apply(--layout-horizontal);
         @apply(--layout-center);
+        @apply(--shadow-elevation-2dp);
         @apply(--reportal-hierarchy-button);
+
       }
       #hierarchyWrapper>::content .dd-target-button-arrow {display:none !important}
       #hierarchyWrapper>::content .dd-target-button-text {
@@ -90,7 +93,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       #hierarchyWrapper>::content .dd-search-input{
         border: 0 !important;
-        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+        @apply(--shadow-elevation-2dp);
         height: 32px;
         line-height: 32px;
         padding: 0 16px;
@@ -118,10 +121,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         padding: 0;
         background-image: none;
         border-radius: 3px;
-        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+        @apply(--shadow-elevation-2dp);
       }
-      #hierarchyWrapper>::content .dd-button-select:active{
-        box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12), 0 5px 5px -3px rgba(0, 0, 0, 0.4);
+      #hierarchyWrapper>::content .dd-button-select:active, #hierarchyWrapper>::content a.dd-cancel:active, #hierarchyWrapper>::content .dd-target-button:active{
+        @apply(--shadow-elevation-8dp);
       }
       #hierarchyWrapper>::content .dd-expand-icon{
         opacity:0.6;
@@ -134,9 +137,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         transition: box-shadow 0.2s;
         box-shadow:0 0 0 0 rgba(0,0,0,0);
         line-height: 34px;
-      }
-      #hierarchyWrapper>::content a.dd-cancel:active{
-        box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12), 0 5px 5px -3px rgba(0, 0, 0, 0.4);
       }
 
       #hierarchyWrapper>::content .dd-button-menu>div{
@@ -201,9 +201,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
   <script>
     (function() {
+      'use strict';
       Polymer({
         is: 'reportal-hierarchy',
-        listeners:{'tap':'addBackdrop'},
+        listeners:{
+          'tap':'_processTap'
+        },
         properties: {
           icon: {
             type: String,
@@ -215,50 +218,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
           label:String
         },
-        created: function(){
-          this.async(function(){
-            var inlineLabel = this.$.wrapperLabel.querySelector('.wrapper-label');
-            if(inlineLabel){this.label=inlineLabel.textContent;}
-            if(this.label && this.label.length>0){
-              this.$.wrapperLabel.textContent = this.label;
-            }
-            this.$.wrapperLabel.setAttribute('style','display:block');
-
-          });
-          this._wrapButton();
-        },
-        _wrapButton: function(){
-          var button = document.createElement('paper-button');
-          var source = Polymer.dom(this).querySelector('div.dd-target-button');
-          Polymer.dom(button).setAttribute('raised','');
-          Polymer.dom(button).setAttribute('id',source.id);
-          for(var i=0;i<source.childNodes.length;i++){
-            if(source.childNodes[i].localName !== null){
-              Polymer.dom(button).appendChild(source.childNodes[i]);
-            }
+        ready: function(){
+          var inlineLabel = this.$.wrapperLabel.querySelector('.wrapper-label');
+          if(inlineLabel){this.label=inlineLabel.textContent;}
+          if(this.label && this.label.length>0){
+            this.$.wrapperLabel.textContent = this.label;
           }
+          this.$.wrapperLabel.setAttribute('style','display:block');
+          this._enhanceButton();
+        },
+        _enhanceButton: function(){
+          var ripple = document.createElement('paper-ripple');
+          var source = Polymer.dom(this).querySelector('div.dd-target-button');
+          Polymer.dom(source).appendChild(ripple);
           var icon = document.createElement('iron-icon');
-          this.async(function(){
-            Polymer.dom(icon).setAttribute('icon',this.icon);
-            if(this.backdrop){
-              Polymer.dom(Polymer.dom(this).querySelector('.dd-target-container')).classList.add('backdrop');
-            }
-          });
-          Polymer.dom(button).appendChild(icon);
-          Polymer.dom(button).classList.add('dd-target-button');
-          Polymer.dom(Polymer.dom(this).querySelector('.dd-target-container')).removeChild(source);
-          Polymer.dom(Polymer.dom(this).querySelector('.dd-target-container')).appendChild(button);
+          Polymer.dom(icon).setAttribute('icon',this.icon);
+          if(this.backdrop){
+            Polymer.dom(Polymer.dom(this).querySelector('.dd-target-container')).classList.add('backdrop');
+          }
+          Polymer.dom(source).appendChild(icon);
         },
-        addBackdrop:function(){
-          var that=this;
-          window.setTimeout(function(){
-            var dd = document.querySelector('.dd-drilldown');
-            dd.addEventListener('tap',that.ddClick);
-          },200);
-
-        },
-        ddClick:function(e){
-          if(e.target.className === 'dd-drilldown'){document.querySelector('.dd-cancel').click();} else {return false;}
+        _processTap:function(e){
+          if(e.target.classList.contains('dd-drilldown')){
+            Polymer.dom.flush();
+            Polymer.dom(e.target).querySelector('.dd-cancel').click();
+          }
         }
       });
     })();

@@ -48,127 +48,122 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </paper-dialog>
   </template>
   <script>
-  (function() {
-    'use strict';
+    (function() {
+      'use strict';
+      Polymer({
+        is: 'reportal-calendar',
 
-    Polymer({
-      is: 'reportal-calendar',
+        properties: {
+          label: {
+            type:String,
+            value: 'Date'
+          },
+          date: {
+            type: Date
+          },
+          /**
+           * The current locale
+           * @attribute locale
+           * @type string
+           * @default 'en'
+           */
+          locale: {
+            type: String,
+            value: 'en'
+          },
 
-      properties: {
-        label: {
-          type:String,
-          value: "Date"
-        },
-        date: {
-          type: Date
-        },
-        /**
-         * The current locale
-         * @attribute locale
-         * @type string
-         * @default 'en'
-         */
-        locale: {
-          type: String,
-          value: 'en'
-        },
-
-        /**
-         * The minimum allowed date
-         * @attribute minDate
-         * @type Date
-         */
-        minDate: {
-          type: Date,
-          value: null
-        },
-        /**
-         * The maximum allowed date
-         * @attribute minDate
-         * @type Date
-         */
-        maxDate: {
-          type: Date,
-          value: null
-        },
-        /*
-         * The minumum allowable year
-         * @attribute minYear
-         * @type int
-         * @default 1900
-         */
-        minYear: {
-          type: Number,
-          value: 1900
-        },
-        /*
-         * The maximum allowable year
-         * @attribute maxYear
-         * @type int
-         * @default 2100
-         */
-        maxYear: {
-          type: Number,
-          value: 2100
-        },
-        /**
-         * Force narrow layout
-         * @attribute forceNarrow
-         * @type boolean
-         * @default false
-         */
-        forceNarrow: {
-          type: Boolean,
-          value: false
-        },
-        format:{
-          type:String,
-          value:'YYYY-MM-DD'
-        },
-        displayFormat:{
-          type:String,
-          value:'ll'
-        }
-
-      },
-      dateFormat:function(date,format){
-        return this.$.picker.dateFormat(date,format);
-      },
-      computeLocale:function(locale){
-        // adjust calendar locale to current report language
-        var adjustLocale = Polymer.dom(this).querySelector('.locale');
-        if(adjustLocale && adjustLocale.textContent.length>0){
-          console.log(adjustLocale.textContent);
-          moment.locale(adjustLocale.textContent);
-          return adjustLocale.textContent;
-        } else {
-          console.log(locale);
-          return locale;}
-      },
-      ready:function(){
-        //legacy multilang label
-        var adjustLabel = Polymer.dom(this).querySelector('.label');
-        if(adjustLabel && adjustLabel.textContent.length>0){this.label=adjustLabel.textContent;}
-        var inputDate = Polymer.dom(this).querySelector('input').value;
-        if(inputDate.length>0){
-          if(inputDate.split('/').length>0){
-            inputDate = inputDate.split('/').reverse();
+          /**
+           * The minimum allowed date
+           * @attribute minDate
+           * @type Date
+           */
+          minDate: {
+            type: Date,
+            value: null
+          },
+          /**
+           * The maximum allowed date
+           * @attribute minDate
+           * @type Date
+           */
+          maxDate: {
+            type: Date,
+            value: null
+          },
+          /*
+           * The minumum allowable year
+           * @attribute minYear
+           * @type int
+           * @default 1900
+           */
+          minYear: {
+            type: Number,
+            value: 1900
+          },
+          /*
+           * The maximum allowable year
+           * @attribute maxYear
+           * @type int
+           * @default 2100
+           */
+          maxYear: {
+            type: Number,
+            value: 2100
+          },
+          /**
+           * Force narrow layout
+           * @attribute forceNarrow
+           * @type boolean
+           * @default false
+           */
+          forceNarrow: {
+            type: Boolean,
+            value: false
+          },
+          format:{
+            type:String,
+            value:'YYYY-MM-DD'
+          },
+          displayFormat:{
+            type:String,
+            value:'ll'
           }
-          this.date = new Date(parseInt(inputDate[0])-1,parseInt(inputDate[1]) -1,parseInt(inputDate[2]));
-          console.log(this.date);
-        }
-      },
-      dismissDialog: function(event) {
-      if (event.detail.confirmed) {
-        this.date = this.$.picker.date;
-        Polymer.dom(this).querySelector('input').setAttribute('value', this.dateFormat(this.date, this.format))
-      }
-      },
-      showDialog: function() {
-        this.$.dialog.toggle();
 
-      }
-    });
-  })();
+        },
+        dateFormat:function(date,format){
+          return this.$.picker.dateFormat(date,format);
+        },
+        computeLocale:function(locale){
+          // adjust calendar locale to current report language
+          var adjustLocale = Polymer.dom(this).querySelector('.locale');
+          if(adjustLocale && adjustLocale.textContent.length>0){
+            return adjustLocale.textContent;
+          } else {
+            return locale;}
+        },
+        ready:function(){
+          //legacy multilang label
+          var adjustLabel = Polymer.dom(this).querySelector('.label');
+          if(adjustLabel && adjustLabel.textContent.length>0){this.label=adjustLabel.textContent;}
+          var inputDate = Polymer.dom(this).querySelector('.reportal_hide_print input').value;
+          if(inputDate.length>0){
+            if(inputDate.split('-').length>0){
+              inputDate = inputDate.split('-');
+            }
+            this.date = new Date(parseInt(inputDate[0])-1,parseInt(inputDate[1]) -1,parseInt(inputDate[2]));
+          }
+        },
+        dismissDialog: function(event) {
+          if (event.detail.confirmed) {
+            //TODO: add clear date functionality
+            this.date = this.$.picker.date;
+            Polymer.dom(this).querySelector('input').setAttribute('value', this.dateFormat(this.date, this.format));
+          }
+        },
+        showDialog: function() {
+          this.$.dialog.toggle();
+        }
+      });
+    })();
   </script>
 </dom-module>

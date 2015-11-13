@@ -74,8 +74,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       paper-dropdown-menu{
-        width:100%;
+        margin:8px;
+        width: calc(100% - 16px);
         display:block;
+
         @apply(--reportal-list-dropdown);
       }
     </style>
@@ -94,6 +96,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
   <script>
     (function() {
+      'use strict';
       Polymer({
         is: 'reportal-list',
         listeners:{
