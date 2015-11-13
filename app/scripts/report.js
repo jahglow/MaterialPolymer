@@ -7,15 +7,15 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-//do not change! take care or body classes;
+(function(){//do not change! take care or body classes;
 var body = document.querySelector('body');
 var bclist = body.classList;
-bclist.add('fullbleed');
-bclist.add('layout');
-bclist.add('vertical');
+//bclist.add('fullbleed');
+//bclist.add('layout');
+//bclist.add('vertical');
 if(bclist.contains('sl-skin')){bclist.remove('sl-skin');}
 if(bclist.contains('reportal-viewmode')){bclist.remove('reportal-viewmode');}
-body.setAttribute('unresolved','');
+//body.setAttribute('unresolved','');
 // end of do not change
 
 function prependScript(pathToScript) {
@@ -57,3 +57,4 @@ function prependScript(pathToScript) {
   metaCycle([['name','apple-mobile-web-app-title'],['content','Confirmit Material Dream']]);
 */
 
+})();

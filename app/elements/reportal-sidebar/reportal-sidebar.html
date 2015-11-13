@@ -100,6 +100,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
   <script>
     (function() {
+      'use strict';
       Polymer({
         is: 'reportal-sidebar',
         properties: {
@@ -122,8 +123,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             Polymer.dom(this.root).querySelector('.logo').classList.add('hidden');
           }
           // set custom style to multiple-injction content
-          var rwl = Polymer.dom(this.$$('#reportFilters')).querySelectorAll('reportal-list');
-          for(var i=0;i<rwl.length;i++){rwl[i].customStyle['--reportal-list-dropdown'] = 'margin:-8px 0';}
+         // var rwl = Polymer.dom(this.$$('#reportFilters')).querySelectorAll('reportal-list');
+         // for(var i=0;i<rwl.length;i++){rwl[i].customStyle['--reportal-list-dropdown'] = 'margin:-8px 0';}
         }
       });
     })();

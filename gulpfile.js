@@ -22,6 +22,10 @@ var fs = require('fs');
 var glob = require('glob');
 var historyApiFallback = require('connect-history-api-fallback');
 
+var polybuild = require('polybuild');
+
+
+
 var AUTOPREFIXER_BROWSERS = [
   'ie >= 10',
   'ie_mob >= 10',
@@ -241,6 +245,13 @@ gulp.task('default', ['clean'], function (cb) {
     'vulcanize',
     cb);
     // Note: add , 'precache' , after 'vulcanize', if your are going to use Service Worker
+});
+
+// Build Production Files, minified files
+gulp.task('build', function () {
+  return gulp.src('dist/elements/elements.html')
+    .pipe(polybuild({maximumCrush: true}))
+    .pipe(gulp.dest('dist/minified/'));
 });
 
 // Load tasks for web-component-tester

@@ -1,0 +1,127 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+
+<dom-module id="reportal-filter-summary">
+  <template>
+    <style>
+      :host {
+        display: block;
+        @apply(--reportal-filter-summary);
+
+      }
+      :host>::content table{display:none}
+      .filterLabel,.filterValue,.bgLabel,.bgBody{display:block;-webkit-font-smoothing: antialiased;}
+      .filterLabel{
+        font-size:11px;
+        line-height: 13px;
+        padding-top: 2px;
+        opacity:0.8;
+        @apply(--reportal-filter-summary-filter-label);
+      }
+      .filterValue{
+        font-size:16px;
+        @apply(--reportal-filter-summary-filter-value);
+      }
+      .filterContainer, .breadcrumbGroup{
+        display:inline-block;
+        padding-right: 24px;
+       }
+      .filterContainer{
+        @apply(--reportal-filter-summary-filter-container);
+      }
+      .breadcrumbGroup{
+        @apply(--reportal-filter-summary-group-container);
+      }
+      .bgBody{
+        @apply(--reportal-filter-summary-group-contents);
+      }
+      .bgLabel{
+        font-size:11px;
+        text-transform: uppercase;
+        font-weight: 500;
+        opacity:0.8;
+        @apply(--reportal-filter-summary-group-label);
+      }
+
+    </style>
+    <content></content>
+    <div id="breadcrumb"></div>
+  </template>
+  <script>
+  (function() {
+    'use strict';
+
+    Polymer({
+      is: 'reportal-filter-summary',
+
+      properties: {
+        useGrouping: {
+          type: Boolean,
+          value: false
+        }
+      },
+      ready:function(){
+        var rows = Polymer.dom(this).querySelectorAll('table tr');
+        var breadcrumbGroup,bgBody;
+        for(var i=0;i<rows.length;i++){
+          if(rows[i].children.length===1 && this.useGrouping){
+            if(breadcrumbGroup && bgBody){
+              breadcrumbGroup.appendChild(bgBody);
+              Polymer.dom(this.$.breadcrumb).appendChild(breadcrumbGroup);
+            }
+              breadcrumbGroup = document.createElement('span');
+              breadcrumbGroup.classList.add('breadcrumbGroup');
+              this.createGroup(rows[i],breadcrumbGroup);
+              bgBody = document.createElement('span');
+              bgBody.classList.add('bgBody');
+          } else {
+            if(breadcrumbGroup){
+              this.createTag(rows[i], breadcrumbGroup);
+            } else {
+              if(rows[i].children.length>1){this.createTag(rows[i]);}
+            }
+          }
+        }
+        if(this.useGrouping){ //append final breadcrumbGroup
+          Polymer.dom(this.$.breadcrumb).appendChild(breadcrumbGroup);
+        }
+      },
+      createTag:function(row, parEl){
+        var items = row.querySelectorAll('td');
+        var filterLabel = document.createElement('span');
+        filterLabel.classList.add('filterLabel');
+        filterLabel.textContent = items[0].textContent.replace(/\:$/, '');
+        var filterValue = document.createElement('span');
+        filterValue.classList.add('filterValue');
+        filterValue.textContent = items[1].textContent;
+        var filterContainer=document.createElement('span');
+        filterContainer.classList.add('filterContainer');
+        filterContainer.appendChild(filterLabel);
+        filterContainer.appendChild(filterValue);
+        if(!parEl){
+          Polymer.dom(this.$.breadcrumb).appendChild(filterContainer);
+        } else {
+          Polymer.dom(parEl).appendChild(filterContainer);
+        }
+      },
+      createGroup:function(row,parEl){
+        var item = row.querySelector('td');
+        var bgLabel = document.createElement('span');
+        bgLabel.classList.add('bgLabel');
+        bgLabel.textContent = item.textContent.replace(/\:$/, '');
+          Polymer.dom(parEl).appendChild(bgLabel);
+
+      }
+    });
+  })();
+  </script>
+</dom-module>
