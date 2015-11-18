@@ -70,6 +70,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       position:relative;
     @apply(--kpi-tile-actions);
     }
+    :host ::content #info{display:none}
   </style>
   <template>
 
@@ -188,6 +189,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       @apply(--kpi-tile);
 
       }
+      :host>reveal-content{display:none}
 
       neon-animated-pages {
       height:100%
@@ -227,7 +229,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         font-size: 20px;
         font-weight: 500;
         color: var(--kpi-tile-header-color, #000);
-      @apply(--layout-flex);
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+
+        @apply(--layout-flex);
       @apply(--kpi-tile-header-text);
       }
 
@@ -262,8 +268,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </style>
     <paper-material animated$="[[animatedShadow]]" elevation="[[elevation]]"></paper-material>
-    <neon-animated-pages id="revealPage" selected="0">
-      <kpi-content id="tile">
+    <neon-animated-pages id="revealPage"></neon-animated-pages>
+      <kpi-content id="tile" >
         <div class="header">
           <iron-icon hidden$="[[!icon]]" icon="[[icon]]"></iron-icon>
           <div hidden$="[[!heading]]" class$="[[_computeHeadingClass(icon,info)]]">[[heading]]</div>
@@ -275,7 +281,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <content id="helloWorld"></content>
       </kpi-content>
 
-      <reveal-content>
+      <reveal-content id="rc">
         <div class="header">
           <div class="button" on-click="_hideInfo">
             <iron-icon icon="arrow-back" id="backIcon"></iron-icon>
@@ -285,7 +291,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
         <div class="tile-content" id="revealContent"></div>
       </reveal-content>
-    </neon-animated-pages>
+
 
   </template>
 </dom-module>
@@ -298,9 +304,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       behaviors: [
         Polymer.KpiTileBehavior
       ],
-      ready:function(){
-        this._computeInfo(this.info);
-        this.setAttribute('style','height:'+ this.height);
+      properties:{
+
+      },
+      attached:function(){
+        this._computeInfo();
+
+        //this.setAttribute('style','height:'+ this.height);
+      },
+      _wrapNeonPages:function(){
+        //a hack to automatically compute height for the tile if not set explicitly
+        if(!this.style.height){this.style.height=window.getComputedStyle(this.$.tile).getPropertyValue('height');
+        console.log(this.style.height);}
+        if(this.$.revealPage.children.length===0){
+          var tileInnerContent= this.$.helloWorld;
+          Polymer.dom(this.$.revealPage).appendChild(this.$.tile);
+          Polymer.dom(this.$.revealPage).appendChild(this.$.rc);
+          Polymer.dom(this.$.tile).appendChild(tileInnerContent);
+          Polymer.dom(this.$.revealPage).setAttribute('selected','0');
+        }
       },
       _displayInfo : function(event) {
         this.$.tile.sharedElements = {
@@ -321,8 +343,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         else if (info) {cls += ' pr0';}
         return cls;
       },
-      _computeInfo: function(info) {
-        this.$.revealContent.innerHTML = info;
+      _computeInfo: function() {
+        if(!this.info){
+          console.log('noinfo');
+          var supposedInfo = Polymer.dom(this).querySelector('#info');
+          if(supposedInfo){
+            this.info = supposedInfo.innerHTML;
+            Polymer.dom(this).removeChild(supposedInfo);
+          }
+
+        }
+
+        if(this.info && this.info.length>0){ // passed as attribute
+          this.$.revealContent.innerHTML = this.info;
+          this._wrapNeonPages();
+        }
+
+
+
+
+        //if(this.info && this.info.length>0){this._wrapNeonPages();} //use NeonPages if there's info
+
       }
 
     });

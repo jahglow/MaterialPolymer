@@ -38,6 +38,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   :host .content-container>::content #wait_c #primaryProgress{
     background-color: var(--report-master-loading-progress-color, --dark-primary-color);
   }
+  paper-scroll-header-panel[drawer]:not([narrow]){border-right:1px solid #ededed}
 </style>
     <paper-drawer-panel id="paperDrawerPanel">
       <!-- Drawer Scroll Header Panel -->
@@ -71,34 +72,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   </template>
   <script>
-  (function() {
-    'use strict';
-    Polymer({
-      is: 'report-master',
-      listeners:{
-        'paper-header-transform':'_condenseHeader',
-        'tap':'_panelToggle'
-      },
-      properties:{
+    (function() {
+      'use strict';
+      Polymer({
+        is: 'report-master',
+        listeners:{
+          'paper-header-transform':'_condenseHeader',
+          'tap':'_panelToggle'
+        },
+        properties:{
 
-      },
-      attached:function(){
-        //this._replaceLoadingAnimation();
-      },
+        },
+        ready:function(){
+          this._replaceLoadingAnimation();
+        },
 
-      _panelToggle:function(e){
-        if(e.target.hasAttribute('paper-drawer-toggle') || e.target.parentNode.hasAttribute('paper-drawer-toggle')){
-          this.$.paperDrawerPanel.openDrawer();
-        }
-      },
+        _panelToggle:function(e){
+          if(e.target.hasAttribute('paper-drawer-toggle') || e.target.parentNode.hasAttribute('paper-drawer-toggle')){
+            this.$.paperDrawerPanel.openDrawer();
+          }
+        },
 
-      _replaceLoadingAnimation: function () {
-        this.async(function(){
-          var toolbar=this.querySelector('div[main] paper-scroll-header-panel div[id="headerContainer"]');
+        _replaceLoadingAnimation: function () {
+          var that=this;
           var progress = document.createElement('paper-progress');
           Polymer.dom(progress).setAttribute('indeterminate','');
-          //Polymer.dom(toolbar).appendChild(progress);
-
           this._poll(
             function(){
               return document.querySelector('#wait_c');
@@ -108,58 +106,59 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               container.setAttribute('style','');
               container.innerHTML='';
               container.appendChild(progress);
+              var toolbar=document.querySelector('#headerContainer');
               toolbar.appendChild(container);
               Polymer.updateStyles();
             },
-            function(){},
+            function(){console.log('failed to find & restyle loading progress for <report-master>')},
             10000, //10 seconds total
             1000 //check every second
           );
-        });
-      },
-      _poll:function(fn, callback, errback, timeout, interval) {
-      var endTime = Number(new Date()) + (timeout || 2000);
-      interval = interval || 100;
+        },
+        _poll:function(fn, callback, errback, timeout, interval) {
+          var endTime = Number(new Date()) + (timeout || 2000);
+          interval = interval || 100;
 
-      (function p() {
-        // If the condition is met, we're done!
-        if(fn()) {
-          callback();
+          (function p() {
+            // If the condition is met, we're done!
+            if(fn()) {
+              callback();
+            }
+            // If the condition isn't met but the timeout hasn't elapsed, go again
+            else if (Number(new Date()) < endTime) {
+              setTimeout(p, interval);
+            }
+            // Didn't match and too much time, reject!
+            else {
+              errback(new Error('timed out for ' + fn + ': ' + arguments));
+            }
+          })();
+        },
+        _condenseHeader:function(e){
+          this.async(function() {
+            var appName = Polymer.dom(e.target).querySelector('.app-name');
+            var middleContainer = Polymer.dom(e.target).querySelector('.middle-container');
+            var bottomContainer = Polymer.dom(e.target).querySelector('.bottom-container');
+            var detail = e.detail;
+            var heightDiff = detail.height - detail.condensedHeight;
+            var yRatio = Math.min(1, detail.y / heightDiff);
+            var maxMiddleScale = 0.50;  // appName max size when condensed. The smaller the number the smaller the condensed size.
+            var scaleMiddle = Math.max(maxMiddleScale, (heightDiff - detail.y) / (heightDiff / (1 - maxMiddleScale)) + maxMiddleScale);
+            var scaleBottom = 1 - yRatio;
+
+            // Move/translate middleContainer
+            this.transform('translate3d(0,' + yRatio * 100 + '%,0)', middleContainer);
+
+            // Scale bottomContainer and bottom sub title to nothing and back
+            this.transform('scale(' + scaleBottom + ') translateZ(0)', bottomContainer);
+
+            // Scale middleContainer appName
+            this.transform('scale(' + scaleMiddle + ') translateZ(0)', appName);
+          });
         }
-        // If the condition isn't met but the timeout hasn't elapsed, go again
-        else if (Number(new Date()) < endTime) {
-          setTimeout(p, interval);
-        }
-        // Didn't match and too much time, reject!
-        else {
-          errback(new Error('timed out for ' + fn + ': ' + arguments));
-        }
-      })();
-    },
-      _condenseHeader:function(e){
-        this.async(function() {
-          var appName = Polymer.dom(e.target).querySelector('.app-name');
-          var middleContainer = Polymer.dom(e.target).querySelector('.middle-container');
-          var bottomContainer = Polymer.dom(e.target).querySelector('.bottom-container');
-          var detail = e.detail;
-          var heightDiff = detail.height - detail.condensedHeight;
-          var yRatio = Math.min(1, detail.y / heightDiff);
-          var maxMiddleScale = 0.50;  // appName max size when condensed. The smaller the number the smaller the condensed size.
-          var scaleMiddle = Math.max(maxMiddleScale, (heightDiff - detail.y) / (heightDiff / (1 - maxMiddleScale)) + maxMiddleScale);
-          var scaleBottom = 1 - yRatio;
+      });
 
-          // Move/translate middleContainer
-          this.transform('translate3d(0,' + yRatio * 100 + '%,0)', middleContainer);
-
-          // Scale bottomContainer and bottom sub title to nothing and back
-          this.transform('scale(' + scaleBottom + ') translateZ(0)', bottomContainer);
-
-          // Scale middleContainer appName
-          this.transform('scale(' + scaleMiddle + ') translateZ(0)', appName);
-        });
-      }
-    });
-  })();
+ })();
   </script>
 </dom-module>
 

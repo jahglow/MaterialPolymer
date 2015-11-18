@@ -499,6 +499,7 @@
  #reportFilters>::content #filters .dateRange reportal-calendar{
    @apply(--layout-flex);
  }
+  #reportalPage>::content #materialVOCoverview kpi-tile{margin:10px}
 
 </style>
   <report-master>
@@ -677,14 +678,30 @@
 
 
         <!--kpi-tabbed-chart heading="NPS&reg;" info="Hello, this is some info about<br> NPS" height="420px" selected=""></kpi-tabbed-chart -->
-        <div class="layout horizontal wrap" id="firstRow">
-          <kpi-tile heading="NPS&reg;" icon="thumbs-up-down" info="Hello, this is some info about<br> NPS" height="420px">
+        <div class="layout horizontal wrap" id="materialVOCoverview">
+          <kpi-tile heading="NPS®" icon="thumbs-up-down" >
             <div class="tile-content">
-            </div>
-            <div class="tile-actions">
-              <paper-button>VIEW DETAILS</paper-button>
-            </div>
+долфлоывралдорлдфоывра
+            </div><div class="tile-actions">
+            <paper-button>VIEW DETAILS</paper-button>
+          </div>
+            <div id="info">Hello, this is some info about<br> NPS</div>
           </kpi-tile>
+          <kpi-tile heading="NES" info="Strategic sample" >
+            <div class="tile-content">
+
+            </div><div class="tile-actions">
+            <paper-button>VIEW DETAILS</paper-button>
+          </div>
+          </kpi-tile>
+          <kpi-tile heading="NPS® Year to date" icon="trending-up" info="Hello, this is some info about<br> NPS" >
+            <div class="tile-content">
+
+            </div><div class="tile-actions">
+            <paper-button>VIEW DETAILS</paper-button>
+          </div>
+          </kpi-tile>
+
         </div>
         <div class="layout horisontal wrap">
 
