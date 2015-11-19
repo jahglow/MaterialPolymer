@@ -285,6 +285,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <neon-animated-pages id="revealPage"></neon-animated-pages>
       <kpi-content id="tile" >
         <div class="header">
+          <img hidden$="[[!image]]" src="[[image]]" />
           <iron-icon hidden$="[[!icon]]" icon="[[icon]]"></iron-icon>
           <div hidden$="[[!heading]]" class$="[[_computeHeadingClass(icon,info)]]">[[heading]]</div>
           <div hidden$="[[!info]]" class="button" on-click="_displayInfo">
