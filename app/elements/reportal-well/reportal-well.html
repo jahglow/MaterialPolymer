@@ -16,10 +16,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style>
       :host {
         display: block;
+        @apply(--reportal-well);
       }
       :host>::content>*{
         @apply(--layout-self-stretch);
         height:100% !important;
+        @apply(--reportal-well-element);
       }
     </style>
     <content></content>
