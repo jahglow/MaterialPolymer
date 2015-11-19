@@ -33,7 +33,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       padding: 16px;
       padding-top:0;
       position:relative;
-    @apply(--kpi-tile-content);
+    @apply(--kpi-tile-reveal);
     }
 
   </style>
@@ -64,7 +64,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       position:relative;
       @apply(--layout-self-stretch);
       height: 100%;
-
       @apply(--kpi-tile-content);
     }
     #container{
@@ -269,9 +268,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --iron-icon-height:24px;
         --iron-icon-width:24px;}
 
-      #tile>::content{
-        @apply(--kpi-tile-content);
-      }
+
       #revealContent{
         @apply(--kpi-tile-reveal);
       }
