@@ -1,0 +1,109 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+<link rel="import" href="..\..\bower_components/paper-styles/color.html">
+
+<dom-module id="kpi-tile-role">
+  <template>
+    <style>
+      :host {
+        width: 100%;
+        @apply(--layout-horizontal);
+      }
+      .icon>iron-icon{
+        --iron-icon-width:5em;
+        --iron-icon-height:5em;
+        color:var(--paper-grey-600);
+      }
+      .icon{
+        @apply(--layout-flex-1);
+      }
+
+      .data{
+        @apply(--layout-vertical);
+        @apply(--layout-flex-2);
+        text-align: center;
+      }
+      .digit{
+        font-size:3em;
+        color:var(--paper-grey-600);
+      }
+      .base{
+        color:var(--paper-grey-500);
+        font-size: 0.8em;
+        text-transform: uppercase;
+      }
+      .promoter{color:var(--default-promoter-color,--paper-green-500) !important;}
+      .passive{color:var(--default-passive-color,--paper-amber-500) !important;}
+      .detractor{color:var(--default-detractor-color,--paper-red-500) !important;}
+
+    </style>
+    <div class="icon" hidden$="[[!iconize]]"><iron-icon></iron-icon></div>
+    <div class="data">
+      <div class="digit">{{value}}</div>
+      <div hidden$="[[!base]]" class="base">Base: <span>[[base]]</span></div>
+    </div>
+  </template>
+  <script>
+  (function() {
+    'use strict';
+
+    Polymer({
+      is: 'kpi-tile-role',
+
+      properties: {
+        role: {
+          type: String,
+          value: ''
+        },
+        value:{
+          type:String,
+          value:''
+        },
+        base:{
+          type: Number,
+          value:null
+        },
+        icons:{
+          type:String,
+          value: 'social:mood,face,social:mood-bad' //"promoterIcon,passiveIcon,detractorIcon"
+        },
+        iconize:{
+          type:Boolean,
+          value:false
+        }
+      },
+      ready:function() {
+        if (this.iconize && this.role) {
+        var aIcons = this.icons.split(',');
+        var icon = this.$$('.icon iron-icon');
+        switch (this.role) {
+          case 'promoter':
+            icon.setAttribute('icon', aIcons[0]);
+            break;
+          case 'passive':
+            icon.setAttribute('icon', aIcons[1]);
+            break;
+          case 'detractor':
+            icon.setAttribute('icon', aIcons[2]);
+            break;
+        }
+      }
+        if(this.role){
+          this.$$('.icon iron-icon').classList.add(this.role);
+          this.$$('.digit').classList.add(this.role);
+        }
+      }
+
+    });
+  })();
+  </script>
+</dom-module>

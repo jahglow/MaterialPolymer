@@ -490,46 +490,46 @@
 <span id="browser-sync-binding"></span>
 <script src="scripts/report.js"></script>
 <dom-module id="global-scope">
-<template>
-<style>
- #reportFilters>::content #filters .dateRange{
-   @apply(--layout-horizontal);
-   @apply(--layout-wrap);
- }
- #reportFilters>::content #filters .dateRange reportal-calendar{
-   @apply(--layout-flex);
- }
-  #reportalPage>::content #materialVOCoverview kpi-tile{margin:10px}
+  <template>
+    <style>
+      #reportFilters>::content #filters .dateRange{
+        @apply(--layout-horizontal);
+        @apply(--layout-wrap);
+      }
+      #reportFilters>::content #filters .dateRange reportal-calendar{
+        @apply(--layout-flex);
+      }
+      #reportalPage>::content #materialVOCoverview kpi-tile{margin:10px}
 
-</style>
-  <report-master>
-    <reportal-sidebar id="reportalSidebar" filters selected="1" logo="https://www.confirmit.com/Confirmit/media/confirmit-corporate/templates/global-nav-logo.png">
-      <div id="reportMenu" >
-        <reportal-menu legacy-icons="polymer|warning|settings" legacy-icons-separator="|">
-          <content select="#menu"></content>
-        </reportal-menu>
-      </div>
-      <div id="reportFilters"><content select="#filters"></content></div>
-    </reportal-sidebar>
-    <div id="reportalPage">
-      <!-- Main Area -->
+    </style>
+    <report-master>
+      <reportal-sidebar id="reportalSidebar" filters selected="1" logo="https://www.confirmit.com/Confirmit/media/confirmit-corporate/templates/global-nav-logo.png">
+        <div id="reportMenu" >
+          <reportal-menu legacy-icons="polymer|warning|settings" legacy-icons-separator="|">
+            <content select="#menu"></content>
+          </reportal-menu>
+        </div>
+        <div id="reportFilters"><content select="#filters"></content></div>
+      </reportal-sidebar>
+      <div id="reportalPage">
+        <!-- Main Area -->
         <content></content>
-    </div>
+      </div>
 
-  </report-master>
-</template>
-<script>
-  window.addEventListener('WebComponentsReady', function() {
-    Polymer({
-      is:'global-scope'
-    })
-  });
-</script>
+    </report-master>
+  </template>
+  <script>
+    window.addEventListener('WebComponentsReady', function() {
+      Polymer({
+        is:'global-scope'
+      })
+    });
+  </script>
 </dom-module>
 
 <global-scope>
   <div id="menu">
-</div>
+  </div>
 
   <div id="filters">
     <div>
@@ -600,115 +600,128 @@
     </div>
   </div>
 
-    <!-- Main Toolbar -->
-    <paper-scroll-header-panel condenses keep-condensed-header id="shp">
-      <paper-toolbar id="mainToolbar" class="tall">
-        <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
-        <span class="flex"></span>
+  <!-- Main Toolbar -->
+  <paper-scroll-header-panel condenses keep-condensed-header id="shp">
+    <paper-toolbar id="mainToolbar" class="tall">
+      <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
+      <span class="flex"></span>
 
-        <!-- Toolbar icons -->
-        <paper-icon-button icon="refresh"></paper-icon-button>
-        <paper-icon-button icon="search"></paper-icon-button>
+      <!-- Toolbar icons -->
+      <paper-icon-button icon="refresh"></paper-icon-button>
+      <paper-icon-button icon="search"></paper-icon-button>
 
-        <!-- Application name -->
-        <div class="middle middle-container center horizontal layout">
-          <div class="app-name">VOC Active Customers</div>
+      <!-- Application name -->
+      <div class="middle middle-container center horizontal layout">
+        <div class="app-name">VOC Active Customers</div>
+      </div>
+
+      <!-- Application sub title -->
+      <div class="bottom bottom-container center horizontal layout">
+        <reportal-filter-summary class="bottom-title paper-font-subhead" style=" white-space: nowrap; overflow: hidden;"><div class="filter-summary"><table cellpadding="5" cellspacing="0">
+          <tbody>
+          <tr>
+            <td style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;" class="filterSummary" colspan="2"><b>Current Report Base:</b></td></tr>
+          <tr>
+            <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000" valign="top">Sales Organisation:</td>
+            <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000"><li>Austria</li></td>
+          </tr>
+          <tr>
+            <td style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;" class="filterSummary" colspan="2"><b>Selected Elements:</b></td></tr>
+          <tr class="parameterSummary">
+            <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000" valign="top">p_Week:</td><td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000">
+            Week 1</td></tr>
+          <tr class="parameterSummary">
+            <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000" valign="top">p_CustomerGroup:</td><td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000">
+            Corporate</td></tr>
+          <tr class="parameterSummary">
+            <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000" valign="top">p_Year:</td><td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000">
+            2015</td></tr>
+          <tr class="parameterSummary">
+            <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000" valign="top">p_Quarter:</td><td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000">
+            2</td></tr>
+          </tbody></table>
         </div>
+        </reportal-filter-summary>
+        <!--div class="bottom-title paper-font-subhead">The future of the web today</div-->
+      </div>
 
-        <!-- Application sub title -->
-        <div class="bottom bottom-container center horizontal layout">
-          <reportal-filter-summary class="bottom-title paper-font-subhead" style=" white-space: nowrap; overflow: hidden;"><div class="filter-summary"><table cellpadding="5" cellspacing="0">
-            <tbody>
-            <tr>
-              <td style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;" class="filterSummary" colspan="2"><b>Current Report Base:</b></td></tr>
-            <tr>
-              <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000" valign="top">Sales Organisation:</td>
-              <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000"><li>Austria</li></td>
-            </tr>
-            <tr>
-              <td style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;" class="filterSummary" colspan="2"><b>Selected Elements:</b></td></tr>
-            <tr class="parameterSummary">
-              <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000" valign="top">p_Week:</td><td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000">
-              Week 1</td></tr>
-            <tr class="parameterSummary">
-              <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000" valign="top">p_CustomerGroup:</td><td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000">
-              Corporate</td></tr>
-            <tr class="parameterSummary">
-              <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000" valign="top">p_Year:</td><td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000">
-              2015</td></tr>
-            <tr class="parameterSummary">
-              <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000" valign="top">p_Quarter:</td><td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000">
-              2</td></tr>
-            </tbody></table>
-          </div>
-          </reportal-filter-summary>
-          <!--div class="bottom-title paper-font-subhead">The future of the web today</div-->
+    </paper-toolbar>
+
+    <div class="content">
+      <paper-material elevation="1">
+        <reportal-filter-summary use-grouping class="bottom-title paper-font-subhead"><div class="filter-summary"><table cellpadding="5" cellspacing="0">
+          <tbody>
+          <tr>
+            <td style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;" class="filterSummary" colspan="2"><b>Current Report Base:</b></td></tr>
+          <tr>
+            <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000" valign="top">Sales Organisation:</td>
+            <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000"><li>Austria</li></td>
+          </tr>
+          <tr>
+            <td style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;" class="filterSummary" colspan="2"><b>Selected Elements:</b></td></tr>
+          <tr class="parameterSummary">
+            <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000" valign="top">p_Week:</td><td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000">
+            Week 1</td></tr>
+          <tr class="parameterSummary">
+            <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000" valign="top">p_CustomerGroup:</td><td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000">
+            Corporate</td></tr>
+          <tr class="parameterSummary">
+            <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000" valign="top">p_Year:</td><td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000">
+            2015</td></tr>
+          <tr class="parameterSummary">
+            <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000" valign="top">p_Quarter:</td><td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000">
+            2</td></tr>
+          </tbody></table>
         </div>
+        </reportal-filter-summary>
+      </paper-material>
 
-      </paper-toolbar>
 
-      <div class="content">
-        <paper-material elevation="1">
-          <reportal-filter-summary use-grouping class="bottom-title paper-font-subhead"><div class="filter-summary"><table cellpadding="5" cellspacing="0">
-            <tbody>
-            <tr>
-              <td style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;" class="filterSummary" colspan="2"><b>Current Report Base:</b></td></tr>
-            <tr>
-              <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000" valign="top">Sales Organisation:</td>
-              <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000"><li>Austria</li></td>
-            </tr>
-            <tr>
-              <td style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;" class="filterSummary" colspan="2"><b>Selected Elements:</b></td></tr>
-            <tr class="parameterSummary">
-              <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000" valign="top">p_Week:</td><td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000">
-              Week 1</td></tr>
-            <tr class="parameterSummary">
-              <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000" valign="top">p_CustomerGroup:</td><td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000">
-              Corporate</td></tr>
-            <tr class="parameterSummary">
-              <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000" valign="top">p_Year:</td><td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000">
-              2015</td></tr>
-            <tr class="parameterSummary">
-              <td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000" valign="top">p_Quarter:</td><td class="filterSummary" style="border-style:none;margin:0;padding:0;background-image:none;background-color:transparent;position:static;border-bottom:1px solid #000000">
-              2</td></tr>
-            </tbody></table>
+      <!--kpi-tabbed-chart heading="NPS&reg;" info="Hello, this is some info about<br> NPS" height="420px" selected=""></kpi-tabbed-chart -->
+      <reportal-well class="layout horizontal wrap"  id="materialVOCoverview">
+        <kpi-tile heading="Promoters"  class="valign-middle">
+          <div class="tile-content">
+            <div class="layout vertical flex-12">
+              <kpi-tile-role role="promoter" iconize value="65%" base="107"></kpi-tile-role>
+
+            </div>
           </div>
-          </reportal-filter-summary>
-        </paper-material>
-
-
-        <!--kpi-tabbed-chart heading="NPS&reg;" info="Hello, this is some info about<br> NPS" height="420px" selected=""></kpi-tabbed-chart -->
-        <div class="layout horizontal wrap" id="materialVOCoverview">
-          <kpi-tile heading="NPS®" icon="thumbs-up-down" >
-            <div class="tile-content">
-долфлоывралдорлдфоывра
-            </div><div class="tile-actions">
-            <paper-button>VIEW DETAILS</paper-button>
+          <div class="tile-actions">
+            <div class="flex-12" style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
           </div>
-            <div id="info">Hello, this is some info about<br> NPS</div>
-          </kpi-tile>
-          <kpi-tile heading="NES" info="Strategic sample" >
-            <div class="tile-content">
+          <div id="info">Hello, this is some info about<br> NPS</div>
+        </kpi-tile>
+        <kpi-tile heading="Passive"  class="valign-middle">
+          <div class="tile-content">
+            <div class="layout vertical flex-12">
+              <kpi-tile-role role="passive" iconize value="18%" base="31"></kpi-tile-role>
 
-            </div><div class="tile-actions">
-            <paper-button>VIEW DETAILS</paper-button>
+            </div>
           </div>
-          </kpi-tile>
-          <kpi-tile heading="NPS® Year to date" icon="trending-up" info="Hello, this is some info about<br> NPS" >
-            <div class="tile-content">
-
-            </div><div class="tile-actions">
-            <paper-button>VIEW DETAILS</paper-button>
+          <div class="tile-actions">
+            <div class="flex-12" style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
           </div>
-          </kpi-tile>
+          <div id="info">Hello, this is some info about<br> NPS</div>
+        </kpi-tile>
+        <kpi-tile heading="Detractors" class="valign-middle">
+        <div class="tile-content">
+          <div class="layout vertical flex-12">
+            <kpi-tile-role role="detractor" iconize value="17%" base="25"></kpi-tile-role>
 
+          </div>
         </div>
-        <div class="layout horisontal wrap">
-
+        <div class="tile-actions">
+          <div class="flex-12" style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
         </div>
+        <div id="info">Hello, this is some info about<br> NPS</div>
+      </kpi-tile>
+      </reportal-well>
+      <div class="layout horisontal wrap">
 
       </div>
-    </paper-scroll-header-panel>
+
+    </div>
+  </paper-scroll-header-panel>
 </global-scope>
 
 </body>

@@ -52,18 +52,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     :host {
       display: block;
       overflow: hidden;
+      @apply(--layout-vertical);
     }
     #placeholder {
       opacity: 0;
       background-color: grey;
     }
-    :host ::content .tile-content {
+    #container>::content>.tile-content {
       padding: 16px;
       padding-top:0;
       position:relative;
-    @apply(--kpi-tile-content);
-    }
+      @apply(--layout-self-stretch);
+      height: 100%;
 
+      @apply(--kpi-tile-content);
+    }
+    #container{
+      @apply(--layout-self-stretch);
+      height: 100%;
+      @apply(--layout-vertical);
+    }
     :host ::content .tile-actions {
       border-top: 1px solid #e8e8e8;
       padding: 5px 16px;
@@ -190,7 +198,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       }
       :host>reveal-content{display:none}
-
+      :host.valign-middle #tile>::content .tile-content{
+        @apply(--layout-horizontal);
+        @apply(--layout-self-stretch);
+        @apply(--layout-center);
+      }
       neon-animated-pages {
       height:100%
       }
@@ -258,12 +270,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --iron-icon-width:24px;}
 
       #tile>::content{
-        @apply{--kpi-tile-content}
+        @apply(--kpi-tile-content);
       }
       #revealContent{
-        @apply{--kpi-tile-reveal}
+        @apply(--kpi-tile-reveal);
       }
+      :host.valign-middle #helloWorld{
 
+      }
 
 
     </style>
@@ -304,25 +318,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       behaviors: [
         Polymer.KpiTileBehavior
       ],
-      properties:{
-
-      },
       attached:function(){
         this._computeInfo();
-
-        //this.setAttribute('style','height:'+ this.height);
       },
       _wrapNeonPages:function(){
         //a hack to automatically compute height for the tile if not set explicitly
-        if(!this.style.height){this.style.height=window.getComputedStyle(this.$.tile).getPropertyValue('height');
-        console.log(this.style.height);}
+        this._calculateHeight();
         if(this.$.revealPage.children.length===0){
           var tileInnerContent= this.$.helloWorld;
           Polymer.dom(this.$.revealPage).appendChild(this.$.tile);
           Polymer.dom(this.$.revealPage).appendChild(this.$.rc);
           Polymer.dom(this.$.tile).appendChild(tileInnerContent);
-          Polymer.dom(this.$.revealPage).setAttribute('selected','0');
+          this.$.revealPage.selected=0;
         }
+      },
+      _calculateHeight:function(){
+        if(!this.style.height){this.style.height=window.getComputedStyle(this.$.tile).getPropertyValue('height');}
       },
       _displayInfo : function(event) {
         this.$.tile.sharedElements = {
@@ -334,7 +345,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _hideInfo : function() {
         this.$.revealPage.selected = 0;
       },
-
       _computeHeadingClass: function(icon,info) {
         var cls = 'title-text';
         //remove extra paddings on title and justify if both icons
@@ -345,25 +355,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       _computeInfo: function() {
         if(!this.info){
-          console.log('noinfo');
           var supposedInfo = Polymer.dom(this).querySelector('#info');
           if(supposedInfo){
             this.info = supposedInfo.innerHTML;
             Polymer.dom(this).removeChild(supposedInfo);
           }
-
         }
-
         if(this.info && this.info.length>0){ // passed as attribute
           this.$.revealContent.innerHTML = this.info;
           this._wrapNeonPages();
         }
-
-
-
-
-        //if(this.info && this.info.length>0){this._wrapNeonPages();} //use NeonPages if there's info
-
       }
 
     });
