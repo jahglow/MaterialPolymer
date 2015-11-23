@@ -352,7 +352,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       },
       _calculateHeight:function(){
-        if(!this.style.height){this.style.height=window.getComputedStyle(this.$.tile).getPropertyValue('height');}
+        //TODO: organize recalculation of height on window-resize
+        if(!this.style.height){this.style.height=window.getComputedStyle(this).getPropertyValue('height');}
       },
       _displayInfo : function(event) {
         this.$.tile.sharedElements = {
@@ -364,7 +365,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _hideInfo : function() {
         this.$.revealPage.selected = 0;
       },
-      //TODO: divide reveal header and tile header classes.
+
       _computeHeadingClass: function() {
         var cls = ['title-text'];
         //remove extra paddings on title and justify if both icons

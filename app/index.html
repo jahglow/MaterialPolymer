@@ -499,7 +499,9 @@
       #reportFilters>::content #filters .dateRange reportal-calendar{
         @apply(--layout-flex);
       }
-      #reportalPage>::content #materialVOCoverview kpi-tile{margin:10px}
+      #reportalPage>::content #materialVOCoverview kpi-tile{width:calc(98.66% - 16px); margin: 16px 8px;}
+      #reportalPage>::content #materialVOCoverview2 kpi-tile{width:calc(98.66% - 16px); margin: 16px 8px;}
+      #reportalPage>::content #materialVOCoverview, #reportalPage>::content #materialVOCoverview2{margin-bottom:32px}
 
     </style>
     <report-master>
@@ -679,38 +681,77 @@
 
       <!--kpi-tabbed-chart heading="NPS&reg;" info="Hello, this is some info about<br> NPS" height="420px" selected=""></kpi-tabbed-chart -->
       <reportal-well class="layout horizontal wrap" id="materialVOCoverview">
-        <kpi-tile heading="Promoters"  class="valign-middle" >
-          <div class="tile-content">
-            <div class="layout vertical flex-12">
-              <kpi-tile-role role="promoter" iconize value="65%" base="107"></kpi-tile-role>
-              <div style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
+        <div class="flex-1 ">
+          <kpi-tile heading="Promoters" class="valign-middle" >
+            <div class="tile-content">
+              <div class="layout vertical flex-12">
+                <kpi-tile-role role="promoter" iconize value="65%" base="107"></kpi-tile-role>
+                <div style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
+              </div>
             </div>
-          </div>
-          <div class="tile-actions">
-            <paper-button>Some action</paper-button>
-          </div>
-        </kpi-tile>
-        <kpi-tile heading="Passive" class="valign-middle"  >
+            <div class="tile-actions">
+              <paper-button>Some action</paper-button>
+            </div>
+          </kpi-tile>
+          <kpi-tile heading="Passive" class="valign-middle"  >
+            <div class="tile-content">
+              <div class="layout vertical flex-12">
+                <kpi-tile-role role="passive" iconize value="18%" base="31"></kpi-tile-role>
+              </div>
+            </div>
+            <div class="tile-actions">
+              <div class="flex-12" style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
+            </div>
+            <div id="info">Hello, this is some info about<br> NPS</div>
+          </kpi-tile></div>
+        <kpi-tile heading="Detractors" icon="info" class="valign-middle flex-1" image="http://voormedia.com/examples/north-sea-regatta.jpg">
           <div class="tile-content">
             <div class="layout vertical flex-12">
-              <kpi-tile-role role="passive" iconize value="18%" base="31"></kpi-tile-role>
+              <kpi-tile-role role="detractor" iconize value="17%" base="25"></kpi-tile-role>
+
             </div>
           </div>
           <div class="tile-actions">
             <div class="flex-12" style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
           </div>
           <div id="info">Hello, this is some info about<br> NPS</div>
-        </kpi-tile>
-        <kpi-tile heading="Detractors" icon="info" class="valign-middle" image="http://voormedia.com/examples/north-sea-regatta.jpg">
-        <div class="tile-content">
-          <div class="layout vertical flex-12">
-            <kpi-tile-role role="detractor" iconize value="17%" base="25"></kpi-tile-role>
 
+        </kpi-tile>
+      </reportal-well>
+
+      <reportal-well class="layout horizontal around-justified wrap" id="materialVOCoverview2">
+          <kpi-tile heading="Promoters" class="valign-middle" >
+            <div class="tile-content">
+              <div class="layout vertical flex-12">
+                <kpi-tile-role role="promoter" iconize value="65%" base="107"></kpi-tile-role>
+                <div style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
+              </div>
+            </div>
+            <div class="tile-actions">
+              <paper-button>Some action</paper-button>
+            </div>
+          </kpi-tile>
+          <kpi-tile heading="Passive" class="valign-middle"  >
+            <div class="tile-content">
+              <div class="layout vertical flex-12">
+                <kpi-tile-role role="passive" iconize value="18%" base="31"></kpi-tile-role>
+              </div>
+            </div>
+            <div class="tile-actions">
+              <div class="flex-12" style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
+            </div>
+            <div id="info">Hello, this is some info about<br> NPS</div>
+          </kpi-tile>
+        <kpi-tile heading="Detractors" icon="info" class="valign-middle" image="http://voormedia.com/examples/north-sea-regatta.jpg">
+          <div class="tile-content">
+            <div class="layout vertical flex-12">
+              <kpi-tile-role role="detractor" iconize value="17%" base="25"></kpi-tile-role>
+
+            </div>
           </div>
-        </div>
-        <div class="tile-actions">
-          <div class="flex-12" style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
-        </div>
+          <div class="tile-actions">
+            <div class="flex-12" style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
+          </div>
           <div id="info">Hello, this is some info about<br> NPS</div>
 
         </kpi-tile>

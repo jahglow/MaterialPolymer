@@ -33,6 +33,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       Polymer({
         is: 'reportal-well',
         attached:function(){
+          //TODO: recalculate height on window-resize.
           //this.async(function(){
             var children = Polymer.dom(this).children;
             if(children.length>0 && !this.style.height){
