@@ -33,17 +33,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       Polymer({
         is: 'reportal-well',
         attached:function(){
-          var children = Polymer.dom(this).children;
-          if(children.length>0 && !this.style.height){
-            var maxHeight,height;
-            for(var i=0;i<children.length;i++){
-              height=window.getComputedStyle(children[i]).getPropertyValue('height');
-              if(!maxHeight || (maxHeight && parseInt(maxHeight) < parseInt(height)) ){
-                maxHeight=height;
+          //this.async(function(){
+            var children = Polymer.dom(this).children;
+            if(children.length>0 && !this.style.height){
+              var maxHeight,height;
+              for(var i=0;i<children.length;i++){
+                height=window.getComputedStyle(children[i]).getPropertyValue('height');
+                if(!maxHeight || (maxHeight && parseInt(maxHeight) < parseInt(height)) ){
+                  maxHeight=height;
+                }
               }
+              this.style.height=maxHeight;
             }
-            this.style.height=maxHeight;
-          }
+         // });
         }
       });
     })();

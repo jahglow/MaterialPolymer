@@ -22,6 +22,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --iron-icon-width:5em;
         --iron-icon-height:5em;
         color:var(--paper-grey-600);
+        @apply(--kpi-tile-role-icon);
       }
       .icon{
         @apply(--layout-flex-1);
@@ -35,11 +36,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       .digit{
         font-size:3em;
         color:var(--paper-grey-600);
+        @apply(--kpi-tile-role-value);
       }
       .base{
         color:var(--paper-grey-500);
         font-size: 0.8em;
         text-transform: uppercase;
+        @apply(--kpi-tile-role-base);
       }
       .promoter{color:var(--default-promoter-color,--paper-green-500) !important;}
       .passive{color:var(--default-passive-color,--paper-amber-500) !important;}

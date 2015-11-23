@@ -15,7 +15,7 @@
   <link rel="import" href="elements/elements.html">
   <!-- endreplace-->
   <link rel="import" href="styles/app-theme.html">
-  <script src="scripts/report.js"></script>
+  <script src="scripts/report.js" async></script>
   <style>
     .dd-drilldown
     {
@@ -678,8 +678,8 @@
 
 
       <!--kpi-tabbed-chart heading="NPS&reg;" info="Hello, this is some info about<br> NPS" height="420px" selected=""></kpi-tabbed-chart -->
-      <reportal-well class="layout horizontal wrap"  id="materialVOCoverview">
-        <kpi-tile heading="Promoters"  class="valign-middle">
+      <reportal-well class="layout horizontal wrap" id="materialVOCoverview">
+        <kpi-tile heading="Promoters"  class="valign-middle" >
           <div class="tile-content">
             <div class="layout vertical flex-12">
               <kpi-tile-role role="promoter" iconize value="65%" base="107"></kpi-tile-role>
@@ -689,13 +689,11 @@
           <div class="tile-actions">
             <paper-button>Some action</paper-button>
           </div>
-          <div id="info">Hello, this is some info about<br> NPS</div>
         </kpi-tile>
-        <kpi-tile heading="Passive"  class="valign-middle">
+        <kpi-tile heading="Passive" class="valign-middle"  >
           <div class="tile-content">
             <div class="layout vertical flex-12">
               <kpi-tile-role role="passive" iconize value="18%" base="31"></kpi-tile-role>
-
             </div>
           </div>
           <div class="tile-actions">
@@ -703,7 +701,7 @@
           </div>
           <div id="info">Hello, this is some info about<br> NPS</div>
         </kpi-tile>
-        <kpi-tile heading="Detractors" class="valign-middle">
+        <kpi-tile heading="Detractors" icon="info" class="valign-middle" image="http://voormedia.com/examples/north-sea-regatta.jpg">
         <div class="tile-content">
           <div class="layout vertical flex-12">
             <kpi-tile-role role="detractor" iconize value="17%" base="25"></kpi-tile-role>
@@ -713,8 +711,9 @@
         <div class="tile-actions">
           <div class="flex-12" style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
         </div>
-        <div id="info">Hello, this is some info about<br> NPS</div>
-      </kpi-tile>
+          <div id="info">Hello, this is some info about<br> NPS</div>
+
+        </kpi-tile>
       </reportal-well>
       <div class="layout horisontal wrap">
 
