@@ -34,19 +34,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         is: 'reportal-well',
         attached:function(){
           //TODO: recalculate height on window-resize.
-          //this.async(function(){
+          this.async(function(){
             var children = Polymer.dom(this).children;
-            if(children.length>0 && !this.style.height){
+            if(children.length>0 ){
               var maxHeight,height;
               for(var i=0;i<children.length;i++){
                 height=window.getComputedStyle(children[i]).getPropertyValue('height');
+                console.log(height);
                 if(!maxHeight || (maxHeight && parseInt(maxHeight) < parseInt(height)) ){
                   maxHeight=height;
                 }
               }
               this.style.height=maxHeight;
             }
-         // });
+          });
         }
       });
     })();

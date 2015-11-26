@@ -650,6 +650,111 @@
     </paper-toolbar>
 
     <div class="content">
+      <div class="layout horisontal wrap">
+        <paper-material>
+          <reportal-aggregated-table selection-mode="multi" visible-rows="5" frozen="2"  colattr-legacy="header-text:name|hidable||flex:1;hidable;header-text:Surname|flex:1|max-width:100;header-text:name|flex:1;header-text:Surname|flex:1">
+            <table id="confirmit_agg_table" class="t0_table table table-hover">
+              <thead>
+              <tr class="t0_tr">
+                <th rowspan="2" class="t0_cc">
+                </th><th colspan="3" class="t0_chc">2015</th>
+                <th colspan="3" class="t0_hc_total">Total</th>
+              </tr>
+              <tr class="t0_tr">
+                <th class="t0_chc">Store rating</th>
+                <th class="t0_chc">Questions asked</th>
+                <th class="t0_chc">Listening</th>
+                <th class="t0_chc">Store rating</th>
+                <th class="t0_chc">Questions asked</th>
+                <th class="t0_chc">Listening</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr class="t0_tr">
+                <td class="t0_rhc table-row-header">TS001</td>
+                <td class="t0_dc">5.9</td>
+                <td class="t0_dc">3.6</td>
+                <td class="t0_dc">3.1</td>
+                <td class="t0_dc">5.9</td>
+                <td class="t0_dc">3.6</td>
+                <td class="t0_dc">3.1</td>
+              </tr>
+              <tr class="t0_tr">
+                <td class="t0_rhc table-row-header">TS002</td>
+                <td class="t0_dc" style="color:red">7.0</td>
+                <td class="t0_dc">4.0</td>
+                <td class="t0_dc">5.0</td>
+                <td class="t0_dc">7.0</td>
+                <td class="t0_dc">4.0</td>
+                <td class="t0_dc">5.0</td>
+              </tr>
+              <tr class="t0_tr">
+                <td class="t0_rhc table-row-header">TS003</td>
+                <td class="t0_dc">3.0</td>
+                <td class="t0_dc">4.0</td>
+                <td class="t0_dc">2.0</td>
+                <td class="t0_dc">3.0</td>
+                <td class="t0_dc">4.0</td>
+                <td class="t0_dc">2.0</td>
+              </tr>
+              <tr class="t0_tr">
+                <td class="t0_rhc table-row-header">TS004</td>
+                <td class="t0_dc">10.0</td>
+                <td class="t0_dc">4.0</td>
+                <td class="t0_dc">4.0</td>
+                <td class="t0_dc">10.0</td>
+                <td class="t0_dc">4.0</td>
+                <td class="t0_dc">4.0</td>
+              </tr>
+              <tr class="t0_tr">
+                <td class="t0_rhc table-row-header">TS005</td>
+                <td class="t0_dc">3.0</td>
+                <td class="t0_dc">2.0</td>
+                <td class="t0_dc">2.0</td>
+                <td class="t0_dc">3.0</td>
+                <td class="t0_dc">2.0</td>
+                <td class="t0_dc">2.0</td>
+              </tr>
+              <tr class="t0_tr">
+                <td class="t0_rhc table-row-header">TS006</td>
+                <td class="t0_dc">6.3</td>
+                <td class="t0_dc">3.7</td>
+                <td class="t0_dc">3.3</td>
+                <td class="t0_dc">6.3</td>
+                <td class="t0_dc">3.7</td>
+                <td class="t0_dc">3.3</td>
+              </tr>
+              <tr class="t0_tr">
+                <td class="t0_rhc table-row-header">TS007</td>
+                <td class="t0_dc">7.5</td>
+                <td class="t0_dc">4.0</td>
+                <td class="t0_dc">4.0</td>
+                <td class="t0_dc">7.5</td>
+                <td class="t0_dc">4.0</td>
+                <td class="t0_dc">4.0</td>
+              </tr>
+              <tr class="t0_tr">
+                <td class="t0_rhc table-row-header">TS008</td>
+                <td class="t0_dc">5.0</td>
+                <td class="t0_dc">3.0</td>
+                <td class="t0_dc">3.0</td>
+                <td class="t0_dc">5.0</td>
+                <td class="t0_dc">3.0</td>
+                <td class="t0_dc">3.0</td>
+              </tr>
+              <tr class="t0_tr">
+                <td class="t0_rhc table-row-header">Average</td>
+                <td class="t0_dc">5.9</td>
+                <td class="t0_dc">3.6</td>
+                <td class="t0_dc">3.2</td>
+                <td class="t0_dc">5.9</td>
+                <td class="t0_dc">3.6</td>
+                <td class="t0_dc">3.2</td>
+              </tr>
+              </tbody>
+            </table>          </reportal-aggregated-table>
+        </paper-material>
+      </div>
       <paper-material elevation="1">
         <reportal-filter-summary use-grouping class="bottom-title paper-font-subhead"><div class="filter-summary"><table cellpadding="5" cellspacing="0">
           <tbody>
@@ -720,28 +825,28 @@
       </reportal-well>
 
       <reportal-well class="layout horizontal around-justified wrap" id="materialVOCoverview2">
-          <kpi-tile heading="Promoters" class="valign-middle" >
-            <div class="tile-content">
-              <div class="layout vertical flex-12">
-                <kpi-tile-role role="promoter" iconize value="65%" base="107"></kpi-tile-role>
-                <div style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
-              </div>
+        <kpi-tile heading="Promoters" class="valign-middle" >
+          <div class="tile-content">
+            <div class="layout vertical flex-12">
+              <kpi-tile-role role="promoter" iconize value="65%" base="107"></kpi-tile-role>
+              <div style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
             </div>
-            <div class="tile-actions">
-              <paper-button>Some action</paper-button>
+          </div>
+          <div class="tile-actions">
+            <paper-button>Some action</paper-button>
+          </div>
+        </kpi-tile>
+        <kpi-tile heading="Passive" class="valign-middle"  >
+          <div class="tile-content">
+            <div class="layout vertical flex-12">
+              <kpi-tile-role role="passive" iconize value="18%" base="31"></kpi-tile-role>
             </div>
-          </kpi-tile>
-          <kpi-tile heading="Passive" class="valign-middle"  >
-            <div class="tile-content">
-              <div class="layout vertical flex-12">
-                <kpi-tile-role role="passive" iconize value="18%" base="31"></kpi-tile-role>
-              </div>
-            </div>
-            <div class="tile-actions">
-              <div class="flex-12" style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
-            </div>
-            <div id="info">Hello, this is some info about<br> NPS</div>
-          </kpi-tile>
+          </div>
+          <div class="tile-actions">
+            <div class="flex-12" style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
+          </div>
+          <div id="info">Hello, this is some info about<br> NPS</div>
+        </kpi-tile>
         <kpi-tile heading="Detractors" icon="info" class="valign-middle" image="http://voormedia.com/examples/north-sea-regatta.jpg">
           <div class="tile-content">
             <div class="layout vertical flex-12">
@@ -756,9 +861,6 @@
 
         </kpi-tile>
       </reportal-well>
-      <div class="layout horisontal wrap">
-
-      </div>
 
     </div>
   </paper-scroll-header-panel>

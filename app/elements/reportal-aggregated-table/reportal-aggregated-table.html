@@ -51,7 +51,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             value:false
           },
           /* firstColumnHeadr allows to set the header of the first column (unsupported by Reportal natively)*/
-          firstColumnHeader:String
+          firstColumnHeader:String,
+          visibleRows:String
         },
         ready:function(){
           if(this.colattrLegacy && this.colattrLegacy.length>0){
@@ -60,6 +61,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           var gridAttributes=[];
           gridAttributes.push(this._defineAttr('selection-mode',this.selectionMode));
           gridAttributes.push(this._defineAttr('frozen-columns',this.frozenColumns));
+          gridAttributes.push(this._defineAttr('visible-rows',this.visibleRows));
           this._defineColumns();
           this.$.grid.innerHTML = '<vaadin-grid'+gridAttributes.join(' ')+'>' + this.$.source.innerHTML + '</vaadin-grid>';
         },
@@ -116,7 +118,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   Polymer.dom(col).setAttribute(this.colattr[i][ai][0], this.colattr[i][ai][1]);
                   if(this.colattr[i][ai][0]==='header-text'){
                     hasHeader = true;
-                    if(this.columnHeaderOverride){
+                    /*if there is override or this is the first column and title was passed as parameter and not as firstColumnHeader */
+                    if(this.columnHeaderOverride || (i===0 && !this.columnHeaderOverride && !this.firstColumnHeader)){
                     Polymer.dom(colheader[i]).textContent=this.colattr[i][ai][1];
                     }
                   }
