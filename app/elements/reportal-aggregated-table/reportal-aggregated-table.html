@@ -105,7 +105,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         },
         _processLegacyAttributes:function(data){
-          var aColAttrs=data.split(';'),attrPairs,attrPair,tempA=[];
+          var aColAttrs=data.split(';'),attrPairs,attrPair;
           for(var i=0;i<aColAttrs.length;i++){
             var tempColAttr=[];
             if(aColAttrs[i].length>0){
@@ -179,12 +179,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               this.grid.data.clearCache();
             }
             this.sortedColumn = this.grid.data.sortOrder[0].column;
-          }
+          } else if(e.target.parentElement.classList.contains('sort-desc') || e.target.parentElement.classList.contains('sort-asc')){e.target.parentElement.click()}
         },
         sorter:function(){
           var grid = this.grid || this.$.grid.querySelector('vaadin-grid');
           var idx = grid.data.sortOrder[0].column;
-          var lesser = grid.data.sortOrder[0].direction == 'asc' ? -1 : 1;
+          var lesser = grid.data.sortOrder[0].direction === 'asc' ? -1 : 1;
           this.data.sort(function(a,b){
             var x,y;
             x = a[idx]; y = b[idx];
