@@ -178,10 +178,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               this.sorter();
               this.grid.data.clearCache();
             }
-
-            this.sortedColumn = grid.data.sortOrder[0].column;
-            console.log(grid.data.source);
-
+            this.sortedColumn = this.grid.data.sortOrder[0].column;
           }
         },
         sorter:function(){
