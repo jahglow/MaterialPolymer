@@ -78,12 +78,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             gridAttributes.push(this._defineAttr('visible-rows',this.visibleRows));
             this._defineColumns();
             this._defineData(this.$.source.querySelector('table'));
-          console.log(this.data);
             Polymer.dom(this.$.grid).innerHTML = '<vaadin-grid'+gridAttributes.join(' ')+'>' + this.$.source.innerHTML + '</vaadin-grid>';
             this.grid = this.$.grid.querySelector('vaadin-grid');
-          this.grid.items = this.data;
-          this.grid.sortOrder = [{column: 0, direction: "asc"}, {column: 1, direction: "desc"}];
-          console.log(this.grid.sortOrder)
+            this.grid.items = this.data;
         },
         attached:function(){
 
@@ -93,17 +90,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           for(var i=0;i<rows.length;i++){
             var curRow=[];
             for(var ri=0;ri<rows[i].children.length;ri++){
-              var tc=rows[i].children[ri].textContent;
-              curRow.push(tc);
-              /*if(tc && tc.trim().length>0 && (!isNaN(parseFloat(tc,10)) && ((tc.trim().length - parseFloat(tc,10).toString().length)===0))){
-                if(tc.trim().split('.')[1].length>0){
-                  console.log('is decimal '+ tc.trim().split('.')[1].length);
-                  var val = (parseFloat(tc));
-                  curRow.push(parseFloat(val.toFixed(1)));
-                } else {curRow.push(parseInt(tc));}
-              } else if(tc && tc.trim().length>0 ){
-                curRow.push(tc.trim());
-              } else {curRow.push('')}*/
+              curRow.push(rows[i].children[ri].textContent);
             }
             this.data.push(curRow);
           }
@@ -182,8 +169,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         _sortChange:function(e){
           if(e.target.classList.contains('sort-desc') || e.target.classList.contains('sort-asc') ){
-            var grid = this.grid || this.$.grid.querySelector('vaadin-grid');
-            var idx = grid.data.sortOrder[0].column;
+            var idx = this.grid.data.sortOrder[0].column;
             /*if this column was sorted before just flip it*/
             if(this.sortedColumn === idx){
               this.data.reverse();
