@@ -18,6 +18,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
       }
       #source{display:none}
+      #grid>vaadin-grid .numeric{text-align: right}
     </style>
     <div id="source"><content></content></div>
     <div id="grid"></div>
@@ -40,7 +41,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         properties: {
           selectionMode:{
             type:String,
-            value: 'single'
+            value: 'disabled'
           },
           frozenColumns:String,
           colattrLegacy:{
@@ -59,9 +60,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type:Array,
             value:[]
           },
-          sortedColumn:{
+          _sortedColumn:{
             type:Number,
             value:null
+          },
+          indexed:{
+            type:Boolean,
+            value:false
+          },
+          indexedHeader:{
+            type:String,
+            value:'#'
           },
           /* firstColumnHeadr allows to set the header of the first column (unsupported by Reportal natively)*/
           firstColumnHeader:String,
@@ -89,6 +98,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           var rows = table.querySelectorAll('tbody tr');
           for(var i=0;i<rows.length;i++){
             var curRow=[];
+            if(this.indexed){curRow.push(i+1);}//append index
             for(var ri=0;ri<rows[i].children.length;ri++){
               curRow.push(rows[i].children[ri].textContent);
             }
@@ -165,21 +175,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
             Polymer.dom(colgroup).appendChild(col);
           }
+          if(this.indexed){
+            console.log(colgroup.children.length);
+            var indexCol = document.createElement('col');
+            Polymer.dom(indexCol).setAttribute('header-text',this.indexedHeader);
+            Polymer.dom(indexCol).setAttribute('max-width','88px');
+            Polymer.dom(colgroup).insertBefore(indexCol,colgroup.firstChild);
+            var indexTH= document.createElement('th');
+            indexTH.innerHTML = this.indexedHeader;
+            Polymer.dom(this.$.source.querySelector('thead tr:last-child')).insertBefore(indexTH,this.$.source.querySelector('thead tr:last-child th:first-child'));
+          }
           Polymer.dom(table).insertBefore(colgroup, table.firstChild);
         },
         _sortChange:function(e){
           if(e.target.classList.contains('sort-desc') || e.target.classList.contains('sort-asc') ){
             var idx = this.grid.data.sortOrder[0].column;
             /*if this column was sorted before just flip it*/
-            if(this.sortedColumn === idx){
+            if(this._sortedColumn === idx){
               this.data.reverse();
               this.grid.data.clearCache();
             } else { //not sorted
               this.sorter();
               this.grid.data.clearCache();
             }
-            this.sortedColumn = this.grid.data.sortOrder[0].column;
-          } else if(e.target.parentElement.classList.contains('sort-desc') || e.target.parentElement.classList.contains('sort-asc')){e.target.parentElement.click()}
+            this._sortedColumn = this.grid.data.sortOrder[0].column;
+          } else if(e.target.parentElement.localName === 'th' && e.target.parentElement.classList.contains('vaadin-grid-cell')){e.target.parentElement.click()}
         },
         sorter:function(){
           var grid = this.grid || this.$.grid.querySelector('vaadin-grid');

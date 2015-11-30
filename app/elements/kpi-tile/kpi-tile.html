@@ -202,6 +202,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         @apply(--layout-self-stretch);
         @apply(--layout-center);
       }
+
       :host.valign-middle kpi-content{
         top: 0;
         left: 0;
@@ -230,7 +231,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       @apply(--kpi-tile-header);
       }
       .header iron-icon {
-        padding:16px;
+        padding:16px 24px;
         --iron-icon-height:20px;
         --iron-icon-width:20px;
         color:inherit
@@ -246,7 +247,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       .header .title-text {
-        padding: 16px;
+        padding: 16px 24px;
         font-size: 20px;
         font-weight: 500;
         color: var(--kpi-tile-header-color, #000);
@@ -291,6 +292,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         @apply(--kpi-tile-header-image);
       }
 
+      /* specific styles for reportal-aggregated-table */
+      :host #tile>::content .tile-content>reportal-aggregated-table{
+        margin: 0 -16px -16px -16px;
+      }
+      :host #tile>::content .tile-content>reportal-aggregated-table .vaadin-grid-sidebar.vaadin-grid{
+        top: -56px;
+      }
 
 
     </style>

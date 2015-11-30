@@ -652,9 +652,9 @@
 
     <div class="content">
       <div class="layout horisontal wrap">
-        <paper-material>
-          <reportal-aggregated-table visible-rows="2" colattr-legacy="sortable|sort-direction:asc;sortable">
-            <table id="confirmit_agg_table" class="t0_table table table-hover">
+        <kpi-tile heading="Big Aggregated Table">
+          <div class="tile-content">
+          <reportal-aggregated-table selection-mode="multi" indexed visible-rows="3" frozen-columns="1" colattr-legacy="sortable|sort-direction:asc;sortable|hidable;sortable|hidable;sortable;sortable;"><table id="confirmit_agg_table" class="t0_table table table-hover">
               <thead>
               <tr class="t0_tr">
                 <th>stores</th>
@@ -750,8 +750,8 @@
               </tr>
               </tbody>
             </table>          </reportal-aggregated-table>
-
-        </paper-material>
+          </div>
+        </kpi-tile>
       </div>
       <paper-material elevation="1">
         <reportal-filter-summary use-grouping class="bottom-title paper-font-subhead"><div class="filter-summary"><table cellpadding="5" cellspacing="0">
