@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="styles/main.css">
   <!-- endbuild-->
   <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
-  <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
   <!-- endbuild -->
 
   <!-- will be replaced with elements/elements.vulcanized.html -->
@@ -16,7 +16,7 @@
   <!-- endreplace-->
   <link rel="import" href="styles/app-theme.html">
   <script src="scripts/report.js" async></script>
-  <style>
+  <!--<style>
     .dd-drilldown
     {
       position: absolute;
@@ -481,7 +481,7 @@
     {
       background-color: #ededed;
     }
-  </style>
+  </style>-->
 
 </head>
 
@@ -500,9 +500,9 @@
       #reportFilters>::content #filters .dateRange reportal-calendar{
         @apply(--layout-flex);
       }
-      #reportalPage>::content #materialVOCoverview kpi-tile{width:calc(98.66% - 16px); margin: 16px 8px;}
-      #reportalPage>::content #materialVOCoverview2 kpi-tile{width:calc(98.66% - 16px); margin: 16px 8px;}
-      #reportalPage>::content #materialVOCoverview, #reportalPage>::content #materialVOCoverview2{margin-bottom:32px}
+      #reportalPage>::content #materialVOCoverview kpi-tile{width:calc(98.66% - 16px); margin: 16px 8px; min-width:250px;}
+      #reportalPage>::content #materialVOCoverview, #reportalPage>::content #materialVOCoverview2{margin-bottom:32px;min-width:250px;}
+      #reportalPage>::content #materialVOCoverview2 kpi-tile{width:calc(98.66% - 16px); margin: 16px 8px;min-width:250px;}
 
     </style>
     <report-master>
@@ -651,107 +651,486 @@
     </paper-toolbar>
 
     <div class="content">
-      <div class="layout horisontal wrap">
-        <kpi-tile heading="Big Aggregated Table">
+      <div class="layout horizontal wrap">
+        <kpi-tile heading="Promoters" class="flex-1">
           <div class="tile-content">
-          <reportal-aggregated-table selection-mode="multi" indexed visible-rows="3" frozen-columns="1" colattr-legacy="sortable|sort-direction:asc;sortable|hidable;sortable|hidable;sortable;sortable;"><table id="confirmit_agg_table" class="t0_table table table-hover">
-              <thead>
-              <tr class="t0_tr">
-                <th>stores</th>
-                <th class="t0_chc">Store rating</th>
-                <th class="t0_chc">Questions asked</th>
-                <th class="t0_chc">Listening</th>
-                <th class="t0_chc">Store rating2</th>
-                <th class="t0_chc">Questions asked2</th>
-                <th class="t0_chc">Listening2</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr class="t0_tr">
-                <td class="t0_rhc table-row-header">TS001</td>
-                <td class="t0_dc">5.9</td>
-                <td class="t0_dc">3.6</td>
-                <td class="t0_dc">3.1</td>
-                <td class="t0_dc">5.9</td>
-                <td class="t0_dc">3.6</td>
-                <td class="t0_dc">3.1</td>
-              </tr>
-              <tr class="t0_tr">
-                <td class="t0_rhc table-row-header">TS002</td>
-                <td class="t0_dc" style="color:red">7.0</td>
-                <td class="t0_dc">4.0</td>
-                <td class="t0_dc">5.0</td>
-                <td class="t0_dc">7.0</td>
-                <td class="t0_dc">4.0</td>
-                <td class="t0_dc">5.0</td>
-              </tr>
-              <tr class="t0_tr">
-                <td class="t0_rhc table-row-header">TS003</td>
-                <td class="t0_dc">3.0</td>
-                <td class="t0_dc">4.0</td>
-                <td class="t0_dc">2.0</td>
-                <td class="t0_dc">3.0</td>
-                <td class="t0_dc">4.0</td>
-                <td class="t0_dc">2.0</td>
-              </tr>
-              <tr class="t0_tr">
-                <td class="t0_rhc table-row-header">TS004</td>
-                <td class="t0_dc">10.0</td>
-                <td class="t0_dc">4.0</td>
-                <td class="t0_dc">4.0</td>
-                <td class="t0_dc">10.0</td>
-                <td class="t0_dc">4.0</td>
-                <td class="t0_dc">4.0</td>
-              </tr>
-              <tr class="t0_tr">
-                <td class="t0_rhc table-row-header">TS005</td>
-                <td class="t0_dc">3.0</td>
-                <td class="t0_dc">2.0</td>
-                <td class="t0_dc">2.0</td>
-                <td class="t0_dc">3.0</td>
-                <td class="t0_dc">2.0</td>
-                <td class="t0_dc">2.0</td>
-              </tr>
-              <tr class="t0_tr">
-                <td class="t0_rhc table-row-header">TS006</td>
-                <td class="t0_dc">6.3</td>
-                <td class="t0_dc">3.7</td>
-                <td class="t0_dc">3.3</td>
-                <td class="t0_dc">6.3</td>
-                <td class="t0_dc">3.7</td>
-                <td class="t0_dc">3.3</td>
-              </tr>
-              <tr class="t0_tr">
-                <td class="t0_rhc table-row-header">TS007</td>
-                <td class="t0_dc">7.5</td>
-                <td class="t0_dc">4.0</td>
-                <td class="t0_dc">4.0</td>
-                <td class="t0_dc">7.5</td>
-                <td class="t0_dc">4.0</td>
-                <td class="t0_dc">4.0</td>
-              </tr>
-              <tr class="t0_tr">
-                <td class="t0_rhc table-row-header">TS008</td>
-                <td class="t0_dc">5.0</td>
-                <td class="t0_dc">3.0</td>
-                <td class="t0_dc">3.0</td>
-                <td class="t0_dc">5.0</td>
-                <td class="t0_dc">3.0</td>
-                <td class="t0_dc">3.0</td>
-              </tr>
-              <tr class="t0_tr">
-                <td class="t0_rhc table-row-header">Average</td>
-                <td class="t0_dc">5.9</td>
-                <td class="t0_dc">3.6</td>
-                <td class="t0_dc">3.2</td>
-                <td class="t0_dc">5.9</td>
-                <td class="t0_dc">3.6</td>
-                <td class="t0_dc">3.2</td>
-              </tr>
-              </tbody>
-            </table>          </reportal-aggregated-table>
+            <div class="layout horizontal flex-12">
+              <reportal-aggregated-table column-header-override visible-rows="7" indexed selection-mode="multi" frozen-columns="1" colattr-legacy="sortable|flex:1|headerContent:Country;hidable|headerContent:Type1;;headerContent:Type3">
+                <table id="confirmit_agg_table_5" class="t5_table table data-table">
+                  <thead>
+                  <tr class="t5_tr">
+                    <td class="t5_cc">
+                    </td><td class="t5_chc">Target</td>
+                    <td class="t5_chc">NPS® Score</td>
+                    <td class="t5_chc">Gap to target</td>
+                    <td class="t5_chc">Respondents</td>
+                    <td class="t5_chc">Movement</td>
+                    <td class="t5_chc">NES Score </td>
+                    <td class="t5_chc">Rolling12Spend</td>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c23">Australia</a>
+                    </td>
+                    <td class="t5_dc">47.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c24">New Zealand</a>
+                    </td>
+                    <td class="t5_dc">47.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c25">China</a>
+                    </td>
+                    <td class="t5_dc">35.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c26">Hong Kong</a>
+                    </td>
+                    <td class="t5_dc">34.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c27">Taiwan</a>
+                    </td>
+                    <td class="t5_dc">34.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c28">Malaysia</a>
+                    </td>
+                    <td class="t5_dc">21.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c29">Philippines</a>
+                    </td>
+                    <td class="t5_dc">21.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c30">Singapore</a>
+                    </td>
+                    <td class="t5_dc">21.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c31">Thailand</a>
+                    </td>
+                    <td class="t5_dc">21.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c32">Japan</a>
+                    </td>
+                    <td class="t5_dc">0.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c33">Belgium (Dutch)</a>
+                    </td>
+                    <td class="t5_dc">32.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c34">Belgium (French)</a>
+                    </td>
+                    <td class="t5_dc">32.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c35">Netherlands</a>
+                    </td>
+                    <td class="t5_dc">32.0</td>
+                    <td class="t5_dc">100.0</td>
+                    <td class="t5_dc">68.0</td>
+                    <td class="t5_dc">1</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">100.0</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c36">Denmark</a>
+                    </td>
+                    <td class="t5_dc">45.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c37">Norway</a>
+                    </td>
+                    <td class="t5_dc">45.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c38">Sweden</a>
+                    </td>
+                    <td class="t5_dc">45.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c39">Austria</a>
+                    </td>
+                    <td class="t5_dc">76.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c40">France</a>
+                    </td>
+                    <td class="t5_dc">49.0</td>
+                    <td class="t5_dc">100.0</td>
+                    <td class="t5_dc">51.0</td>
+                    <td class="t5_dc">1</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">100.0</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c41">Germany</a>
+                    </td>
+                    <td class="t5_dc">53.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c42">Portugal</a>
+                    </td>
+                    <td class="t5_dc">46.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c43">Spain</a>
+                    </td>
+                    <td class="t5_dc">46.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c44">Ireland</a>
+                    </td>
+                    <td class="t5_dc">58.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c45">Italy</a>
+                    </td>
+                    <td class="t5_dc">54.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c46">Czech Republic</a>
+                    </td>
+                    <td class="t5_dc">52.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c47">Hungary</a>
+                    </td>
+                    <td class="t5_dc">52.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c48">Poland</a>
+                    </td>
+                    <td class="t5_dc">52.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c49">South Africa</a>
+                    </td>
+                    <td class="t5_dc">52.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c50">UK Exports</a>
+                    </td>
+                    <td class="t5_dc">52.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  <tr class="t5_tr">
+                    <td class="t5_rhc table-row-header">
+                      <a href="#" class="tbl-dd-trigger" data-table-id="1fe69321-ec2e-4a6f-a24f-f05f236bbc1c" data-table-index="5" data-menu-id="m327680" data-cell-id="m327680_c51">United Kingdom</a>
+                    </td>
+                    <td class="t5_dc">50.0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">&nbsp;</td>
+                    <td class="t5_dc">0</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </reportal-aggregated-table>
+            </div></div>
+          <div class="tile-actions">
+            <paper-button>Some action</paper-button>
           </div>
+          <div id="info">Hello, this is some info about<br> NPS</div>
         </kpi-tile>
+
+        <!--      <kpi-tile heading="Big Aggregated Table" class="flex-8">
+                <div class="tile-content">
+                  <div class="layout horizontal flex-12">
+                <reportal-aggregated-table id="l2" selection-mode="multi" indexed visible-rows="3" frozen-columns="1" colattr-legacy="sortable|sort-direction:asc;sortable|hidable;sortable|hidable;sortable;sortable;"><table id="confirmit_agg_table" class="t0_table table table-hover">
+                    <thead>
+                    <tr class="t0_tr">
+                      <th>stores</th>
+                      <th class="t0_chc">Store rating</th>
+                      <th class="t0_chc">Questions asked</th>
+                      <th class="t0_chc">Listening</th>
+                      <th class="t0_chc">Store rating2</th>
+                      <th class="t0_chc">Questions asked2</th>
+                      <th class="t0_chc">Listening2</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="t0_tr">
+                      <td class="t0_rhc table-row-header">TS001</td>
+                      <td class="t0_dc">5.9</td>
+                      <td class="t0_dc">3.6</td>
+                      <td class="t0_dc">3.1</td>
+                      <td class="t0_dc">5.9</td>
+                      <td class="t0_dc">3.6</td>
+                      <td class="t0_dc">3.1</td>
+                    </tr>
+                    <tr class="t0_tr">
+                      <td class="t0_rhc table-row-header">TS002</td>
+                      <td class="t0_dc" style="color:red">7.0</td>
+                      <td class="t0_dc">4.0</td>
+                      <td class="t0_dc">5.0</td>
+                      <td class="t0_dc">7.0</td>
+                      <td class="t0_dc">4.0</td>
+                      <td class="t0_dc">5.0</td>
+                    </tr>
+                    <tr class="t0_tr">
+                      <td class="t0_rhc table-row-header">TS003</td>
+                      <td class="t0_dc">3.0</td>
+                      <td class="t0_dc">4.0</td>
+                      <td class="t0_dc">2.0</td>
+                      <td class="t0_dc">3.0</td>
+                      <td class="t0_dc">4.0</td>
+                      <td class="t0_dc">2.0</td>
+                    </tr>
+                    <tr class="t0_tr">
+                      <td class="t0_rhc table-row-header">TS004</td>
+                      <td class="t0_dc">10.0</td>
+                      <td class="t0_dc">4.0</td>
+                      <td class="t0_dc">4.0</td>
+                      <td class="t0_dc">10.0</td>
+                      <td class="t0_dc">4.0</td>
+                      <td class="t0_dc">4.0</td>
+                    </tr>
+                    <tr class="t0_tr">
+                      <td class="t0_rhc table-row-header">TS005</td>
+                      <td class="t0_dc">3.0</td>
+                      <td class="t0_dc">2.0</td>
+                      <td class="t0_dc">2.0</td>
+                      <td class="t0_dc">3.0</td>
+                      <td class="t0_dc">2.0</td>
+                      <td class="t0_dc">2.0</td>
+                    </tr>
+                    <tr class="t0_tr">
+                      <td class="t0_rhc table-row-header">TS006</td>
+                      <td class="t0_dc">6.3</td>
+                      <td class="t0_dc">3.7</td>
+                      <td class="t0_dc">3.3</td>
+                      <td class="t0_dc">6.3</td>
+                      <td class="t0_dc">3.7</td>
+                      <td class="t0_dc">3.3</td>
+                    </tr>
+                    <tr class="t0_tr">
+                      <td class="t0_rhc table-row-header">TS007</td>
+                      <td class="t0_dc">7.5</td>
+                      <td class="t0_dc">4.0</td>
+                      <td class="t0_dc">4.0</td>
+                      <td class="t0_dc">7.5</td>
+                      <td class="t0_dc">4.0</td>
+                      <td class="t0_dc">4.0</td>
+                    </tr>
+                    <tr class="t0_tr">
+                      <td class="t0_rhc table-row-header">TS008</td>
+                      <td class="t0_dc">5.0</td>
+                      <td class="t0_dc">3.0</td>
+                      <td class="t0_dc">3.0</td>
+                      <td class="t0_dc">5.0</td>
+                      <td class="t0_dc">3.0</td>
+                      <td class="t0_dc">3.0</td>
+                    </tr>
+                    <tr class="t0_tr">
+                      <td class="t0_rhc table-row-header">Average</td>
+                      <td class="t0_dc">5.9</td>
+                      <td class="t0_dc">3.6</td>
+                      <td class="t0_dc">3.2</td>
+                      <td class="t0_dc">5.9</td>
+                      <td class="t0_dc">3.6</td>
+                      <td class="t0_dc">3.2</td>
+                    </tr>
+                    </tbody>
+                  </table>          </reportal-aggregated-table>
+                </div></div>
+                <div id="info">Hello, this is some info about<br> NPS</div>
+
+              </kpi-tile>-->
       </div>
       <paper-material elevation="1">
         <reportal-filter-summary use-grouping class="bottom-title paper-font-subhead"><div class="filter-summary"><table cellpadding="5" cellspacing="0">
@@ -781,22 +1160,80 @@
         </reportal-filter-summary>
       </paper-material>
 
+      <div class="layout horizontal wrap" id="materialVOCoverview">
+        <kpi-tile heading="Promoters"  preserve-initial-height>
+          <div class="tile-content">
+            <div class="layout vertical flex-12">
+              <kpi-tile-role role="promoter" iconize value="65%" base="107"></kpi-tile-role>
+              <div style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
+              </div>
+          </div>
+          <div class="tile-actions">
+            <paper-button>Some action</paper-button>
+          </div>
+          <div id="info">Hello, this is some info about<br> NPS
+            Hello, this is some info about<br> NPS
+            Hello, this is some info about<br> NPS
+            Hello, this is some info about<br> NPS
+            Hello, this is some info about<br> NPS
+            Hello, this is some info about<br> NPS
+            Hello, this is some info about<br> NPS
+            Hello, this is some info about<br> NPS
+            Hello, this is some info about<br> NPS
+            Hello, this is some info about<br> NPS
+            Hello, this is some info about<br> NPSHello, this is some info about<br> NPSHello, this is some info about<br> NPS
+            Hello, this is some info about<br> NPS
+            Hello, this is some info about<br> NPS
+            Hello, this is some info about<br> NPS
+            Hello, this is some info about<br> NPS
+            Hello, this is some info about<br> NPS
+            Hello, this is some info about<br> NPS
+            Hello, this is some info about<br> NPS
 
-      <!--kpi-tabbed-chart heading="NPS&reg;" info="Hello, this is some info about<br> NPS" height="420px" selected=""></kpi-tabbed-chart -->
-      <reportal-well class="layout horizontal wrap" id="materialVOCoverview">
-        <div class="flex-1 ">
-          <kpi-tile heading="Promoters" class="valign-middle" >
+          </div>
+        </kpi-tile>
+
+        <kpi-tile heading="Passive"  preserve-initial-height>
+          <div class="tile-content">
+            <div class="layout vertical flex-12">
+              <kpi-tile-role role="passive" iconize value="18%" base="31"></kpi-tile-role>
+              <div style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
+            </div>
+          </div>
+          <div class="tile-actions">
+            <paper-button>Some action</paper-button>
+          </div>
+          <div id="info">Hello, this is some info about<br> NPS</div>
+        </kpi-tile>
+
+        <kpi-tile heading="Detractors"  preserve-initial-height>
+          <div class="tile-content">
+            <div class="layout vertical flex-12">
+              <kpi-tile-role role="detractor" iconize value="17%" base="25"></kpi-tile-role>
+              <div style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
+            </div>
+          </div>
+          <div class="tile-actions">
+            <paper-button>Some action</paper-button>
+          </div>
+          <div id="info">Hello, this is some info about<br> NPS</div>
+        </kpi-tile>
+
+
+        <!--kpi-tabbed-chart heading="NPS&reg;" info="Hello, this is some info about<br> NPS" height="420px" selected=""></kpi-tabbed-chart -->
+
+        <div class="flex layout vertical" style="min-width:250px">
+          <kpi-tile heading="Promoters"  >
             <div class="tile-content">
               <div class="layout vertical flex-12">
                 <kpi-tile-role role="promoter" iconize value="65%" base="107"></kpi-tile-role>
-                <div style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
               </div>
             </div>
             <div class="tile-actions">
-              <paper-button>Some action</paper-button>
+              <div class="flex-12" style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
             </div>
           </kpi-tile>
-          <kpi-tile heading="Passive" class="valign-middle"  >
+          <kpi-tile heading="Passive"   >
             <div class="tile-content">
               <div class="layout vertical flex-12">
                 <kpi-tile-role role="passive" iconize value="18%" base="31"></kpi-tile-role>
@@ -807,7 +1244,7 @@
             </div>
             <div id="info">Hello, this is some info about<br> NPS</div>
           </kpi-tile></div>
-        <kpi-tile heading="Detractors" icon="info" class="valign-middle flex-1" image="http://voormedia.com/examples/north-sea-regatta.jpg">
+        <kpi-tile heading="Detractors" icon="info" class="flex" image="http://voormedia.com/examples/north-sea-regatta.jpg">
           <div class="tile-content">
             <div class="layout vertical flex-12">
               <kpi-tile-role role="detractor" iconize value="17%" base="25"></kpi-tile-role>
@@ -820,21 +1257,10 @@
           <div id="info">Hello, this is some info about<br> NPS</div>
 
         </kpi-tile>
-      </reportal-well>
+      </div>
 
-      <reportal-well class="layout horizontal around-justified wrap" id="materialVOCoverview2">
-        <kpi-tile heading="Promoters" class="valign-middle" >
-          <div class="tile-content">
-            <div class="layout vertical flex-12">
-              <kpi-tile-role role="promoter" iconize value="65%" base="107"></kpi-tile-role>
-              <div style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
-            </div>
-          </div>
-          <div class="tile-actions">
-            <paper-button>Some action</paper-button>
-          </div>
-        </kpi-tile>
-        <kpi-tile heading="Passive" class="valign-middle"  >
+      <div class="layout horizontal wrap" id="materialVOCoverview2">
+        <kpi-tile heading="Passive"   >
           <div class="tile-content">
             <div class="layout vertical flex-12">
               <kpi-tile-role role="passive" iconize value="18%" base="31"></kpi-tile-role>
@@ -845,21 +1271,17 @@
           </div>
           <div id="info">Hello, this is some info about<br> NPS</div>
         </kpi-tile>
-        <kpi-tile heading="Detractors" icon="info" class="valign-middle" image="http://voormedia.com/examples/north-sea-regatta.jpg">
+        <kpi-tile heading="Detractors" icon="info" class="flex" image="http://voormedia.com/examples/north-sea-regatta.jpg">
           <div class="tile-content">
-            <div class="layout vertical flex-12">
-              <kpi-tile-role role="detractor" iconize value="17%" base="25"></kpi-tile-role>
-
-            </div>
+            <kpi-tile-role role="detractor" iconize value="17%" base="25"></kpi-tile-role>
           </div>
           <div class="tile-actions">
-            <div class="flex-12" style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
+            <div  style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
           </div>
           <div id="info">Hello, this is some info about<br> NPS</div>
 
         </kpi-tile>
-      </reportal-well>
-
+      </div>
     </div>
   </paper-scroll-header-panel>
 </global-scope>

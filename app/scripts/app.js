@@ -69,15 +69,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 // 4. Conditionally load the webcomponents polyfill if needed by the browser.
 // This feature detect will need to change over time as browsers implement
 // different features.
-var webComponentsSupported = ('registerElement' in document
-&& 'import' in document.createElement('link')
-&& 'content' in document.createElement('template'));
+var webComponentsSupported = ('registerElement' in document && 'import' in document.createElement('link') && 'content' in document.createElement('template'));
 
 if (!webComponentsSupported) {
   console.log('webComponents not supported');
   var script = document.createElement('script');
   script.async = true;
-  script.src = '/isa/BDJPFRDMEYBPBKLVADAYFQCDAVIOEQJR/Polymer/webcomponents-lite.js';
+  script.src = '/isa/BDJPFRDMEYBPBKLVADAYFQCDAVIOEQJR/Polymer/webcomponents-lite.min.js';
   script.onload = finishLazyLoading;
   document.head.appendChild(script);
 } else {

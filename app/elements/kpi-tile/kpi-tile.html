@@ -13,9 +13,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="..\..\bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="..\..\bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
 <link rel="import" href="..\..\bower_components/paper-styles/paper-styles.html">
-<link rel="import" href="..\..\bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="..\neon-animated-pages-autosize/neon-animated-pages-autosize.html">
 <link rel="import" href="..\..\bower_components/neon-animation/neon-animations.html">
 <link rel="import" href="..\kpi-tile-behavior/kpi-tile-behavior.html">
+<link rel="import" href="..\..\bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
+
 
 
 <dom-module id="reveal-content">
@@ -23,7 +25,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     :host {
       display: block;
       overflow: hidden;
-
+      height:inherit;
     }
     #placeholder {
       opacity: 0;
@@ -33,7 +35,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       padding: 16px;
       padding-top:0;
       position:relative;
-    @apply(--kpi-tile-reveal);
+      overflow:auto;
+      @apply(--kpi-tile-reveal);
+    }
+    #container{
+      @apply(--layout-vertical);
+      @apply(--layout-fit);
+
     }
 
   </style>
@@ -52,6 +60,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     :host {
       display: block;
       overflow: hidden;
+      height:inherit;
       @apply(--layout-vertical);
     }
     #placeholder {
@@ -59,8 +68,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       background-color: grey;
     }
     #container>::content>.tile-content {
-      padding: 16px;
-      padding-top:0;
       position:relative;
       @apply(--layout-self-stretch);
       height: 100%;
@@ -68,14 +75,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
     #container{
       @apply(--layout-self-stretch);
-      height: 100%;
+     height:100%;
       @apply(--layout-vertical);
     }
     :host ::content .tile-actions {
       border-top: 1px solid #e8e8e8;
       padding: 5px 16px;
       position:relative;
-    @apply(--kpi-tile-actions);
+      @apply(--kpi-tile-actions);
     }
     :host ::content #info{display:none}
   </style>
@@ -188,35 +195,48 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
         position: relative;
         box-sizing: border-box;
-
+        will-change:height;
+        transition: height 0.25s ease-in;
         background: #fff;
         border-radius: 2px;
-        @apply(--layout-flex); @apply(--layout-self-start);
         min-width:200px;
-      @apply(--kpi-tile);
+        @apply(--kpi-tile);
 
       }
       :host>reveal-content{display:none}
-      :host.valign-middle #tile>::content .tile-content{
+      :host.valign #tile>::content .tile-content{
+        @apply(--layout-horizontal);
+        @apply(--layout-self-stretch);
+        @apply(--layout-center);
+        @apply(--layout-flex);
+      }
+      :host.flex #tile>::content .tile-content{
         @apply(--layout-horizontal);
         @apply(--layout-self-stretch);
         @apply(--layout-center);
       }
+      :host.valign,
+      /*:host.valign>#revealPage,*/
+      :host.valign #tile,:host.valign ::content #container{
+        @apply(--layout-vertical);
+        @apply(--layout-flex);
+      }
 
-      :host.valign-middle kpi-content{
+
+ /*     :host.valign-middle kpi-content{
         top: 0;
         left: 0;
         bottom: 0;
         right: 0;
         height: 100%;
-      }
-      neon-animated-pages {
-      height:100%
+      }*/
+      neon-animated-pages-autosize {
+        height:100%;
       }
 
       paper-material {
         border-radius: inherit;
-      @apply(--layout-fit);
+        @apply(--layout-fit);
       }
 
       /* IE 10 support for HTML5 hidden attr */
@@ -228,7 +248,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         position: relative;
         @apply(--layout-horizontal);
         @apply(--layout-center);
-      @apply(--kpi-tile-header);
+        @apply(--kpi-tile-header);
       }
       .header iron-icon {
         padding:16px 24px;
@@ -293,31 +313,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       /* specific styles for reportal-aggregated-table */
-      :host #tile>::content .tile-content>reportal-aggregated-table{
-        margin: 0 -16px -16px -16px;
-      }
-      :host #tile>::content .tile-content>reportal-aggregated-table .vaadin-grid-sidebar.vaadin-grid{
-        top: -56px;
+      :host #tile>::content .tile-content reportal-aggregated-table .vaadin-grid-sidebar.vaadin-grid{
+        top: -54px;
       }
 
+      :host.hasInfo #tile>::content .tile-content reportal-aggregated-table .vaadin-grid-sidebar.vaadin-grid{
+        right: 40px;
+      }
 
     </style>
     <paper-material animated$="[[animatedShadow]]" elevation="[[elevation]]"></paper-material>
-    <neon-animated-pages id="revealPage" hidden$="[[!info]]"></neon-animated-pages>
+    <neon-animated-pages-autosize selected="0" preserve-initial-height$="[[preserveInitialHeight]]" id="revealPage">
       <kpi-content id="tile" >
         <div class="header-wrapper">
-        <div class="header">
-          <iron-icon hidden$="[[!icon]]" icon="[[icon]]"></iron-icon>
-          <div hidden$="[[!heading]]" id="tileHeading" >[[heading]]</div>
-          <div hidden$="[[!info]]" class="button" on-click="_displayInfo">
-            <iron-icon  icon="info-outline" id="infoIcon"></iron-icon>
-            <paper-tooltip for="infoIcon" position="bottom" offset="0">[[tooltip]]</paper-tooltip>
-          </div>
-        </div></div>
+          <div class="header">
+            <iron-icon hidden$="[[!icon]]" icon="[[icon]]"></iron-icon>
+            <div hidden$="[[!heading]]" id="tileHeading" >[[heading]]</div>
+            <div hidden$="[[!info]]" class="button" on-click="_displayInfo">
+              <iron-icon  icon="info-outline" id="infoIcon"></iron-icon>
+              <paper-tooltip for="infoIcon" position="bottom" offset="0">[[tooltip]]</paper-tooltip>
+            </div>
+          </div></div>
         <content id="helloWorld"></content>
       </kpi-content>
 
-      <reveal-content id="rc">
+      <reveal-content id="rc" hidden$="[[!info]]">
         <div class="header">
           <div class="button" on-click="_hideInfo">
             <iron-icon icon="arrow-back" id="backIcon"></iron-icon>
@@ -327,41 +347,41 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
         <div class="tile-content" id="revealContent"></div>
       </reveal-content>
-
+    </neon-animated-pages-autosize>
 
   </template>
 </dom-module>
-  <script>
+<script>
   (function() {
     'use strict';
 
     new Polymer({
       is: 'kpi-tile',
       behaviors: [
-        Polymer.KpiTileBehavior
+        Polymer.KpiTileBehavior,
+        Polymer.IronResizableBehavior
       ],
-      ready:function(){
-        this._computeHeadingClass();
+      listeners: {
+        'iron-resize': '_onIronResize'
       },
-      attached:function(){
+      ready:function(){
+        var _this = this;
+        this._computeHeadingClass();
         this.async(this._computeInfo);
       },
-      _wrapNeonPages:function(){
-        //a hack to automatically compute height for the tile if not set explicitly
-        this._calculateHeight();
-        if(this.$.revealPage.children.length===0){
-          var tileInnerContent= this.$.helloWorld;
-          Polymer.dom(this.$.revealPage).appendChild(this.$.tile);
-          Polymer.dom(this.$.revealPage).appendChild(this.$.rc);
-          Polymer.dom(this.$.tile).appendChild(tileInnerContent);
-          this.$.revealPage.selected=0;
-        }
-      },
-      _calculateHeight:function(){
-        //TODO: organize recalculation of height on window-resize
-        if(!this.style.height){this.style.height=window.getComputedStyle(this).getPropertyValue('height');}
+
+      _onIronResize:function(e){
+        this.debounce('recomputeHeight', function(){
+          this.classList.remove('valign');
+          this.$.revealPage.classList.remove('layout','vertical','flex');
+          this.$.revealPage.style.minHeight='';
+          var oldHeight = this.$.revealPage.style.height;
+          this.style.minHeight='';
+          this._computeHeight(oldHeight);
+        }, 300);
       },
       _displayInfo : function(event) {
+        this.$.revealPage.style.height = this.$.revealPage.clientHeight + 'px';
         this.$.tile.sharedElements = {
           'ripple': event.target,
           'reverse-ripple': event.target
@@ -370,8 +390,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       _hideInfo : function() {
         this.$.revealPage.selected = 0;
+        this.$.revealPage.style.height='';
       },
+      _computeHeight:function(oldHeight){
+        if(oldHeight){console.log(oldHeight);}
+        var height=window.getComputedStyle(this).getPropertyValue('height');
+        if(height!=='auto' && height!=='100%'){
+          this.style.minHeight=height;
+          this.$.revealPage.style.minHeight=height;
+        }
+        this.classList.add('valign');
+        this.$.revealPage.classList.add('layout','vertical','flex');
 
+      },
       _computeHeadingClass: function() {
         var cls = ['title-text'];
         //remove extra paddings on title and justify if both icons
@@ -381,7 +412,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if(this.image){
           this.$$('.header-wrapper').classList.add('image');
           this.$$('.image').style.backgroundImage='url('+this.image+')';
-          }
+        }
         if(this.$.tileHeading && this.$.tileHeading.classList && !this.$.tileHeading.classList.contains('title-text')){
           for(var i=0;i<cls.length;i++){this.$.tileHeading.classList.add(cls[i]);}
         }
@@ -400,12 +431,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
         if(this.info && this.info.length>0){ // passed as attribute
           this.$.revealContent.innerHTML = this.info;
-          this._wrapNeonPages();
+          this.classList.add('hasInfo');
         }
       }
 
     });
   })();
-  </script>
+</script>
 
 

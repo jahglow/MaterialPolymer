@@ -10,15 +10,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="..\..\bower_components/polymer/polymer.html">
 <link rel="import" href="..\..\bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="..\..\bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
+
 
 <dom-module id="reportal-aggregated-table">
   <template>
     <style>
       :host {
         display: block;
+        width:100%;
+        height:auto
       }
       #source{display:none}
       #grid>vaadin-grid .numeric{text-align: right}
+      #grid>vaadin-grid .vaadin-grid-header .sort-desc{
+        color: red !important}
     </style>
     <div id="source"><content></content></div>
     <div id="grid"></div>
@@ -37,13 +43,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         listeners:{
           'tap':'_sortChange'
         },
+        behaviors: [
+          Polymer.IronResizableBehavior
+        ],
 
         properties: {
           selectionMode:{
             type:String,
             value: 'disabled'
           },
-          frozenColumns:String,
+          frozenColumns:{
+            type:Number,
+            value:0
+          },
           colattrLegacy:{
             type:String,
             value:''
@@ -74,33 +86,48 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
           /* firstColumnHeadr allows to set the header of the first column (unsupported by Reportal natively)*/
           firstColumnHeader:String,
-          visibleRows:String
+          visibleRows:Number,
+          vaadinID:String
         },
         ready:function(){
-            if(this.colattrLegacy && this.colattrLegacy.length>0){
-              this._processLegacyAttributes(this.colattrLegacy);
-            }
+          if(this.colattrLegacy && this.colattrLegacy.length>0){
+            this._processLegacyAttributes(this.colattrLegacy);
+            //this._processLegacyAttributes1(this.colattrLegacy);
+          }
+          this.vaadinID = this._guid();
+          var grid = document.createElement('vaadin-grid');
+          this._defineData(this.$.source.querySelector('table'));
+          this._defineHeader(grid);
+          if(this.visibleRows){grid.visibleRows=this.visibleRows;}
+          grid.items = this.data;
+          if(this.selectionMode){grid.selection.mode=this.selectionMode;}
+          if(this.frozenColumns){
+            if(this.indexed){this.frozenColumns+=1;}
+            grid.frozenColumns=this.frozenColumns;
+          }
+          //if(this.selectionMode){grid.selection.mode=this.selectionMode}
+          this.grid = grid;
 
-            var gridAttributes=[];
-            gridAttributes.push(this._defineAttr('selection-mode',this.selectionMode));
-            gridAttributes.push(this._defineAttr('frozen-columns',this.frozenColumns));
-            gridAttributes.push(this._defineAttr('visible-rows',this.visibleRows));
-            this._defineColumns();
-            this._defineData(this.$.source.querySelector('table'));
-            Polymer.dom(this.$.grid).innerHTML = '<vaadin-grid'+gridAttributes.join(' ')+'>' + this.$.source.innerHTML + '</vaadin-grid>';
-            this.grid = this.$.grid.querySelector('vaadin-grid');
-            this.grid.items = this.data;
+          Polymer.dom(grid).setAttribute('id',this.vaadinID);
+          Polymer.dom(this.$.grid).appendChild(grid);
         },
         attached:function(){
-
+            this.async(this.notifyResize,300);
         },
         _defineData:function(table){
+          this.data=[];
           var rows = table.querySelectorAll('tbody tr');
           for(var i=0;i<rows.length;i++){
             var curRow=[];
             if(this.indexed){curRow.push(i+1);}//append index
             for(var ri=0;ri<rows[i].children.length;ri++){
-              curRow.push(rows[i].children[ri].textContent);
+              curRow.push(rows[i].children[ri].textContent.trim());
+              var csp=rows[i].children[ri].getAttribute('colspan');
+              if(csp){
+                for(var ci=1;ci<csp;ci++){
+                  curRow.push("");
+                }
+              }
             }
             this.data.push(curRow);
           }
@@ -114,6 +141,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
           }
         },
+        /**
+         * Converts array["key","value"] to object {key:"value"} respecting int,string,bool
+         */
+        _a2o:function(obj,key,val){
+          if(obj && key){
+            if(val && val.length>0){
+              obj[key]=this._isInt(val)?parseInt(val):val;
+            } else {obj[key]=true}
+          }
+        },
+        /**
+         * Checks if value is a number
+         */
+        _isInt:function(val){
+          return (!isNaN(parseInt(val)) && parseInt(val).toString().length===val.length);
+        },
+
         _processLegacyAttributes:function(data){
           var aColAttrs=data.split(';'),attrPairs,attrPair;
           for(var i=0;i<aColAttrs.length;i++){
@@ -129,9 +173,68 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
             this.colattr.push(tempColAttr);
           }
-          console.log(this.colattr);
+            return tempColAttr;
         },
-        _defineColumns:function(){
+
+        _defineHeader:function(host){
+          //first define column quantity of the table
+          var columns= this.data[0]|| this.$.source.querySelectorAll('tbody tr:last-child td');
+          if(columns && columns.length>0){
+            var colattr = this.colattr;
+            if(this.indexed){
+              host.addColumn({headerContent:this.indexedHeader}); //append index
+            }
+            for(var i=0;i<columns.length;i++){
+              var colProp = {dummy:1};
+              if(colattr[i]){
+                for(var ci=0;ci<colattr[i].length;ci++){ // populate column properties
+                  if(colattr[i][ci].length>0){
+                    this._a2o(colProp,colattr[i][ci][0],colattr[i][ci][1]);
+                  }
+                }
+              }
+              host.addColumn(colProp);
+            }
+          }
+          // then define number of rows in the header
+          var headerRows =  this.$.source.querySelectorAll('thead tr');
+            for(var hr=0;hr<headerRows.length;hr++){
+              if(hr>0){host.header.addRow();}
+              if(hr===headerRows.length-1){host.header.defaultRow = headerRows.length-1;}
+              var ths = headerRows[hr].children;
+              var columnIncr=0;
+              if(hr>0){
+                columnIncr++;
+              }
+              for(var thsi = 0;thsi<ths.length;thsi++){
+                //detect if there's a colspan on the column and
+                var THcolspan = ths[thsi].getAttribute('colspan');
+                var tmpCell=host.header.getCell(hr,columnIncr);
+
+                // if it's last header row && this cell has contents && col doesn't have headerText or it does, but there isn't header override, pass this value to col
+                if(hr===headerRows.length-1 ){
+                  if(THcolspan){host.header.getCell(hr,thsi).colspan = THcolspan;}
+                  console.log(tmpCell);
+
+                  if(host.columns[columnIncr].headerContent.length>0 && this.columnHeaderOverride){tmpCell.content = host.columns[columnIncr].headerContent} else {tmpCell.content = ths[thsi].textContent;}
+                } else {
+                  tmpCell.content = ths[thsi].textContent;
+                }
+
+                if(THcolspan){
+                  //tmpCell.colspan = THcolspan;
+                  columnIncr += THcolspan-1;
+                }
+                columnIncr++;
+              }
+            }
+
+
+
+
+
+        },
+        _defineColumns:function(par){
           if(this.$.source.querySelectorAll('thead tr').length>1){ //double header row
             var topRowTH = this.$.source.querySelector('thead tr:first-child th');
             var rowspan = topRowTH.getAttribute('rowspan');
@@ -141,51 +244,55 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
             topRowTH.removeAttribute('rowspan');
           } else if(this.$.source.querySelectorAll('thead tr:last-child th').length < this.$.source.querySelectorAll('tbody tr:last-child td')) {
+            //check if there is colspan for ths
             Polymer.dom(this.$.source.querySelector('thead tr:last-child')).insertBefore(document.createElement('th'),this.$.source.querySelector('thead tr:last-child th:first-child'));
           }
-          var num=this.$.source.querySelector('thead').lastElementChild.children.length;
           var table = this.$.source.querySelector('table');
           var colgroup = document.createElement('colgroup');
           /* set the header for the first table column if it's not specified via header-text on parameters */
           if(this.firstColumnHeader && !this.columnHeaderOverride){
             this.$.source.querySelector('thead tr:last-child th:first-child').textContent = this.firstColumnHeader;
           }
+          var num=this.$.source.querySelector('thead').lastElementChild.children.length;
           var colheader = this.$.source.querySelectorAll('thead tr:last-child th');
-          for(var i=0;i<num;i++){
-            var col = document.createElement('col');
-            if(this.colattr && this.colattr[i]) {
-              var hasHeader = false;
-              for (var ai = 0; ai < this.colattr[i].length; ai++) {
-                if(this.colattr[i][ai].length>1){
-                  Polymer.dom(col).setAttribute(this.colattr[i][ai][0], this.colattr[i][ai][1]);
-                  if(this.colattr[i][ai][0]==='header-text'){
-                    hasHeader = true;
-                    /*if there is override or this is the first column and title was passed as parameter and not as firstColumnHeader */
-                    if(this.columnHeaderOverride || (i===0 && !this.columnHeaderOverride && !this.firstColumnHeader)){
-                      Polymer.dom(colheader[i]).textContent=this.colattr[i][ai][1];
+          if(colheader && num>0){
+            for(var i=0;i<num;i++){
+              var col = document.createElement('col');
+              if(this.colattr && this.colattr[i]) {
+                var hasHeader = false;
+                for (var ai = 0; ai < this.colattr[i].length; ai++) {
+                  if(this.colattr[i][ai].length>1){
+                    Polymer.dom(col).setAttribute(this.colattr[i][ai][0], this.colattr[i][ai][1]);
+                    if(this.colattr[i][ai][0]==='header-text'){
+                      hasHeader = true;
+                      /*if there is override or this is the first column and title was passed as parameter and not as firstColumnHeader */
+                      if(this.columnHeaderOverride || (i===0 && !this.columnHeaderOverride && !this.firstColumnHeader)){
+                        Polymer.dom(colheader[i]).textContent=this.colattr[i][ai][1];
+                      }
                     }
+                  } else {
+                    Polymer.dom(col).setAttribute(this.colattr[i][ai][0], '');
                   }
-                } else {
-                  Polymer.dom(col).setAttribute(this.colattr[i][ai][0], '');
-                }
-                if(ai === this.colattr[i].length-1 && hasHeader === false ){
-                  Polymer.dom(col).setAttribute('header-text', Polymer.dom(colheader[i]).textContent);
+                  if(ai === this.colattr[i].length-1 && hasHeader === false ){
+                    Polymer.dom(col).setAttribute('header-text', Polymer.dom(colheader[i]).textContent);
+                  }
                 }
               }
+              Polymer.dom(colgroup).appendChild(col);
             }
-            Polymer.dom(colgroup).appendChild(col);
           }
           if(this.indexed){
-            console.log(colgroup.children.length);
             var indexCol = document.createElement('col');
             Polymer.dom(indexCol).setAttribute('header-text',this.indexedHeader);
             Polymer.dom(indexCol).setAttribute('max-width','88px');
             Polymer.dom(colgroup).insertBefore(indexCol,colgroup.firstChild);
-            var indexTH= document.createElement('th');
-            indexTH.innerHTML = this.indexedHeader;
-            Polymer.dom(this.$.source.querySelector('thead tr:last-child')).insertBefore(indexTH,this.$.source.querySelector('thead tr:last-child th:first-child'));
+            if(num>0){
+              var indexTH= document.createElement('th');
+              indexTH.innerHTML = this.indexedHeader;
+              Polymer.dom(this.$.source.querySelector('thead tr:last-child')).insertBefore(indexTH,this.$.source.querySelector('thead tr:last-child th:first-child'));
+            }
           }
-          Polymer.dom(table).insertBefore(colgroup, table.firstChild);
+          Polymer.dom(par).appendChild(colgroup);
         },
         _sortChange:function(e){
           if(e.target.classList.contains('sort-desc') || e.target.classList.contains('sort-asc') ){
@@ -202,7 +309,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           } else if(e.target.parentElement.localName === 'th' && e.target.parentElement.classList.contains('vaadin-grid-cell')){e.target.parentElement.click()}
         },
         sorter:function(){
-          var grid = this.grid || this.$.grid.querySelector('vaadin-grid');
+          var grid = this.grid;
           var idx = grid.data.sortOrder[0].column;
           var lesser = grid.data.sortOrder[0].direction === 'asc' ? -1 : 1;
           this.data.sort(function(a,b){
@@ -214,6 +321,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               return x.toLowerCase() < y.toLowerCase() ? lesser : x.toLowerCase() > y.toLowerCase() ? -lesser : 0;
             }
           });
+        },
+        _guid:function(){
+          var S4 = function(){
+            return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+          };
+
+          // then to call it, plus stitch in '4' in the third group
+          var guid = (S4() + S4() + "_" + S4() ).toLowerCase();
+          return(guid);
         }
       });
     })();

@@ -81,10 +81,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           'tap':'_panelToggle'
         },
         properties:{
-
+          replaceLoadingAnimation:{
+            type:Boolean,
+            value:false
+          }
         },
         ready:function(){
-          this._replaceLoadingAnimation();
+          if(this.replaceLoadingAnimation){this._replaceLoadingAnimation();}
         },
 
         _panelToggle:function(e){
@@ -97,23 +100,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           var that=this;
           var progress = document.createElement('paper-progress');
           Polymer.dom(progress).setAttribute('indeterminate','');
-          this._poll(
-            function(){
-              return document.querySelector('#wait_c');
-            },
-            function(){
-              var container = document.querySelector('#wait_c');
-              container.setAttribute('style','');
-              container.innerHTML='';
-              container.appendChild(progress);
-              var toolbar=document.querySelector('#headerContainer');
-              toolbar.appendChild(container);
-              Polymer.updateStyles();
-            },
-            function(){console.log('failed to find & restyle loading progress for <report-master>')},
-            10000, //10 seconds total
-            1000 //check every second
-          );
+            this.async(function(){
+              try{
+                this._poll(
+                function(){
+                  return document.querySelector('#wait_c');
+                },
+                function(){
+                  var container = document.querySelector('#wait_c');
+                  if(container){
+                    container.setAttribute('style','');
+                    container.innerHTML='';
+                    container.appendChild(progress);
+                    var toolbar=document.querySelector('#reportalPage #headerContainer');
+                    if(toolbar){toolbar.appendChild(container);}
+                  }
+                  //Polymer.updateStyles();
+                },
+                function(){console.log('failed to find & restyle loading progress for <report-master>')},
+                5000, //5 seconds total
+                1000 //check every second
+              );
+              } catch(e){
+                alert( e.name + ":" + e.message + "\n" + e.stack); // (3) <--
+              }
+
+
+            },3000);
         },
         _poll:function(fn, callback, errback, timeout, interval) {
           var endTime = Number(new Date()) + (timeout || 2000);
