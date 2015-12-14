@@ -97,7 +97,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
 
         _replaceLoadingAnimation: function () {
-          var that=this;
           var progress = document.createElement('paper-progress');
           Polymer.dom(progress).setAttribute('indeterminate','');
             this.async(function(){
@@ -115,17 +114,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     var toolbar=document.querySelector('#reportalPage #headerContainer');
                     if(toolbar){toolbar.appendChild(container);}
                   }
-                  //Polymer.updateStyles();
                 },
-                function(){console.log('failed to find & restyle loading progress for <report-master>')},
+                function(){console.log('failed to find & restyle loading progress for <report-master>');},
                 5000, //5 seconds total
                 1000 //check every second
               );
               } catch(e){
-                alert( e.name + ":" + e.message + "\n" + e.stack); // (3) <--
+                alert( e.name + ':' + e.message + '\n' + e.stack);
               }
-
-
             },3000);
         },
         _poll:function(fn, callback, errback, timeout, interval) {
