@@ -66,7 +66,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
           data:{
             type:Array,
-            value:[]
+            value:[],
+            notify:true
           },
           _sortedColumn:{
             type:Number,
@@ -83,50 +84,73 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           /* firstColumnHeadr allows to set the header of the first column (unsupported by Reportal natively)*/
           firstColumnHeader:String,
           visibleRows:Number,
-          vaadinID:String
+          vaadinID:String,
+          renderer:{
+            type: Object,
+            value: function(){
+              return {
+                html:function(cell){
+                  cell.element.innerHTML = cell.data;
+                }
+              }
+            }
+          },
+
         },
         ready:function(){
           if(this.colattrLegacy && this.colattrLegacy.length>0){
             this._processLegacyAttributes(this.colattrLegacy);
-            //this._processLegacyAttributes1(this.colattrLegacy);
           }
-          this.vaadinID = this._guid();
           var grid = document.createElement('vaadin-grid');
-          this._defineData(this.$.source.querySelector('table'));
-          this._defineHeader(grid);
-          if(this.visibleRows){grid.visibleRows=this.visibleRows;}
-          grid.items = this.data;
-          if(this.selectionMode){grid.selection.mode=this.selectionMode;}
-          if(this.frozenColumns){
-            if(this.indexed){this.frozenColumns+=1;}
-            grid.frozenColumns=this.frozenColumns;
+          var table = this.$.source.querySelector('table');
+          if(table){
+            this.grid = grid;
+            this._defineData(this.$.source.querySelector('table'));
+            this._defineHeader(grid);
+            console.log(Polymer.dom(grid));
+            if(this.visibleRows){grid.rows=this.visibleRows;}
+            if(this.selectionMode){grid.selection.mode=this.selectionMode;}
+            if(this.frozenColumns){
+              if(this.indexed){this.frozenColumns+=1;}
+              grid.frozenColumns=this.frozenColumns;
+            }
+            this.vaadinID = this._guid();
+            Polymer.dom(grid).setAttribute('id',this.vaadinID);
+            Polymer.dom(this.$.grid).appendChild(grid);
           }
-          this.grid = grid;
-          Polymer.dom(grid).setAttribute('id',this.vaadinID);
-          Polymer.dom(this.$.grid).appendChild(grid);
         },
         attached:function(){
-            this.async(this.notifyResize,300);
+            this.async(this.notifyResize,100);
         },
         _defineData:function(table){
-          this.data=[];
-          var rows = table.querySelectorAll('tbody tr');
-          for(var i=0;i<rows.length;i++){
-            var curRow=[];
-            if(this.indexed){curRow.push(i+1);}//append index
-            for(var ri=0;ri<rows[i].children.length;ri++){
-              curRow.push(rows[i].children[ri].textContent.trim());
-              var csp=rows[i].children[ri].getAttribute('colspan');
-              if(csp){
-                for(var ci=1;ci<csp;ci++){
-                  curRow.push('');
+          this.data=[];var rows;
+          for(var ch=0;ch<table.children.length;ch++){
+            // we want to get the topmost table and not its cells content tables if any
+            if(table.children[ch].localName==='tbody'){rows=table.children[ch].children; break;}
+          }
+          if(rows){
+            for(var i=0;i<rows.length;i++){
+              var curRow=[];
+              if(this.indexed){curRow.push(i+1);}//append index
+              for(var ri=0;ri<rows[i].children.length;ri++){
+                curRow.push(rows[i].children[ri].children.length>0?rows[i].children[ri].innerHTML:rows[i].children[ri].textContent.trim());
+                var csp=rows[i].children[ri].getAttribute('colspan');
+                if(csp){
+                  for(var ci=1;ci<csp;ci++){
+                    curRow.push('');
+                  }
                 }
               }
+              this.data.push(curRow);
             }
-            this.data.push(curRow);
           }
+          this.grid.items = this.data;
+          this.grid.cellClassGenerator = function(cell){
+            console.log(rows[cell.row.index].children[cell.index].className);
+            return rows[cell.row.index].children[cell.index].className;
+          };
         },
-        _defineAttr:function(propN,propV){
+        /*_defineAttr:function(propN,propV){
           if(propV){
             if(typeof propV === 'string'){
               return ' '+propN+'="'+propV+'"';
@@ -134,15 +158,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               return ' '+propN;
             }
           }
-        },
+        },*/
         /**
          * Converts array["key","value"] to object {key:"value"} respecting int,string,bool
          */
         _a2o:function(obj,key,val){
           if(obj && key){
             if(val && val.length>0){
-              obj[key]=this._isInt(val)?parseInt(val):val;
-            } else {obj[key]=true;}
+              if(key!=='renderer'){
+                obj[key]=this._isInt(val)?parseInt(val):val;
+              } else { // process renderers via this.renderer.Renderer_name property
+                obj[key]=this.renderer[val];
+              }
+            } else {obj[key]=true;} //it's a boolean
           }
         },
         /**
