@@ -217,7 +217,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
           console.log(host.columns);
           // then define number of rows in the header
-          var headerRows =  this.$.source.querySelectorAll('thead tr');
+          var headerRows =  this.$.source.querySelectorAll('table:first-child>thead>tr');
             for(var hr=0;hr<headerRows.length;hr++){
               if(hr>0){host.header.addRow();} // add next row else fill first row
               if(hr===headerRows.length-1){host.header.defaultRow = headerRows.length-1;} //set default(bottom) row of header for sorting and such
