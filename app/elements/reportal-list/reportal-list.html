@@ -13,73 +13,79 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="..\..\bower_components/paper-radio-button/paper-radio-button.html">
 <link rel="import" href="..\..\bower_components/paper-radio-group/paper-radio-group.html">
 <link rel="import" href="..\..\bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="..\..\bower_components/paper-menu/paper-menu.html">
-<link rel="import" href="..\..\bower_components/paper-item/paper-item.html">
+<link rel="import" href="..\..\bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="..\..\bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="..\..\bower_components/iron-list/iron-list.html">
+<link rel="import" href="..\..\bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="..\..\bower_components/iron-icons/iron-icons.html">
 
 <dom-module id="reportal-list">
   <template>
     <style>
       :host {
-        display: block;
+        display: inline-block;
         @apply(--reportal-list);
       }
-      paper-checkbox{
+      :host paper-checkbox{
         display: block;
         padding: 8px 8px;
-      @apply(--reportal-list-checkbox);
+        @apply(--reportal-list-checkbox);
       }
-      paper-radio-group{
+      :host paper-radio-group{
         display: block;
         @apply(--reportal-list-radio-group);
       }
-      paper-radio-group paper-radio-button{
+      :host paper-radio-group paper-radio-button{
         display: block;
         padding: 8px 8px;
         @apply(--reportal-list-radio-button);
       }
-      #listWrapper{
+      :host #listWrapper{
         display:none;
       }
-      #wrapperLabel{
+      :host #wrapperLabel{
         margin: 8px 8px 0 8px;
         display: none;
         position: relative;
         font-weight: 500;
         color: var(--secondary-text-color);
         font-size: 13px;
-        line-height: 32px;
+        line-height: 24px;
         text-transform: uppercase;
-      @apply(--reportal-sidebar-section-title);
+        @apply(--reportal-sidebar-section-title);
         @apply(--reportal-wrap-list-label);
       }
 
       /* multiselect list*/
-      div.selected{
+      :host div.selected{
         background-color:var(--light-primary-color);
         @apply(--reportal-list-multiselect-selected);
       }
-      iron-list .item{
+      :host iron-list .item{
         line-height: 36px;
         vertical-align: middle;
         padding: 0 16px ;
-      @apply(--reportal-list-multiselect-item);
+        @apply(--reportal-list-multiselect-item);
       }
-      iron-list{
+      :host iron-list{
         height:200px;
         margin: 8px;
         border-bottom:1px solid;
         border-bottom-color:  var(--dark-primary-color);
         @apply(--reportal-list-multiselect);
       }
+      :host paper-listbox paper-icon-item{--paper-item-icon-width:0px}
+      :host paper-listbox[multi] paper-icon-item iron-icon{visibility:hidden}
+      :host paper-listbox[multi] paper-icon-item{--paper-item-icon-width:56px}
 
-      paper-dropdown-menu{
+      :host paper-listbox[multi] paper-icon-item[selected] iron-icon{visibility:visible}
+      :host paper-dropdown-menu{
         margin:8px;
         width: calc(100% - 16px);
         display:block;
-
         @apply(--reportal-list-dropdown);
       }
+      :host paper-checkbox:first-child, :host paper-radio-group:first-child{padding-top: 32px}
     </style>
     <span id="wrapperLabel">
       <content select=".wrapper-label"></content>
@@ -88,11 +94,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <content></content>
     </span>
 
-    <iron-list id="dropDownList" hidden$="{{!multi}}" items="{{ddData}}" selection-enabled multi-selection selected-items="{{selectedItems}}" as="item">
+
+    <paper-dropdown-menu hidden$="[[!isDropdown]]" label="[[label]]" id="dd" vertical-align$="{{verticalAlign}}" horizontal-align$="{{horizontalAlign}}">
+      <paper-listbox class="dropdown-content" attr-for-selected="value" selected-attribute="selected" id="ddListbox">
+        <template is="dom-repeat" items="[[ddData]]" as="item">
+          <paper-icon-item value$="[[item.value]]"><iron-icon icon="check" item-icon></iron-icon>[[item.textContent]]</paper-icon-item>
+        </template>
+      </paper-listbox>
+    </paper-dropdown-menu>
+
+    <!--<iron-list id="dropDownList" hidden$="{{!multi}}" items="{{ddData}}" selection-enabled multi-selection selected-items="{{selectedItems}}" as="item">
         <template>
             <div on-tap="_reflectToList" tabindex="0" aria-label$="[[_getAriaLabel(item, selected)]]" class$="[[_computedClass(item, selected)]]">{{item.textContent}}</div>
         </template>
-       </iron-list>
+       </iron-list>-->
   </template>
   <script>
     (function() {
@@ -101,13 +116,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         is: 'reportal-list',
         listeners:{
           'change':'_reflectToCheckbox',
-          'iron-select':'_reflectToOriginal'
+          'iron-select':'_reflectToOriginal',
+          'iron-deselect':'_reflectToOriginal'
         },
         properties: {
           listType: String,
           multi: {
             type: Boolean,
-            value: false
+            value: false,
+            notify:true
           },
           label:{
             type:String
@@ -122,66 +139,107 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             notify:true
           },
           selectedItems: {
-            type: Object
+            type: Object,
+            value:{},
+            notify:true
           },
           forceCustomLabel:{
             type: Boolean,
             value:false
+          },
+          verticalAlign:{
+            type:String,
+            value:'top'
+          },
+          keepOpen:{
+            type:Boolean,
+            value:false
+          },
+          horizontalAlign:{
+            type:String,
+            value:'right'
           }
         },
-        created:function(){
+        ready:function(){
           var el;
-          this.async(
-            function(){
-              var inlineLabel = this.$.wrapperLabel.querySelector('.wrapper-label');
-              if(inlineLabel && !this.label){this.label=inlineLabel.textContent;}
-              if(Polymer.dom(this).querySelector('input')){
-                if(this.label){this._computeLabel(this.label);}
-                el = Polymer.dom(this).querySelector('input');
-                this.listType = el.type;
-                this._computeCheckboxRadio();
-              }
-              else if(Polymer.dom(this).querySelector('select')){
-                if(Polymer.dom(this).querySelector('select').multiple){
-                  if(this.label){this._computeLabel(this.label)}
-                  this.multi = true;
-                  this._computeList();
-                } else {
-                  this.isDropdown=true;
-                  if(this.forceCustomLabel){this._computeLabel(this.label);}
-                  this.listType = 'dropdown';
-                  this._computeDropdown();
+          //this.async(
+          //function(){
+          /*this.$.dd._selectedItemChanged = function(selectedItem) {
+            var paperListbox = this.querySelector('paper-listbox');
+            var value = '';
+            this.async(function(){if (!selectedItem) {
+              if(paperListbox && paperListbox.selectedItems && paperListbox.selectedItems.length>0){
+                var labels = [];
+                for(var i=0;i<paperListbox.selectedItems;i++){
+                  labels.push(paperListbox.selectedItems[i].textContent.trim())
                 }
+                value = labels.join(', ');
+              } else {value = '';}
 
+            } else {
+              if(paperListbox && paperListbox.selectedItems && paperListbox.selectedItems.length>0){
+                console.log(paperListbox.selectedItems);
+                var labels = [];
+                for(var i=0;i<paperListbox.selectedItems;i++){
+                  console.log(paperListbox.selectedItems[i]);
+                  labels.push(paperListbox.selectedItems[i].textContent.trim())
+                }
+                value = labels.join(', ');
+              } else {
+                value = selectedItem.label || selectedItem.textContent.trim();
               }
             }
-          );
+
+            this._setValue(value);
+            this._setSelectedItemLabel(value);});
+          }*/
+
+
+
+
+          var inlineLabel = this.$.wrapperLabel.querySelector('.wrapper-label');
+          if(inlineLabel && !this.label){this.label=inlineLabel.textContent;}
+          if(Polymer.dom(this).querySelector('input')){
+            if(this.label){this._computeLabel(this.label);}
+            el = Polymer.dom(this).querySelector('input');
+            this.listType = el.type;
+            this._computeCheckboxRadio();
+          }
+          else if(Polymer.dom(this).querySelector('select')){
+            this.ddData=Polymer.dom(this).querySelectorAll('option');
+            var select = Polymer.dom(this).querySelector('select');
+            if(select.multiple){
+              Polymer.dom(this.$.ddListbox).setAttribute('multi','');
+              this.multi = true;
+            }
+            if(this.label || this.forceCustomLabel){this._computeLabel(this.label)}
+            if(this.forceCustomLabel){
+              this.$.dd.noLabelFloat = true;
+            }
+            var listbox=this.$.ddListbox;
+            this.isDropdown=true;
+            this.listType = 'dropdown';
+          }
+          //}
+          //);
         },
+        attached:function(){
+          if(this.isDropdown){
+            var selected=Polymer.dom(this).querySelectorAll('option').filter(function(item){return item.selected;});
+            if(!this.multi){
+              Polymer.dom(this.$.ddListbox).setAttribute('selected',selected[0].value)
+            } else {
+              var s=[];
+              for(var i=0;i<selected.length;i++){
+                s.push(selected[i].value);
+              }
+              Polymer.dom(this.$.ddListbox).setAttribute('selected-values', JSON.stringify(s))
+            }
+          }
+        },
+
         _computeList:function(){
           this.ddData=Polymer.dom(this).querySelectorAll('option'); //option[i].value (String), option[i].textContent (String), option[i].selected (Bool)
-        },
-        _computeDropdown:function(){
-          var pdm = document.createElement('paper-dropdown-menu');
-          if(this.label){Polymer.dom(pdm).setAttribute('label',this.label);}
-          var pm = document.createElement('paper-menu');
-          Polymer.dom(pdm).setAttribute('on-paper-dropdown-close','_reflectToDropdown');
-          if(!this.forceCustomLabel){
-            Polymer.dom(pdm).setAttribute('always-float-label','');
-          } else{
-            Polymer.dom(pdm).setAttribute('no-label-float','');
-          }
-          Polymer.dom(pm).classList.add('dropdown-content');
-          Polymer.dom(pm).setAttribute('attr-for-selected','value');
-          var item,items=Polymer.dom(this).querySelectorAll('option');//option[i].value (String), option[i].textContent (String), option[i].selected (Bool)
-          for(var i=0;i<items.length;i++){
-            item=document.createElement('paper-item');
-            Polymer.dom(item).textContent = items[i].textContent;
-            Polymer.dom(item).setAttribute('value',items[i].value);
-            if(items[i].selected){Polymer.dom(pm).setAttribute('selected',items[i].value);}
-            Polymer.dom(pm).appendChild(item);
-          }
-          Polymer.dom(pdm).appendChild(pm);
-          Polymer.dom(this.root).appendChild(pdm);
         },
         _computeCheckboxRadio:function(){
           var rg;
@@ -217,7 +275,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             case 'dropdown': this._reflectToDropdown(e);break;
           }
         },
-        _reflectToList:function(e){
+        /*_reflectToList:function(e){
           var hostInput = Polymer.dom(this).querySelector('select option[value="'+e.model.item.value+'"]');
           if(!hostInput.selected){
             hostInput.selected = true;
@@ -226,16 +284,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             hostInput.selected = false;
             hostInput.removeAttribute('selected');
           }
-        },
+        },*/
         _reflectToDropdown:function(e){
-          Polymer.dom(this).querySelector('select option[value="'+e.target.selected+'"]').selected=true;
+          if(this.multi && this.keepOpen){
+            this.$.dd.open();
+          }
+          var el = this.querySelector('select option[value="'+e.detail.item.value+'"]');
+          if(e.detail.item.hasAttribute('selected')){
+            el.selected=true;
+          } else {
+            el.selected=false;
+          }
         },
         _reflectToCheckbox:function(e){
           if(this.listType === 'checkbox'){
             var hostInput = Polymer.dom(this).querySelector('input[id="'+e.target.attributes.target.value+'"]');
             hostInput.checked ? hostInput.checked = false : hostInput.checked = true;
           }
-
         },
         _reflectToRadio:function(e){
           Polymer.dom(this.$$('paper-radio-group')).setAttribute('selected',e.target.selectedItem.attributes.target.value);

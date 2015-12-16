@@ -36,7 +36,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       :host>::content #reportFilters{
         padding:8px;
-        @apply(--reportal-sidebar-filters)
+        @apply(--reportal-sidebar-filters);
+      }
+      :host>::content #reportFilters reportal-list{
+        display:block;
       }
 
       :host>::content .section-title{

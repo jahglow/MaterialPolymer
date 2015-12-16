@@ -107,7 +107,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             this.grid = grid;
             this._defineData(this.$.source.querySelector('table'));
             this._defineHeader(grid);
-            console.log(Polymer.dom(grid));
             if(this.visibleRows){grid.rows=this.visibleRows;}
             if(this.selectionMode){grid.selection.mode=this.selectionMode;}
             if(this.frozenColumns){
@@ -145,8 +144,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
           }
           this.grid.items = this.data;
+          // append conditional formatting from corresponding table cells
           this.grid.cellClassGenerator = function(cell){
-            console.log(rows[cell.row.index].children[cell.index].className);
             return rows[cell.row.index].children[cell.index].className;
           };
         },
@@ -215,7 +214,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               host.addColumn(colProp);
             }
           }
-          console.log(host.columns);
           // then define number of rows in the header
           var headerRows =  this.$.source.querySelectorAll('table:first-child>thead>tr');
             for(var hr=0;hr<headerRows.length;hr++){
@@ -236,7 +234,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 // if it's last header row && this cell has contents && col doesn't have headerText or it does, but there isn't header override, pass this value to col
                 if(hr===headerRows.length-1 ){ // if it's the main row
                   if(THcolspan){host.header.getCell(hr, !this.indexed?thsi:thsi+1).colspan = THcolspan;}
-                  console.log(tmpCell);
                   if(host.columns[columnIncr].headerContent.length>0 && this.columnHeaderOverride){
                     tmpCell.content = host.columns[columnIncr].headerContent;
                     if(!host.columns[columnIncr].hidingToggleText){host.columns[columnIncr].hidingToggleText = host.columns[columnIncr].headerContent;}
