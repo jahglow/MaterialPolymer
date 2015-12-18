@@ -1,0 +1,51 @@
+<link rel="import" href="behaviors/hc-common.html">
+<link rel="import" href="behaviors/hc-base-chart.html">
+<link rel="import" href="hc-styles.html">
+
+<!--
+
+`hc-column` renders a HighCharts column chart.
+
+Example:
+
+    <hc-column
+        width="400"
+        height="250"
+        series='[{"name":"Year 1800","data":[107,31,635,203,2]},{"name":"Year 1900","data":[133,156,947,408,6]},{"name":"Year 2008","data":[973,914,4054,732,34]}]'>
+    </hc-column>
+
+
+
+@package highcharts-elements
+@element hc-column
+@homepage http://linchpinio.github.io/highcharts-elements
+@demo demo/all.html
+-->
+<dom-module id="hc-column">
+    <template>
+        <style include="hc-styles"></style>
+        <div id="chartContainer" style=""></div>
+    </template>
+</dom-module>
+<script>
+(function() { 
+
+    Polymer({
+
+        is: 'hc-column'
+
+        , behaviors: [
+            HighChartsElement.Common
+            , HighChartsElement.BaseChart
+        ]
+
+        , properties: {
+            type: {
+              type: String,
+              value: 'column'
+            }
+        }
+    });
+
+})();
+</script>

@@ -1,0 +1,446 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../imports.html">
+<link rel="import" href="../hc-ns.html">
+
+<script>
+    
+    HighChartsElement.SUPPORTED_CHART_TYPES = {
+        LINE:           'line'
+        , SPLINE:       'spline'
+        , BAR:          'bar'
+        , COLUMN:       'column'
+        , AREA:         'area'
+        , AREASPLINE:   'areaspline'
+        , SCATTER:      'scatter'
+        , BUBBLE:       'bubble'
+    };
+     
+   /**
+    * `HighChartsElement.Common` holds acts as a base class and has properties and 
+    * methods inherited by all chart types.
+    *
+    * @polymerBehavior HighChartsElement.Common
+    **/
+    HighChartsElement.CommonImpl = {
+        
+        properties: {
+            
+            width: {
+              type: Number,
+              value: null,
+              observer: '_resize'
+            }
+            
+            , height: {
+              type: Number,
+              value: null,
+              observer: '_resize'
+            }
+        
+            , options: {
+              type: Object,
+              value: null
+            }
+        
+            , type: {
+              type: String,
+              value: 'bar'
+            }
+            
+            , title: {
+              type: String,
+              value: ''
+            }
+            
+            , subtitle: {
+              type: String,
+              value: ''
+            }
+            
+            , credits: {
+              type: Boolean,
+              value: false
+            }
+            
+            , animation: {
+              type: Boolean,
+              value: true
+            }
+            
+            , hideLegend: {
+              type: Boolean,
+              value: false
+            }
+            
+            , hideLabels: {
+              type: Boolean,
+              value: false
+            }
+            
+            , reflow: {
+              type: Boolean,
+              value: false
+            }
+            
+            , exporting: {
+              type: Boolean,
+              value: false
+            }
+            
+            , colors: {
+                type: Array,
+                value: null
+            }
+            
+            , series: {
+                type: Array,
+                value: null,
+                observer: '_updateData'
+            }
+            
+            , debug: {
+              type: Boolean,
+              value: false
+            }
+            
+            , resizeDuration: {
+              type: Number,
+              value: 250
+            }
+            
+            , _isResizing: {
+              type: Boolean,
+              value: false
+            }
+        }
+        
+        , _chart: null
+
+        , _dataCopy: null
+        
+        , getChart: function() {
+            return this._chart;
+        }
+        
+        , _getChartElement: function() {
+            return this.$.chartContainer;
+        }
+        
+        , _commonChartOptions: function(options) { var self = this;
+        
+            options.chart.renderTo     = self._getChartElement();
+            
+            options.chart.width        = (self.width?self.width:null)
+            options.chart.height       = (self.height?self.height:null)
+                
+            options.chart.animation    = self.animation;
+            options.chart.reflow       = self.reflow;
+            
+            options.exporting          = self.exporting;
+            if(!options.credits) { options.credits = {}; }
+            options.credits.enabled    = self.credits;
+            
+            if(!options.title) { options.title = {}; }
+            options.title.text = self.title;
+            
+            if(!options.subtitle) { options.subtitle = {}; }
+            options.subtitle.text = self.subtitle;
+            
+            if(!options.legend) { options.legend = {}; }
+            options.legend.enabled = !self.hideLegend;
+            
+            // Exception for sparkline
+            var elementType = self.nodeName;
+            if(elementType === 'HC-SPARKLINE') {
+                options.chart.width  = (self.width?self.width:120);
+                options.chart.height = (self.height?self.height:20);
+                options.legend.enabled = false;
+                options.title.text = '';
+            }
+            
+            return options;
+        }
+        
+        , ready: function() { var self = this;
+               
+        }
+        
+        , render: function() { var self = this;
+            if(!self._chart) {
+                var chartOptions = self._commonChartOptions( self._createChartOptions());
+                if(typeof self._setChartStackingOptions==='function'){
+                    self._setChartStackingOptions(chartOptions);
+                }
+                
+                if(self.debug) {
+                    console.debug("highcharts-element options object: %o", chartOptions); 
+                }
+                
+                // Merge in override options
+                if(typeof self.options === 'string') {
+                    try {
+                        self.options = JSON.parse(self.options);
+                    } catch(ex){
+                        console.error("Exception thrown parsing options attribute: "+ ex);
+                    }
+                }
+                
+                var elementType = self.nodeName;
+                        
+                // Add type if needed
+                if(elementType === 'HC-PIE' || elementType === 'HC-DONUT' || elementType === 'HC-DONUT-SEMI' ) {
+                    chartOptions.type = 'pie';
+                    if(Array.isArray(chartOptions.series)) {
+                        chartOptions.series.forEach( function(el, i, list) {
+                            el.type = 'pie';
+                        });
+                    }   
+                }
+                
+                if(typeof self.options === 'object') {
+                    chartOptions = Highcharts.merge(chartOptions, self.options);
+                }
+                
+                self._chart = new Highcharts.Chart(chartOptions);
+
+                self.scopeSubtree(this.$$('.highcharts-container'), true);
+            } else {
+                try {
+                    self._chart.series = self.series;
+                    // self._chart.series[0].setData(self.series);
+                }catch(ex){
+                    console.error("Exception thrown updating chart data %o", ex);
+                }
+            }
+        }
+        
+        , _resize: function() { var self = this;
+            // self.async( function(){ var self = this;
+                if(self._chart){
+                    try {
+                        self._isResizing=true;
+
+                        // Resize container
+                        var chartCon = self._getChartElement();
+                        chartCon.style.width  = self.width+'px';
+                        chartCon.style.height = self.height+'px';
+                        
+                        // Sometimes they aren't numbers
+                        if(Number(self.width)!==self.width) {
+                            return;
+                        }
+                        if(Number(self.height)!==self.height) {
+                            return;
+                        }
+                        
+                        // This is how you get the nice dynamic
+                        // resizing effect
+                        self._chart.setSize(
+                            self.width
+                            , self.height
+                            , {duration: self.resizeDuration}
+                        );
+
+                        var elementType = self.nodeName;
+                        if(elementType === 'HC-GAUGE') {
+                        
+                            // Get the point
+                            var point = self._chart.series[0].data[0];
+                            
+                            // Wierd edge case
+                            if(point) {
+                                // Update value
+                                // Even though we updated the series in the chart,
+                                // there seems to be a timing issue where the actual chart options
+                                // don't have the same data, thus the number flips back. 
+                                // Probably async data setting because of animation
+                                // Trying polymer async, else try cloning options
+
+                                if(self._dataCopy){
+                                    point.dataLabel.attr({ text: self._getGaugeDataLabelFormat(self._chart.options, self._dataCopy) });
+                                }  
+                            }
+                            
+                        } else if(elementType === 'HC-GAUGE-SEMI') {
+                        
+                            // Get the point
+                            var point = self._chart.series[0].data[0];
+                            
+                            // Wierd edge case
+                            if(point) {
+                                // Update value
+                                // Even though we updated the series in the chart,
+                                // there seems to be a timing issue where the actual chart options
+                                // don't have the same data, thus the number flips back. 
+                                // Probably async data setting because of animation
+                                // Trying polymer async, else try cloning options
+                                
+                                if(self._dataCopy){
+                                    point.dataLabel.attr({ text: self._getSemiGaugeDataLabelFormat(self._chart.options, self._dataCopy) });
+                                } 
+                            } 
+                        }
+
+                        // Hack because 'sometimes' this element does
+                        // not expand the width of parent, weird 
+                        // because the numbers in setResize() below are correct
+
+                        var hcCon = self.querySelector('.highcharts-container');
+                        hcCon.style.width  = self.width+'px';
+                        hcCon.style.height = self.height+'px';
+                        
+                    } catch(ex) {
+                        console.error('hc-common behavior: Error on resize '+ex);
+                    }
+                    self._isResizing=false;
+                }
+            // }.bind(self), 1);  
+        }
+       
+        , _updateData: function(newData, oldData) { var self = this;
+            if(!newData){
+                return;
+            }
+            if(!self._chart){
+                self.render();
+            }
+            try {
+
+                // Because HC modifies and we need sometimes
+                self._dataCopy = self.clone(newData);
+            
+                var elementType = self.nodeName;
+                
+                // Add type if needed
+                if(elementType === 'HC-PIE' || elementType === 'HC-DONUT' || elementType === 'HC-DONUT-SEMI' ) {
+                    self._chart.series.forEach( function(el, i, list) {
+                        el.type = 'pie';
+                    });
+                }
+            
+                if(elementType === 'HC-GAUGE') {
+                
+                    if(self._chart.series[0]){
+                        newData[0].type = 'solidgauge';
+                        self._setGaugeSeriesOptions(self._chart.series[0]);
+                        self._chart.series[0].setData(newData[0].data);
+                    } else {
+                        newData[0].type = 'solidgauge';
+                        self._chart.addSeries(newData[0]);
+                        self._setGaugeSeriesOptions(self._chart.series[0]);
+                    } 
+                    
+                    
+                    // Get the point
+                    var point = self._chart.series[0].data[0];
+                    
+                    // Update value
+                    // Even though we updated the series in the chart,
+                    // there seems to be a timing issue where the actual chart options
+                    // don't have the same data, thus the number flips back. 
+                    // Probably async data setting because of animation
+                    // Trying polymer async, else try cloning options
+                    
+                    self.async( function(){ var self = this;
+                        point.dataLabel.attr({ text: self._getGaugeDataLabelFormat(self._chart.options, self._dataCopy) });
+                        // point.dataLabel.attr({ text: "TEST" });
+                    }.bind(self), 250);
+                    
+                } else if(elementType === 'HC-GAUGE-SEMI') {
+                
+                    self._chart.series[0].setData(newData[0].data);
+                    
+                    // Get the point
+                    var point = self._chart.series[0].data[0];
+                    
+                    // Update value
+                    // Even though we updated the series in the chart,
+                    // there seems to be a timing issue where the actual chart options
+                    // don't have the same data, thus the number flips back. 
+                    // Probably async data setting because of animation
+                    // Trying polymer async, else try cloning options
+
+                    self.async( function(){ var self = this;
+                        point.dataLabel.attr({ text: self._getSemiGaugeDataLabelFormat(self._chart.options, self._dataCopy) });
+                    }.bind(self), 250);
+                  
+                } else if(elementType === 'HC-PIE' || elementType === 'HC-DONUT' || elementType === 'HC-DONUT-SEMI' ) {
+                
+                    if(self._chart.series[0]){
+                        newData[0].type = 'pie';
+                        self._setPieSeriesOptions(self._chart.series[0]);    
+                        self._chart.series[0].setData(newData[0].data);
+                    } else {
+                        newData[0].type = 'pie';
+                        self._chart.addSeries(newData[0]);
+                        self._setPieSeriesOptions(self._chart.series[0]);
+                    } 
+                
+                } else {
+                    
+                    self._chart.series.forEach( function(el, i, list) {
+
+                        // Update the name only, not data yet
+                        el.update({name:newData[i].name}, false);
+                        self._chart.redraw(); // Need this here, or data doesn't update
+
+                        // Have to update points to get smooth transitions
+                        if(false) {
+                            
+                            // Note, this only gives smooth transitions 
+                            // if not adding new points also
+                            el.setData(newData[i].data);
+                            el.drawDataLabels();
+                            self._chart.redraw();
+                            self._chart.reflow();
+                            
+                        } else {
+                            /*
+                            el.data.forEach( function(point, pi, list) {
+                                point.update(newData[i].data[pi], false);
+                            });
+                            */
+                            el.setData( newData[i].data.slice(0,el.data.length) );
+                            self._chart.redraw();
+
+                            // Data Labels ( or gauge center number does not change )
+                            el.drawDataLabels();
+                            self._chart.redraw();
+                            
+                            // Now need to add any new points
+                            // This way we still get smooth transitions for new points
+                            var lengthDiff = newData[i].data.length-el.data.length;
+                            var seriesLength = el.data.length;
+                            if(lengthDiff>0) {
+                                for (npi = 0; npi < lengthDiff; npi++) { 
+                                    var index = seriesLength+npi;
+                                    el.addPoint(newData[i].data[index], true, false);
+                                }
+                                self._chart.reflow();
+                            }
+                        }
+                    });
+                    
+                    // Now add new series
+                    if(self._chart.series.length<newData.length) {
+                        var numNewSeries = newData.length-self._chart.series.length;
+                        var seriesLength = self._chart.series.length;
+                        for (nsi = 0; nsi < numNewSeries; nsi++) { 
+                            var index = seriesLength+nsi;
+                            self._chart.addSeries(newData[index]);
+                        }
+                    }
+                }
+              
+            } catch(e) {
+                console.log('hc-common behavior: Error updating data '+e);
+            }
+        }
+
+        , clone: function(o) {
+            return JSON.parse(JSON.stringify(o));
+        }
+    };
+    
+    HighChartsElement.Common = [HighChartsElement.CommonImpl];
+</script>

@@ -1,0 +1,30 @@
+<dom-module id="hc-styles">
+  <template>
+    <style>
+
+        :host {
+            display: inline-block;
+            position: relative;
+
+        }
+
+        #chartContainer {
+            margin: 0 auto;
+        }
+
+        #chartContainer .highcharts-container { 
+            overflow: visible !important; 
+        }
+
+        #chartContainer .hc-el-custom-gauge-label { 
+            position: absolute;
+            right: -100px;
+        }
+
+        #chartContainer .hc-el-custom-semi-gauge-label { 
+            position: absolute;
+        }
+        
+      </style>
+  </template>
+</dom-module>

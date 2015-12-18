@@ -1,0 +1,165 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../imports.html">
+<link rel="import" href="../hc-ns.html">
+
+<script>
+     
+    HighChartsElement.SUPPORTED_CHART_TYPES = {
+        LINE:           'line'
+        , SPLINE:       'spline'
+        , BAR:          'bar'
+        , COLUMN:       'column'
+        , AREA:         'area'
+        , AREASPLINE:   'areaspline'
+        , SCATTER:      'scatter'
+        , BUBBLE:       'bubble'
+    };
+    
+    /**
+    * `HighChartsElement.BaseChart` is the base class for line, area, bubble, scatter and 
+    * other types of charts that are mostly interchangable with the same data.
+    *
+    * @polymerBehavior HighChartsElement.BaseChart
+    **/
+    HighChartsElement.BaseChartImpl = {
+        
+        _createChartOptions: function() { var self = this;
+            
+            var options = {
+                chart: {
+                    type: self.type
+                    , zoomType: 'x'
+                }
+                , plotOptions: {
+                    series: {
+                        animation: {
+                            duration: 500
+                    }
+                            },
+                    line: {
+                        animation: {
+                            duration: 500
+                        }
+                    }
+                }
+                , xAxis: {
+
+                }
+                , yAxis: {
+                    labels: {
+                        enabled: true
+                    }
+                    , title: {
+                        text: null
+                    }
+                    , floor: 0
+                    , allowDecimals: false
+                }
+                , series: self.series
+            };
+            
+            var elementType = self.nodeName;
+            if(elementType === 'HC-SPARKLINE') {
+                return self._setSparklineOptions(options);
+            } else {
+                return options;
+            } 
+        }
+        
+        , _setChartStackingOptions: function(options) { var self = this;
+            if(self.stackedChart) {
+                switch(self._chartType) {
+                    case HighChartsElement.SUPPORTED_CHART_TYPES.BAR:
+                        options.plotOptions.series.stacking = 'normal';
+                        break;
+                    case HighChartsElement.SUPPORTED_CHART_TYPES.COLUMN:
+                        options.plotOptions.series.stacking = 'normal';
+                        break;
+                    case HighChartsElement.SUPPORTED_CHART_TYPES.AREA:
+                        options.plotOptions.area = {
+                            stacking: 'normal',
+                            lineColor: '#333',
+                            lineWidth: 1,
+                            marker: {
+                                lineWidth: 1,
+                                lineColor: '#333'
+                            }
+                        };
+                        break;
+                } 
+            }
+        }
+        
+        , _setSparklineOptions: function(options) { var self = this;
+        
+            // Set in hc-common, exception for sparkline
+            // options.chart.width   = 120;
+            // options.chart.height  = 20;
+            
+            options.chart.backgroundColor  = null;
+            options.chart.borderWidth  = 0;
+            options.chart.type = self.chartType;
+            options.chart.margin  = [2, 0, 2, 0];
+            
+            if(options.title===undefined) { options.title={}; }
+            options.title.text  = '';
+            
+            if(options.xAxis.labels===undefined) { options.xAxis.labels={}; }
+            options.xAxis.labels.enabled  = false;
+            if(options.xAxis.title===undefined) { options.xAxis.title={}; }
+            options.xAxis.title.text      = null;
+            options.xAxis.startOnTick  = false;
+            options.xAxis.endOnTick  = false;
+            options.xAxis.tickPositions  = [];
+            
+            if(options.yAxis.labels===undefined) { options.yAxis.labels={}; }
+            options.yAxis.labels.enabled  = false;
+            if(options.yAxis.title===undefined) { options.yAxis.title={}; }
+            options.yAxis.title.text      = null;
+            options.yAxis.startOnTick  = false;
+            options.yAxis.endOnTick  = false;
+            options.yAxis.tickPositions  = [0];
+            
+            if(options.tooltip===undefined) { options.tooltip={}; }
+            options.tooltip.backgroundColor = null;
+            options.tooltip.borderWidth = 0;
+            options.tooltip.shadow = false;
+            options.tooltip.useHTML = true;
+            options.tooltip.hideDelay = 0;
+            options.tooltip.shared = true;
+            options.tooltip.padding = 0;
+            options.tooltip.positioner = function (w, h, point) {
+                    return { x: point.plotX - w / 2, y: point.plotY - h};
+                    // return { x: 2, y: point.plotY - h };
+                };
+            options.tooltip.headerFormat = '';    
+            options.tooltip.pointFormat  = '<span style="font-size:smaller;">{point.y}</span>';
+            
+            options.plotOptions.series.animation = false;
+            options.plotOptions.series.lineWidth = 1;
+            options.plotOptions.series.shadow = false;
+            options.plotOptions.series.states = {
+                    hover: {
+                        lineWidth: 1
+                    }
+                };
+            options.plotOptions.series.marker = {
+                    radius: 1,
+                    states: {
+                        hover: {
+                            radius: 2
+                        }
+                    }
+                };
+            options.plotOptions.series.fillOpacity = 0.25;
+            
+            if(options.plotOptions.column===undefined) { options.plotOptions.column={}; }
+            options.plotOptions.column.negativeColor = '#910000';
+            options.plotOptions.column.borderColor = 'silver';
+            
+            return options;
+        }
+    };
+    
+    HighChartsElement.BaseChart = [HighChartsElement.BaseChartImpl];
+</script>

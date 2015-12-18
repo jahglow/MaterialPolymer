@@ -1,0 +1,59 @@
+{
+  "name": "highcharts-elements",
+  "version": "0.0.5",
+  "description": "A library of polymer elements for rendering highcharts",
+  "homepage": "https://github.com/<USERNAME>/highcharts-elements/",
+  "keywords": [
+    "pie",
+    "bar",
+    "column",
+    "area",
+    "line",
+    "bubble",
+    "scatter",
+    "areaspline",
+    "pyramid",
+    "funnel",
+    "gauge",
+    "donut",
+    "charts",
+    "highchart",
+    "highcharts",
+    "polymer",
+    "web-components"
+  ],
+  "ignore": [
+    "/.*",
+    "/test/",
+    "/demo/",
+    "**/.*",
+    "bower_components",
+    "test"
+  ],
+  "main": "highcharts-elements.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#v1.2.1",
+    "highcharts": "highcharts-release#v4.1.6",
+    "numeral": "adamwdraper/Numeral-js#1.5.3",
+    "paper-tabs": "PolymerElements/paper-tabs",
+    "paper-toolbar": "PolymerElements/paper-toolbar",
+    "paper-material": "PolymerElements/paper-material",
+    "iron-grid": "jmcgdz/iron-grid",
+    "codemirror": "codemirror/CodeMirror#5.2.0",
+    "jquery": "~2.1.4",
+    "back-to-top": "CodyHouse/back-to-top",
+    "lp-component-page": "linchpinio/lp-component-page",
+    "prism-element": "PolymerElements/prism-element",
+    "marked-element": "PolymerElements/marked-element",
+    "paper-button": "PolymerElements/paper-button"
+  },
+  "_release": "0.0.5",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.0.5",
+    "commit": "ca6cb0ef77ecc783e99a137b489056c4bfdf8b54"
+  },
+  "_source": "git://github.com/linchpinio/highcharts-elements.git",
+  "_target": "~0.0.3",
+  "_originalSource": "highcharts-elements"
+}

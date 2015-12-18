@@ -1,0 +1,194 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../imports.html">
+<link rel="import" href="../hc-ns.html">
+
+<script>
+     
+    /**
+    * `HighChartsElement.BaseGauge` is the base class for different types of gauge charts.
+    *
+    * @polymerBehavior HighChartsElement.BaseGauge
+    **/
+    HighChartsElement.BaseGaugeImpl = {
+        
+        properties: {
+            
+            format: {
+              type: String,
+              value: '0,0'
+            }
+            
+            , subText: {
+              type: String,
+              value: ''
+            }
+            
+            , showTicks: {
+              type: Boolean,
+              value: false
+            }
+            
+            , min: {
+              type: Number,
+              value: 0
+            }
+            
+            , max: {
+              type: Number,
+              value: 100
+            }
+        }
+            
+        , _gaugeType: 'semi'        
+        
+        ,  _format: function(number) { var self = this;
+            // Sometimes this comes in as an array
+            if( Array.isArray(number) ) {
+                number = number[0];
+            }
+            // Sometimes this array is an object
+            if( typeof number === 'object' ) {
+                number = number.y;
+            }
+            return numeral(number).format(self.format);
+        }
+        
+        ,  _createChartOptions: function() { var self = this;
+            
+            var options = {
+
+                chart: {
+                    type: 'solidgauge'
+                },
+
+                title: null,
+
+                pane: {
+                    center: ['50%', '85%'],
+                    size: '100%',
+                    startAngle: -90,
+                    endAngle: 90,
+                    background: {
+                        backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+                        innerRadius: '60%',
+                        outerRadius: '100%',
+                        shape: 'arc'
+                    }
+                },
+
+                credits: {
+                    enabled: false
+                },
+
+                // the value axis
+                yAxis: {
+                    min: self.min,
+                    max: self.max,
+                    stops: [
+                        [0.1, '#55BF3B'], // green
+                        [0.5, '#DDDF0D'], // yellow
+                        [0.9, '#FF3300']  // red
+                    ],
+                    lineWidth: 0,
+                    minorTickInterval: null,
+                    tickPixelInterval: 400,
+                    tickWidth: 0,
+                    title: {
+                        y: -70
+                    },
+                    labels: {
+                        y: 16
+                    }
+                },
+
+                plotOptions: {
+                    solidgauge: {
+                        dataLabels: {
+                            enabled: true,
+                            y: 5,
+                            borderWidth: 0,
+                            useHTML: true,
+                            align: "center"
+                        }
+                    }
+                },
+                series: self.series
+            };
+
+            options.yAxis.tickPixelInterval = (self.showTicks?400:0);
+            
+            if(options.series && options.series[0]) {
+                self._setGaugeSeriesOptions(options.series[0]);   
+            }
+                            
+            return self._handleGaugeTypes(options);
+        }
+        
+
+        , _setGaugeSeriesOptions: function(aSeries) { var self = this;
+            
+            aSeries.name = (self.series[0].name?self.series[0].name:null);
+                
+            if(!aSeries.dataLabels){
+                aSeries.dataLabels = {};
+            }
+            
+            if(self._gaugeType === 'semi') {
+                aSeries.dataLabels.format = self._getSemiGaugeDataLabelFormat();
+            } else {
+                aSeries.dataLabels.format = self._getGaugeDataLabelFormat();
+            }
+            
+            aSeries.dataLabels.enabled = !self.hideLabels;
+                               
+            if(!aSeries.tooltip) {
+                aSeries.tooltip = {};
+            }
+            aSeries.tooltip.valueSuffix = (self.subText?self.subText:undefined);
+        }
+        
+        , _handleGaugeTypes: function(options) { var self = this;
+            if(typeof self._gaugeType === 'string') {
+                if(self._gaugeType==='donut') {
+                    options.pane = {
+                        center: ['50%', '50%'],
+                        size: '75%',
+                        startAngle: -180,
+                        endAngle: 180,
+                        background: {
+                            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+                            innerRadius: '60%',
+                            outerRadius: '100%',
+                            shape: 'arc'
+                        }
+                    };
+                    
+                    options.plotOptions.solidgauge.dataLabels.y = -30;
+                }
+            }
+            return options;
+        }
+        
+        , _getGaugeDataLabelFormat: function(options, data) { var self = this;
+            if(!options){
+                return '';
+            }
+            return '<div class="hc-el-custom-gauge-label" style="text-align:center"><span style="font-size:42px;color:' +
+                            ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">'+
+                                self._format(data[0].data)
+                                +'</span><br/>' + '<span style="font-size:12px;color:silver">'+(self.subText?self.subText:'')+'</span></div>';
+        }
+        
+        , _getSemiGaugeDataLabelFormat: function(options, data) { var self = this;
+            if(!options){
+                return '';
+            }
+            return '<div class="hc-el-custom-semi-gauge-label" style="text-align:center"><span style="position:relative;top:10px;font-size:42px;color:' +
+                            ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">'+
+                                self._format(data[0].data)
+                                +'</span><br/>' + '<span style="font-size:12px;color:silver">'+(self.subText?self.subText:'')+'</span></div>';
+        }
+    };
+    
+    HighChartsElement.BaseGauge = [HighChartsElement.BaseGaugeImpl];
+</script>
