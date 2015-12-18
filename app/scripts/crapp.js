@@ -69,13 +69,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 // 4. Conditionally load the webcomponents polyfill if needed by the browser.
 // This feature detect will need to change over time as browsers implement
 // different features.
-var webComponentsSupported = ('registerElement' in document && 'import' in document.createElement('link') && 'content' in document.createElement('template'));
+var webComponentsSupported = ('registerElement' in document && 'import' in document.createElement('link') && 'content' in document.createElement('template') && window.wrap);
 
 if (!webComponentsSupported) {
   console.log('webComponents not supported');
   var script = document.createElement('script');
   script.async = true;
-  script.src = '/isa/BDJPFRDMEYBPBKLVADAYFQCDAVIOEQJR/Polymer/webcomponents-lite.min.js';
+  script.src = '../bower_components/webcomponentsjs/webcomponents-lite.min.js';
   script.onload = finishLazyLoading;
   document.head.appendChild(script);
 } else {
@@ -108,16 +108,14 @@ function finishLazyLoading() {
   if (link.import && link.import.readyState === 'complete') {
     console.log('link import complete');
     if(!webComponentsSupported){
-      console.log('will listen for WebComponentsReady polyfill');
       window.addEventListener('WebComponentsReady', onImportLoaded)
     } else {
       onImportLoaded();
     }
 
   } else {
-    console.log('listen to link.import.complete');
+    console.log('listen to LOAD');
     if(!webComponentsSupported){
-      console.log('will listen for WebComponentsReady polyfill');
       window.addEventListener('WebComponentsReady', onImportLoaded)
     } else {
       link.addEventListener('load', onImportLoaded);

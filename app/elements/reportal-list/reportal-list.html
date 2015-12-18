@@ -41,7 +41,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         @apply(--reportal-list-radio-button);
       }
       :host #listWrapper{
-        display:none;
+       display:none;
       }
       :host #wrapperLabel{
         margin: 8px 8px 0 8px;
@@ -194,9 +194,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             this._setSelectedItemLabel(value);});
           }*/
 
-
-
-
           var inlineLabel = this.$.wrapperLabel.querySelector('.wrapper-label');
           if(inlineLabel && !this.label){this.label=inlineLabel.textContent;}
           if(Polymer.dom(this).querySelector('input')){
@@ -212,11 +209,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               Polymer.dom(this.$.ddListbox).setAttribute('multi','');
               this.multi = true;
             }
-            if(this.label || this.forceCustomLabel){this._computeLabel(this.label)}
+            if(this.label || this.forceCustomLabel){this._computeLabel(this.label);}
             if(this.forceCustomLabel){
               this.$.dd.noLabelFloat = true;
             }
-            var listbox=this.$.ddListbox;
             this.isDropdown=true;
             this.listType = 'dropdown';
           }
@@ -227,13 +223,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if(this.isDropdown){
             var selected=Polymer.dom(this).querySelectorAll('option').filter(function(item){return item.selected;});
             if(!this.multi){
-              Polymer.dom(this.$.ddListbox).setAttribute('selected',selected[0].value)
+              Polymer.dom(this.$.ddListbox).setAttribute('selected',selected[0].value);
             } else {
               var s=[];
               for(var i=0;i<selected.length;i++){
                 s.push(selected[i].value);
               }
-              Polymer.dom(this.$.ddListbox).setAttribute('selected-values', JSON.stringify(s))
+              Polymer.dom(this.$.ddListbox).setAttribute('selected-values', JSON.stringify(s));
             }
           }
         },
@@ -303,8 +299,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         },
         _reflectToRadio:function(e){
-          Polymer.dom(this.$$('paper-radio-group')).setAttribute('selected',e.target.selectedItem.attributes.target.value);
-          var hostInput = Polymer.dom(this).querySelector('input[id="'+e.target.selectedItem.attributes.target.value+'"]');
+          this.$$('paper-radio-group').setAttribute('selected',e.detail.item.attributes.getNamedItem('target').value);
+          var hostInput = this.querySelector('input[id="'+e.detail.item.attributes.getNamedItem('target').value+'"]');
           hostInput.checked = true;
         },
 

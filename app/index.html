@@ -5,491 +5,48 @@
   <meta charset="utf-8">
   <meta name="description" content="">
   <!-- build:css styles/main.css -->
-  <link rel="stylesheet" href="styles/main.css">
+  <script src="scripts/report.js" async></script>
   <!-- endbuild-->
   <!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
-  <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <!-- endbuild -->
 
   <!-- will be replaced with elements/elements.vulcanized.html -->
-  <link rel="import" href="elements/elements.html">
+  <link rel="import" id="bundle" href="elements/elements.html">
   <!-- endreplace-->
+
+  <link rel="stylesheet" href="styles/main.css">
   <link rel="import" href="styles/app-theme.html">
-  <script src="scripts/report.js" async></script>
-  <!--<style>
-    .dd-drilldown
-    {
-      position: absolute;
-      z-index: 9999;
-    }
 
 
-    .dd-search
-    {
-      margin: 4px 0;
-    }
-
-    .dd-search-input
-    {
-      text-align: left;
-      width: 99%;
-      height:26px;
-      border-radius:3px;
-      border:1px solid #ccc !important;
-      padding:3px;
-      -webkit-appearance: textfield;
-    }
-
-    .dd-items
-    {
-      width: 100%;
-      height: 208px;
-      overflow-x: hidden;
-      overflow-y: auto;
-      margin: 0;
-      padding: 0;
-      position: relative;
-    }
-
-    .dd-err-msg {
-      color: red;
-    }
-    .dd-err-msg-container {
-      text-align:left;
-      margin: 0 4px 4px 4px
-    }
-
-    .dd-button-menu
-    {
-      text-align: right;
-      border-top: 1px solid #ccc;
-    }
-
-    .dd-button-menu a
-    {
-      display: inline-block;
-      line-height: 40px;
-      margin-right: 12px;
-      text-decoration: none;
-      color: #1144bb;
-    }
-
-    .dd-button-menu a:hover
-    {
-      text-decoration: underline;
-      color: #ff6600;
-    }
-
-    .dd-button-select
-    {
-      margin: 5px;
-    }
-
-    .dd-wrapper
-    {
-      background: #FFF;
-      border: 1px solid;
-      margin: 0;
-      padding: 0;
-      width: 400px;
-      text-align: left;
-      overflow: hidden;
-      font: normal 10px Verdana, Arial, sans-serif;
-    }
-
-    .dd-wrapper, .dd-wrapper *
-    {
-      -webkit-box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      -ms-box-sizing: border-box;
-      box-sizing: border-box;
-    }
-
-    .dd-wrapper li
-    {
-      list-style: none;
-      display: none;
-    }
-
-    .dd-header
-    {
-      padding: 4px;
-      min-height: 24px;
-      font-size: 11px;
-    }
-
-    .dd-header ul
-    {
-      overflow: hidden;
-      line-height: 1.5em;
-      padding: 0;
-      margin: 0;
-    }
-
-    .dd-header ul li
-    {
-      display: inline-block;
-      float: left;
-      padding: 0;
-    }
-
-    .dd-header li a
-    {
-      background: url(/cf_clientutil/images/drilldown/arrow_gray_right.gif) no-repeat 100% center;
-      color: #3a3a3a;
-      white-space: nowrap;
-      display: inline-block;
-      max-width: 150px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      text-decoration: none;
-      padding: 1px 15px 1px 5px;
-    }
-
-    .dd-header li a:hover
-    {
-      text-decoration: underline;
-    }
-
-    /*.dd-header li:last-child a*/
-    .dd-header li.dd-bc-current a
-    {
-      background: transparent;
-      font-weight: bold;
-    }
-
-    /*.dd-header li:last-child a:hover*/
-    .dd-header li.dd-bc-current a:hover
-    {
-      text-decoration: none;
-      cursor: default;
-    }
-
-    .dd-expand
-    {
-      display: none;
-    }
-
-    .dd-parent-a .dd-expand
-    {
-      position: absolute;
-      display: block;
-      top: 0px;
-      right: 0px;
-      width: 10%;
-      height: 100%;
-      *height: 26px;
-      border-left: 1px solid #ccc;
-    }
-
-    .dd-item-marker
-    {
-      position: absolute;
-      display: none;
-      top: 0px;
-      right: 35px;
-      width: 10%;
-      height: 100%;
-      *height: 26px;
-      font-size: 18px;
-      text-align: center;
-      color: #454545;
-    }
-
-    @media \0screen\,screen\9 {
-      .dd-item-marker {
-        padding-top:4px;
-        height: 21px;
-        top: 0px;
-      }
-
-      .dd-cancel {
-        line-height:30px !important;
-        height: 40px;
-      }
-    }
-
-    .dd-checked .dd-item-marker {
-      display:block;
-    }
-
-    .dd-expand-icon
-    {
-      position: absolute;
-      top: 0px;
-      left: 0px;
-      width: 100%;
-      height: 100%;
-      *width: 30px;
-      *height: 30px;
-      background: url(/cf_clientutil/images/drilldown/arrow_grey_right.png) no-repeat center;
-    }
-
-    .dd-menu
-    {
-      margin: 0;
-      padding: 0;
-      position: relative;
-    }
-
-    ul.dd-sub-menu.dd-current
-    {
-      *overflow-y: auto;
-      *overflow-x: hidden;
-      *height: 208px;
-      *width: 398px;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-
-    .dd-sub-menu
-    {
-      margin: 0;
-      padding: 0;
-      position: static;
-      width: 100%;
-    }
-
-    .dd-submenu li, .dd-submenu a
-    {
-      height: 40px;
-    }
-
-    .dd-item-text
-    {
-      color: #444;
-      width: 100%;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: inline-block;
-      padding: 6px 0 7px 10px;
-      font-size: 10px;
-    }
-
-    .dd-noresults
-    {
-      padding: 10px;
-      font-size: 14px;
-      color: #666;
-    }
-
-    .dd-parent-a > .dd-item-text
-    {
-      width: 90%;
-    }
-
-    .dd-checked .dd-item-text
-    {
-      width: 80%;
-    }
-
-
-    ul.dd-current li.dd-current-item
-    {
-      display: block;
-    }
-
-    li.dd-subitems-visible
-    {
-      display: block;
-    }
-
-    .dd-wrapper a.dd-subitems-visible-link
-    {
-      display: none;
-    }
-
-    .dd-items a
-    {
-      outline:none;
-      text-decoration: none;
-      display: block;
-      position: relative;
-    }
-
-    .dd-header a.link-back
-    {
-      text-decoration: none;
-      display: block;
-      padding: 5px 10px 0 20px;
-    }
-
-    /* DEFAULT THEME */
-    .light-grey .dd-wrapper
-    {
-      background: #FFF;
-      border: 1px solid #c7c7c7;
-      -webkit-border-radius: 0px 6px 6px 6px;
-      -moz-border-radius: 0px 6px 6px 6px;
-      border-radius: 0px 6px 6px 6px;
-      box-shadow: 0px 2px 2px rgba(0, 0, 0, .3);
-    }
-
-    .light-grey .dd-header
-    {
-      background-color: #e8e8e8;
-      border-bottom: 1px solid #c7c7c7;
-    }
-
-    .light-grey .dd-items a
-    {
-      text-decoration: none;
-      border-bottom: 1px solid #ccc;
-    }
-
-    .light-grey .dd-item-text,
-    .light-grey .dd-expand,
-    .light-grey .dd-item-marker,
-    .light-grey .dd-menu li
-    {
-      background-color: #fcfcfc;
-    }
-
-    .light-grey .dd-item-text:hover,
-    .light-grey .dd-expand:hover,
-    .light-grey .dd-items .dd-selectable a .dd-item-text:active,
-    .light-grey .dd-items .dd-selectable a .dd-expand:active
-    {
-      background-color: #efefef;
-    }
-
-    .light-grey .dd-items .dd-selected a .dd-item-text
-    {
-      background-color: #d8ebf8;
-    }
-
-    .light-grey .dd-target-button:hover
-    {
-      cursor: pointer;
-      background: #ededed;
-      background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ededed), color-stop(100%,#e0e0e0));
-      background: -webkit-linear-gradient(top, #ededed 0%,#e0e0e0 100%);
-      background: -moz-linear-gradient(top, #ededed 0%, #e0e0e0 100%);
-      background: -ms-linear-gradient(top, #ededed 0%,#e0e0e0 100%);
-      background: -o-linear-gradient(top, #ededed 0%,#e0e0e0 100%);
-      background: linear-gradient(to bottom, #ededed 0%,#e0e0e0 100%);
-    }
-
-    .dd-block-counter {
-      font-size:10px;
-      float: left;
-      margin-right: 8px;
-      font-weight: bold;
-      margin-top: 10px;
-      position: relative;
-    }
-
-    div a.dd-block:hover {
-      color: #74DFFF;
-      text-decoration:none;
-    }
-
-    div a.dd-block {
-      float: left;
-      background-color: #3a3a3a;
-      color: white;
-      padding: 6px 0px 6px 6px;
-      margin-right: 8px;
-      margin-bottom: 3px;
-      margin-top: 3px;
-      border-radius: 3px;
-      cursor:pointer;
-      text-decoration:none;
-    }
-
-    div a.dd-new-block {
-      background-color: rgba(0, 0, 0, 0.5);
-      -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
-      filter: alpha(opacity=60);
-    }
-
-    div a.dd-deleted-block {
-      text-decoration: line-through;
-    }
-
-    div a.dd-deleted-block:hover {
-      text-decoration: line-through;
-    }
-
-    .dd-tooltip {
-      position:absolute;
-      left: 30px;
-      top: -7px;
-      background-color: #3a3a3a;
-      color: white;
-      padding: 7px;
-      border-radius: 6px;
-    }
-
-    .dd-tooltip:before {
-      content:"\A";
-      border-style: solid;
-      border-width: 10px 15px 10px 0;
-      border-color: transparent #3a3a3a transparent transparent;
-      position: absolute;
-      top: 3px;
-      left: -10px;
-    }
-
-    .dd-target-button-arrow {
-      float: left;
-    }
-
-    .dd-block-wrapper {
-      float: right;
-      -webkit-padding-start: 0;
-      -webkit-margin-before: 0;
-      -webkit-margin-after: 0;
-    }
-
-    .dd-block span {
-      text-align: center;
-      margin-left: 7px;
-      visibility: hidden;
-      color: #fff !important;
-      padding: 6px;
-    }
-
-    .dd-block span:hover {
-      color:red !important;
-    }
-
-    .dd-button-selected .dd-block span {
-      visibility: visible;
-    }
-
-    .dd-deleted-block span {
-      visibility: hidden !important;
-    }
-
-
-    .light-grey .dd-button-select
-    {
-      background-color: #333;
-      color: #FFF;
-      border-bottom: none;
-    }
-
-    .light-grey .dd-cancel
-    {
-      color: #345FCB;
-    }
-
-    .light-grey li.dd-current-item a:focus .dd-item-text
-    {
-      background-color: #ededed;
-    }
-  </style>-->
-  <link rel="import" href="bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-  <link rel="import" href="bower_components/paper-menu/paper-menu.html">
-  <link rel="import" href="bower_components/paper-item/paper-item.html">
+  <style>    body.loading #splash {
+  opacity: 1;
+}
+body.loading{overflow:hidden}
+#splash {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transition: opacity 300ms cubic-bezier(0,0,0.2,1);
+  opacity: 0;
+  will-change: opacity;
+  z-index: 1;
+  background-image: url('https://reportal.euro.confirmit.com/isa/BDJPFRDMEYBPBKLVADAYFQCDAVIOEQJR/MaterialDreamDemo/confirmitLogo.png');
+  background-color: #FFFFFF;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center center;
+}</style>
 </head>
 
-<body>
-<div class="yui-panel-container shadow yui-overlay-hidden" id="wait_c" style="visibility: hidden; left: 840px; top: 518px; z-index: 4;"><div id="wait" class="yui-module yui-overlay yui-panel" style="visibility: inherit; width: 240px;"><div class="hd" style="cursor: auto;">Please wait...</div><div class="bd"><img src="/cf_clientutil/images/loading.gif"></div></div></div>
+<body class="loading fullbleed layout vertical">
 <span id="browser-sync-binding"></span>
+
+<div id="splash"></div>
+<div class="yui-panel-container shadow yui-overlay-hidden" id="wait_c" style="visibility: hidden; left: 840px; top: 518px; z-index: 4;"><div id="wait" class="yui-module yui-overlay yui-panel" style="visibility: inherit; width: 240px;"><div class="hd" style="cursor: auto;">Please wait...</div><div class="bd"><img src="/cf_clientutil/images/loading.gif"></div></div></div>
+
 <script src="scripts/report.js"></script>
 
 <dom-module id="global-scope">
@@ -502,33 +59,49 @@
       #reportFilters>::content #filters .dateRange reportal-calendar{
         @apply(--layout-flex);
       }
-      #reportalPage>::content #materialVOCoverview kpi-tile{width:calc(98.66% - 16px); margin: 16px 8px; min-width:250px;}
-      #reportalPage>::content #materialVOCoverview, #reportalPage>::content #materialVOCoverview2{margin-bottom:32px;min-width:250px;}
-      #reportalPage>::content #materialVOCoverview2 kpi-tile{width:calc(98.66% - 16px); margin: 16px 8px;min-width:250px;}
+
+      #reportalPage>::content kpi-tile{width:calc(98.66% - 16px); margin: 16px 8px; min-width:250px;}
+      #reportalPage>::content #materialVOCoverview, #reportalPage>::content #VOC1{margin-bottom:32px;min-width:250px;}
+      #reportalPage>::content #VOC1 kpi-tile .tile-content{padding:0 16px 16px 16px;}
 
     </style>
-    <report-master>
-      <reportal-sidebar id="reportalSidebar" filters selected="1" logo="https://www.confirmit.com/Confirmit/media/confirmit-corporate/templates/global-nav-logo.png">
-        <div id="reportMenu" >
-          <reportal-menu legacy-icons="polymer|warning|settings" legacy-icons-separator="|">
+    <report-master >
+      <reportal-sidebar id="reportalSidebar" filters selected="0" logo="https://reportal.euro.confirmit.com/isa/BDJPFRDMEYBPBKLVADAYFQCDAVIOEQJR/MaterialDreamDemo/confirmitLogo.png">
+        <div id="reportMenu">
+          <reportal-menu legacy-icons="polymer|speaker-notes|maps:directions-walk|device:devices|communication:comment|av:equalizer|history|communication:contact-phone|settings" legacy-icons-separator="|">
             <content select="#menu"></content>
-          </reportal-menu>
-        </div>
+          </reportal-menu> </div>
+
         <div id="reportFilters"><content select="#filters"></content></div>
       </reportal-sidebar>
       <div id="reportalPage">
-        <!-- Main Area -->
         <content></content>
       </div>
+
 
     </report-master>
   </template>
   <script>
-    window.addEventListener('WebComponentsReady', function() {
-      Polymer({
-        is:'global-scope'
-      })
-    });
+    var link = document.querySelector('#bundle');
+    if (link.import && link.import.readyState === 'complete') {
+     window.addEventListener('WebComponentsReady', function () {
+        console.log('on import loaded');
+        var loadEl = document.getElementById('splash');
+        loadEl.addEventListener('transitionend', function () {
+          loadEl.style.display = 'none';
+          loadEl.parentNode.removeChild(loadEl);
+        });
+
+        document.body.classList.remove('loading');
+
+        Polymer({
+          is: 'global-scope',
+          attached: function () {
+            this.updateStyles();
+          }
+        })
+     });
+    }
   </script>
 </dom-module>
 
@@ -564,7 +137,7 @@
       <reportal-list label="Customer Group">
         <span class="reportal_hide_print"><span id="c39860b07_abd2_4972_b62f_d0d00900fb63"><input id="c39860b07_abd2_4972_b62f_d0d00900fb63_0" type="checkbox" name="c39860b07_abd2_4972_b62f_d0d00900fb63$0" value="r:s:Z1" checked><label for="c39860b07_abd2_4972_b62f_d0d00900fb63_0">Global</label><input id="c39860b07_abd2_4972_b62f_d0d00900fb63_6" type="checkbox" name="c39860b07_abd2_4972_b62f_d0d00900fb63$6" value="r:s:Z7"><label for="c39860b07_abd2_4972_b62f_d0d00900fb63_6">Vendor (Buyback)</label><br><input id="c39860b07_abd2_4972_b62f_d0d00900fb63_1" type="checkbox" name="c39860b07_abd2_4972_b62f_d0d00900fb63$1" value="r:s:Z2"><label for="c39860b07_abd2_4972_b62f_d0d00900fb63_1">Corporate</label><input id="c39860b07_abd2_4972_b62f_d0d00900fb63_7" type="checkbox" name="c39860b07_abd2_4972_b62f_d0d00900fb63$7" value="r:s:Z8"><label for="c39860b07_abd2_4972_b62f_d0d00900fb63_7">Staff</label><br><input id="c39860b07_abd2_4972_b62f_d0d00900fb63_2" type="checkbox" name="c39860b07_abd2_4972_b62f_d0d00900fb63$2" value="r:s:Z3"><label for="c39860b07_abd2_4972_b62f_d0d00900fb63_2">Key</label><input id="c39860b07_abd2_4972_b62f_d0d00900fb63_8" type="checkbox" name="c39860b07_abd2_4972_b62f_d0d00900fb63$8" value="r:s:Z9"><label for="c39860b07_abd2_4972_b62f_d0d00900fb63_8">Intercompany</label><br><input id="c39860b07_abd2_4972_b62f_d0d00900fb63_3" type="checkbox" name="c39860b07_abd2_4972_b62f_d0d00900fb63$3" value="r:s:Z4"><label for="c39860b07_abd2_4972_b62f_d0d00900fb63_3">Standard</label><input id="c39860b07_abd2_4972_b62f_d0d00900fb63_9" type="checkbox" name="c39860b07_abd2_4972_b62f_d0d00900fb63$9" value="r:s:ZA"><label for="c39860b07_abd2_4972_b62f_d0d00900fb63_9">Nursery</label><br><input id="c39860b07_abd2_4972_b62f_d0d00900fb63_4" type="checkbox" name="c39860b07_abd2_4972_b62f_d0d00900fb63$4" value="r:s:Z5"><label for="c39860b07_abd2_4972_b62f_d0d00900fb63_4">Private</label><input id="c39860b07_abd2_4972_b62f_d0d00900fb63_10" type="checkbox" name="c39860b07_abd2_4972_b62f_d0d00900fb63$10" value="r:s:NA"><label for="c39860b07_abd2_4972_b62f_d0d00900fb63_10">Not assigned</label><br><input id="c39860b07_abd2_4972_b62f_d0d00900fb63_5" type="checkbox" name="c39860b07_abd2_4972_b62f_d0d00900fb63$5" value="r:s:Z6"><label for="c39860b07_abd2_4972_b62f_d0d00900fb63_5">Distributor</label></span></span>
       </reportal-list>
-      <reportal-list class="dd" force-custom-label>
+      <reportal-list class="dd" force-custom-label vertical-align="bottom">
         <div class="wrapper-label">Customer Group</div>
 
 <span class="reportal_hide_print"><select name="c39860b07_abd2_4972_b62f_d0d00900fb63" id="c39860b07_abd2_4972_b62f_d0d00900fb63">  <option selected="selected" value=""></option>
@@ -653,6 +226,14 @@
     </paper-toolbar>
 
     <div class="content">
+      <paper-radio-group selected="small">
+        <paper-radio-button name="small">Small</paper-radio-button>
+        <paper-radio-button name="medium">Medium</paper-radio-button>
+        <paper-radio-button name="large">Large</paper-radio-button>
+      </paper-radio-group>
+
+
+
       <reportal-list class="dd" force-custom-label>
         <div class="wrapper-label">Customer Group</div>
           <span class="reportal_hide_print">
@@ -680,19 +261,24 @@
         <kpi-tile heading="Promoters" class="flex-1">
           <div class="tile-content">
             <div class="layout horizontal flex-12">
-              <reportal-aggregated-table  visible-rows="5" colattr-legacy="sortable|headerContent:Country|hidable|hidingToggleText:Mountry;hidingToggleText:Marget|hidable;hidable;hidable;hidable|renderer:html;hidable">
+              <reportal-aggregated-table indexed indexed-header="index" colattr-legacy="sortable|headerContent:Sections|hidable|hidingToggleText:Sections;sortable|hidingToggleText:Marget|hidable;hidable;hidable;hidable|renderer:html;hidable">
                 <table id="confirmit_agg_table" class="t0_table bgred_txtwhite"><colgroup><col width="250"><col><col><col><col width="200px"><col></colgroup><thead>
                 <tr class="t0_tr">
-                  <td rowspan="2">
+                  <td rowspan="3">
                   </td>
-                  <td class="t0_chc bgred_txtwhite" rowspan="2">% Fav</td>
-                  <td class="t0_chc bgred_txtwhite" rowspan="2">% Neut</td>
+                  <td class="t0_chc bgred_txtwhite" rowspan="3">% Fav</td>
+                  <td class="t0_chc bgred_txtwhite" >% Neut</td>
                   <td class="t0_chc bgred_txtwhite" rowspan="2">% Unfav</td>
-                  <td class="t0_chc bgred_txtwhite" rowspan="2" width="200px">%</td>
+                  <td class="t0_chc bgred_txtwhite" rowspan="3" width="200px">%</td>
                   <td class="t0_chc bgred_txtwhite">% difference on Favourable score</td>
                 </tr>
                 <tr class="t0_tr">
+                  <td class="t0_chc bgred_txtwhite" rowspan="2">yay</td>
                   <td class="t0_chc bgred_txtwhite">Our 2013 Results</td>
+                </tr>
+                <tr class="t0_tr">
+                  <td class="t0_chc bgred_txtwhite">Some Cell</td>
+                  <td class="t0_chc bgred_txtwhite">Last Row Last Cell</td>
                 </tr>
                 </thead>
                   <tbody>
@@ -851,7 +437,7 @@
           <div id="info">Hello, this is some info about<br> NPS</div>
         </kpi-tile>
 
-        <kpi-tile heading="Big Aggregated Table" class="flex-8">
+        <!--<kpi-tile heading="Big Aggregated Table" class="flex-8">
                 <div class="tile-content">
                   <div class="layout horizontal flex-12">
                 <reportal-aggregated-table id="l2" selection-mode="multi" indexed visible-rows="10" frozen-columns="1" colattr-legacy="sortable|sort-direction:asc;sortable|hidable;sortable|hidable;sortable;sortable;"><table id="confirmit_agg_table" class="t0_table table table-hover">
@@ -954,7 +540,7 @@
                 </div></div>
                 <div id="info">Hello, this is some info about<br> NPS</div>
 
-              </kpi-tile>
+              </kpi-tile>-->
       </div>
       <paper-material elevation="1">
         <reportal-filter-summary use-grouping class="bottom-title paper-font-subhead"><div class="filter-summary"><table cellpadding="5" cellspacing="0">
@@ -1109,7 +695,7 @@
     </div>
   </paper-scroll-header-panel>
 </global-scope>
-
+<!--<script src="scripts/crapp.js"></script>-->
 </body>
 
 </html>

@@ -105,8 +105,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           var table = this.$.source.querySelector('table');
           if(table){
             this.grid = grid;
-            this._defineData(this.$.source.querySelector('table'));
-            this._defineHeader(grid);
+            this._defineData(table);
+            this._defineHeader(grid,table);
             if(this.visibleRows){grid.rows=this.visibleRows;}
             if(this.selectionMode){grid.selection.mode=this.selectionMode;}
             if(this.frozenColumns){
@@ -119,10 +119,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         },
         attached:function(){
-            this.async(this.notifyResize,100);
+          this.async(this.notifyResize,100);
         },
         _defineData:function(table){
-          this.data=[];var rows;
+          this.data=[];
+          var rows;
           for(var ch=0;ch<table.children.length;ch++){
             // we want to get the topmost table and not its cells content tables if any
             if(table.children[ch].localName==='tbody'){rows=table.children[ch].children; break;}
@@ -144,20 +145,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
           }
           this.grid.items = this.data;
+          console.log(this.grid.items)
           // append conditional formatting from corresponding table cells
           this.grid.cellClassGenerator = function(cell){
             return rows[cell.row.index].children[cell.index].className;
           };
         },
         /*_defineAttr:function(propN,propV){
-          if(propV){
-            if(typeof propV === 'string'){
-              return ' '+propN+'="'+propV+'"';
-            } else if (typeof propV === 'boolean') {
-              return ' '+propN;
-            }
-          }
-        },*/
+         if(propV){
+         if(typeof propV === 'string'){
+         return ' '+propN+'="'+propV+'"';
+         } else if (typeof propV === 'boolean') {
+         return ' '+propN;
+         }
+         }
+         },*/
         /**
          * Converts array["key","value"] to object {key:"value"} respecting int,string,bool
          */
@@ -194,12 +196,98 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             this.colattr.push(tempColAttr);
           }
         },
-        _defineHeader:function(host){
+        _defineHeader:function(host,source){
+          Object.size = function(obj) {
+            var size = 0, key;
+            for (key in obj) {
+              if (obj.hasOwnProperty(key)) size++;
+            }
+            return size;
+          };
+
           //first define column quantity of the table
-          var columns = this.data[0]|| this.$.source.querySelectorAll('tbody tr:last-child td');
+          var columns = this._getImmediateChildrenByName(source,'tbody')[0].lastElementChild.children;
+          var columnsCount = columns.length;
+
           if(this.indexed){
             host.addColumn({headerContent:this.indexedHeader, maxWidth:'100px', sortable:true}); //append index
+            columnsCount++;
           }
+          //console.log('total columns: '+columnsCount);
+          var thead = this._getImmediateChildrenByName(source,'thead')[0];
+          var rowcount = thead.children.length;
+          //console.log('rowcount '+rowcount);
+          var abstraction = {};
+          for(var a=0;a<rowcount;a++){
+            var realRow = thead.children[a]; //real row
+            //console.log(realRow);
+            //console.log('row '+a +'exists? '+abstraction.hasOwnProperty(a.toString()));
+            var aRow = abstraction[a] = abstraction[a] || {}; //abstraction row (might exist)
+            //console.log('row '+a +'exists? '+abstraction.hasOwnProperty(a.toString()));
+
+            var aRowLength = 0;
+            for(var rowTD = 0; rowTD<realRow.children.length;rowTD++){
+              var curTD = realRow.children[rowTD]; //current cell
+              var realIndex;
+              //console.log(curTD);
+              var colspan = curTD.colSpan;
+              var rowspan = curTD.rowSpan;
+              var label = curTD.textContent;
+              //console.log('colSpan '+ colspan)
+              //console.log('rowspan '+rowspan)
+              //console.log('label '+label)
+
+              if(colspan||rowspan||label){
+                var finalTDcellIndex=rowTD;
+                /* if entry exists (there was a rowspan in previous row and it transferred label to next possible row), we need to find a new home for curTD
+                 * all cells are filled sequentially, so we need to find a break in indexing sequence*/
+                //console.log(aRow.hasOwnProperty(rowTD))// create cell for this abstract row
+                if(aRow.hasOwnProperty(rowTD)) { //this entry exists (it can exist if was filled by previous row where a cell had a rowspan)
+                  //console.log(rowTD+' cell exists, will search for new place');
+                  var realTDindex = 0;
+                  var cellIsFound = false;
+                  for (key in aRow) {
+                    if (parseInt(key) === realTDindex) {
+                      //console.log(key+' cell is also used');
+                      realTDindex++
+                    } else {
+                      cellIsFound = true;
+                      //console.log(realTDindex+' cell is just perfect');
+                      finalTDcellIndex = realTDindex;
+                      break;
+                    }
+                  }
+                  if(!cellIsFound){
+                    //console.log('we\'ve ran out of options with'+ realTDindex+' cell, let\'s make it a '+ realTDindex+1 +' ?');
+                    finalTDcellIndex = realTDindex++;
+                  }
+                }
+                var key = a; //is this current row or it has rowspan and we append label to the bottommost row?
+                //console.log('has rowspan, current row is' + a+' cell is '+finalTDcellIndex);
+                if(!rowspan){rowspan=1}
+                for(var ri=0;ri<rowspan;ri++){
+                  if(rowspan){key=a+ri;}
+                  //console.log('row is '+key);
+                  //console.log('from rowspan row '+key+' exists? '+abstraction.hasOwnProperty(key))
+                  if(!abstraction.hasOwnProperty(key)){abstraction[key]={}}// is there such a row in abstraction?
+                  //console.log('from rowspan cell '+finalTDcellIndex+' exists? '+abstraction[key].hasOwnProperty(finalTDcellIndex))
+                  if(!abstraction[key].hasOwnProperty(finalTDcellIndex)){
+                    abstraction[key][finalTDcellIndex]={};
+                    if(ri===rowspan-1){ // if it's the last row
+                      abstraction[key][finalTDcellIndex].label = label.trim().length>0?label.trim():''; // use label if more than empty else empty string
+                    } else {abstraction[key][finalTDcellIndex].label = ''}
+                  } else {
+
+                  }
+                  if(colspan>1){abstraction[key][finalTDcellIndex].colspan = colspan;}
+                }
+                if(abstraction[key]!==abstraction[a]){aRow[finalTDcellIndex].label = ''} // if there was rowspan, this cell is empty and needs empty label
+              } else {aRow[rowTD].label=''}
+              //console.log(JSON.stringify(abstraction));
+              aRowLength++;
+            }
+          }
+
           if(columns && columns.length>0){
             var colattr = this.colattr;
             for(var i=0;i<columns.length;i++){
@@ -214,62 +302,63 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               host.addColumn(colProp);
             }
           }
-          // then define number of rows in the header
-          var headerRows =  this.$.source.querySelectorAll('table:first-child>thead>tr');
-            for(var hr=0;hr<headerRows.length;hr++){
-              if(hr>0){host.header.addRow();} // add next row else fill first row
-              if(hr===headerRows.length-1){host.header.defaultRow = headerRows.length-1;} //set default(bottom) row of header for sorting and such
-              var ths = headerRows[hr].children;
-              var columnIncr=0;
-              if(hr>0){
-                columnIncr++;
-              }
-              if(this.indexed){
-                columnIncr++;
-              }
-              for(var thsi = 0;thsi<ths.length;thsi++){
-                //detect if there's a colspan on the column and
-                var THcolspan = ths[thsi].getAttribute('colspan');
-                var tmpCell=host.header.getCell(hr,columnIncr);
-                // if it's last header row && this cell has contents && col doesn't have headerText or it does, but there isn't header override, pass this value to col
-                if(hr===headerRows.length-1 ){ // if it's the main row
-                  if(THcolspan){host.header.getCell(hr, !this.indexed?thsi:thsi+1).colspan = THcolspan;}
-                  if(host.columns[columnIncr].headerContent.length>0 && this.columnHeaderOverride){
-                    tmpCell.content = host.columns[columnIncr].headerContent;
-                    if(!host.columns[columnIncr].hidingToggleText){host.columns[columnIncr].hidingToggleText = host.columns[columnIncr].headerContent;}
-                  } else {
-                    tmpCell.content = ths[thsi].textContent;
-                    if(!host.columns[columnIncr].hidingToggleText){host.columns[columnIncr].hidingToggleText = ths[thsi].textContent;}
-                  }
-                } else {
-                  tmpCell.content = ths[thsi].textContent;
-                }
-                if(THcolspan){
-                  //tmpCell.colspan = THcolspan;
-                  columnIncr += THcolspan-1;
-                }
-                columnIncr++;
-              }
+
+          for(var idx in abstraction){
+            if(idx>0){
+              console.log('will add a row');
+              host.header.addRow();
             }
+            console.log(typeof parseInt(idx));
+            if(parseInt(idx)===(parseInt(rowcount)-1)){
+              host.header.defaultRow = parseInt(rowcount)-1;
+              console.log('defaultRow '+host.header.defaultRow);
+            }
+            this._fillHeaderRow(idx,parseInt(rowcount),abstraction[idx],host);
+          }
+        },
+        _fillHeaderRow:function(row,rowCount,data,host){
+          for(var cellIdx in data){
+            var trueCellIdx = !this.indexed?parseInt(cellIdx):parseInt(cellIdx)+1;
+            var cell = host.header.getCell(row,trueCellIdx);
+            var props = data[cellIdx];
+            if(props.colspan){cell.colspan = props.colspan}
+            if(row==(rowCount-1)){
+              if(this.indexed){ // apply index text content to header cell
+                host.header.getCell(row,0).content = host.columns[0].headerContent;
+              }
+              if(host.columns[trueCellIdx].headerContent && host.columns[trueCellIdx].headerContent.length>0 && this.columnHeaderOverride){ //if we need to override and we have text to override with
+                cell.content = host.columns[trueCellIdx].headerContent;
+                if(!host.columns[trueCellIdx].hidingToggleText){host.columns[trueCellIdx].hidingToggleText = host.columns[trueCellIdx].headerContent;}
+              } else {
+                cell.content = props.label;
+                if(!host.columns[trueCellIdx].hidingToggleText){host.columns[trueCellIdx].hidingToggleText = props.label;}
+              }
+            } else {
+              cell.content=props.label;
+            }
+          }
         },
         _sortChange:function(e){
+          console.log(e);
           if(e.target.classList.contains('sort-desc') || e.target.classList.contains('sort-asc') ){
-            var idx = this.grid.data.sortOrder[0].column;
+            console.log(Polymer.dom(this.grid));
+            var idx = this.grid.sortOrder[0].column;
+            console.log(idx);
             /*if this column was sorted before just flip it*/
             if(this._sortedColumn === idx){
               this.data.reverse();
-              this.grid.data.clearCache();
+              this.grid.refreshItems();
             } else { //not sorted
               this.sorter();
-              this.grid.data.clearCache();
+              this.grid.refreshItems();
             }
-            this._sortedColumn = this.grid.data.sortOrder[0].column;
+            this._sortedColumn = this.grid.sortOrder[0].column;
           } else if(e.target.parentElement.localName === 'th' && e.target.parentElement.classList.contains('vaadin-grid-cell')){e.target.parentElement.click();}
         },
         sorter:function(){
           var grid = this.grid;
-          var idx = grid.data.sortOrder[0].column;
-          var lesser = grid.data.sortOrder[0].direction === 'asc' ? -1 : 1;
+          var idx = grid.sortOrder[0].column;
+          var lesser = grid.sortOrder[0].direction === 'asc' ? -1 : 1;
           this.data.sort(function(a,b){
             var x,y;
             x = a[idx]; y = b[idx];
@@ -279,6 +368,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               return x.toLowerCase() < y.toLowerCase() ? lesser : x.toLowerCase() > y.toLowerCase() ? -lesser : 0;
             }
           });
+        },
+        _getImmediateChildrenByName:function(source, tagname){
+          return Polymer.dom(source).children.filter(function(item){return item.localName===tagname});
         },
         _guid:function(){
           var S4 = function(){
