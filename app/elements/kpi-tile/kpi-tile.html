@@ -320,6 +320,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host.hasInfo #tile>::content .tile-content reportal-aggregated-table .vaadin-grid-sidebar.vaadin-grid{
         right: 40px;
       }
+      :host[assisted] #tile>::content .tile-content reportal-aggregated-table .vaadin-grid-sidebar.vaadin-grid{
+        right: 40px;
+      }
+      :host[assisted].hasInfo #tile>::content .tile-content reportal-aggregated-table .vaadin-grid-sidebar.vaadin-grid{
+        right: 80px;
+      }
 
     </style>
     <paper-material animated$="[[animatedShadow]]" elevation="[[elevation]]"></paper-material>
@@ -329,6 +335,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div class="header">
             <iron-icon hidden$="[[!icon]]" icon="[[icon]]"></iron-icon>
             <div hidden$="[[!heading]]" id="tileHeading" >[[heading]]</div>
+            <r-speech-input-button hidden$="[[!assisted]]" context$={{context}} action-data="{{actionData}}"></r-speech-input-button>
             <div hidden$="[[!info]]" class="button" on-click="_displayInfo">
               <iron-icon  icon="info-outline" id="infoIcon"></iron-icon>
               <paper-tooltip for="infoIcon" position="bottom" offset="0">[[tooltip]]</paper-tooltip>
@@ -362,12 +369,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         Polymer.IronResizableBehavior
       ],
       listeners: {
-        'iron-resize': '_onIronResize'
+        'iron-resize': '_onIronResize',
+        //'action-data-change':'propagateToChildren'
+
+      },
+      properties:{
+        actionData:{
+          type:Object,
+          observer:'propagateToChildren',
+          notify:true
+        },
+        context:{
+          type:String,
+          notify:true
+        }
+
       },
       ready:function(){
         var _this = this;
         this._computeHeadingClass();
         this.async(this._computeInfo);
+      },
+      propagateToChildren:function(e){
+        var children = this.querySelectorAll('[assisted]');
+          for(var i=0;i<children.length;i++){
+            children[i].actionData=this.actionData;
+          }
       },
 
       _onIronResize:function(e){

@@ -162,38 +162,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         ready:function(){
           var el;
-          //this.async(
-          //function(){
-          /*this.$.dd._selectedItemChanged = function(selectedItem) {
-            var paperListbox = this.querySelector('paper-listbox');
-            var value = '';
-            this.async(function(){if (!selectedItem) {
-              if(paperListbox && paperListbox.selectedItems && paperListbox.selectedItems.length>0){
-                var labels = [];
-                for(var i=0;i<paperListbox.selectedItems;i++){
-                  labels.push(paperListbox.selectedItems[i].textContent.trim())
-                }
-                value = labels.join(', ');
-              } else {value = '';}
-
-            } else {
-              if(paperListbox && paperListbox.selectedItems && paperListbox.selectedItems.length>0){
-                console.log(paperListbox.selectedItems);
-                var labels = [];
-                for(var i=0;i<paperListbox.selectedItems;i++){
-                  console.log(paperListbox.selectedItems[i]);
-                  labels.push(paperListbox.selectedItems[i].textContent.trim())
-                }
-                value = labels.join(', ');
-              } else {
-                value = selectedItem.label || selectedItem.textContent.trim();
-              }
-            }
-
-            this._setValue(value);
-            this._setSelectedItemLabel(value);});
-          }*/
-
           var inlineLabel = this.$.wrapperLabel.querySelector('.wrapper-label');
           if(inlineLabel && !this.label){this.label=inlineLabel.textContent;}
           if(Polymer.dom(this).querySelector('input')){
@@ -209,9 +177,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               Polymer.dom(this.$.ddListbox).setAttribute('multi','');
               this.multi = true;
             }
-            if(this.label || this.forceCustomLabel){this._computeLabel(this.label);}
-            if(this.forceCustomLabel){
+            if(!this.forceCustomLabel){
+              //Polymer.dom(this.$.dd).setAttribute('always-float-label','');
+            } else {
               this.$.dd.noLabelFloat = true;
+              this._computeLabel(this.label);
             }
             this.isDropdown=true;
             this.listType = 'dropdown';
@@ -243,6 +213,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             rg=document.createElement('paper-radio-group');
             Polymer.dom(rg).setAttribute('attr-for-selected','target');
           }
+
           var cbr = Polymer.dom(this).querySelectorAll('input[type="'+this.listType+'"]');
           if(cbr.length>0){
             var c;

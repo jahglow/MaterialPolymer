@@ -37,7 +37,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           'column-header-override': true
         },
         listeners:{
-          'tap':'_sortChange'
+          //'tap':'_sortChange',
+          //'vgrid.sort-order-changed':'_sorttry'
+          //'action-data-change':'voiceControl'
         },
         behaviors: [
           Polymer.IronResizableBehavior
@@ -69,6 +71,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             value:[],
             notify:true
           },
+          actionData:{
+            type:Object,
+            observer:'voiceControl'
+          },
           _sortedColumn:{
             type:Number,
             value:null
@@ -91,11 +97,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               return {
                 html:function(cell){
                   cell.element.innerHTML = cell.data;
+                },
+                striphtml:function(cell){
+                  var tempEl = document.createElement('span'); tempEl.innerHTML = cell.data;
+                  cell.element.innerHTML=tempEl.textContent.trim();
                 }
               }
             }
-          },
-
+          }
+        },
+        voiceControl:function(){
+          if(this.actionData.result.action && this.actionData.result.action.indexOf('table.')>-1){
+            console.log('we have the action');
+            var params = this.actionData.result.parameters;
+            var action = this.actionData.result.action.split('.')[1];
+            return this[action](params);
+          }
+        },
+        sortColumn:function(params){
+          console.log(params);
+          if(params.sortDirection && params.sortDirection.length>0 && params.columnNumber && params.columnNumber.length>0){
+            var column = params.columnNumber>0?parseInt(params.columnNumber)-1:this.grid.columns.length-1;
+            this.grid.sortOrder = [{column:column, direction:params.sortDirection}];
+          }
         },
         ready:function(){
           if(this.colattrLegacy && this.colattrLegacy.length>0){
@@ -114,13 +138,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               grid.frozenColumns=this.frozenColumns;
             }
             this.vaadinID = this._guid();
-            Polymer.dom(grid).setAttribute('id',this.vaadinID);
+            Polymer.dom(grid).setAttribute('id','vgrid');
             Polymer.dom(this.$.grid).appendChild(grid);
+            var that=this;
+            this.grid.addEventListener('sort-order-changed',function(e){return that._sortChange(e)})
           }
         },
         attached:function(){
           this.async(this.notifyResize,100);
         },
+        _sorttry:function(e){console.log('sorted')},
         _defineData:function(table){
           this.data=[];
           var rows;
@@ -133,6 +160,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               var curRow=[];
               if(this.indexed){curRow.push(i+1);}//append index
               for(var ri=0;ri<rows[i].children.length;ri++){
+                //checks if this cell has HTML tags inside, probably we need to keep them
                 curRow.push(rows[i].children[ri].children.length>0?rows[i].children[ri].innerHTML:rows[i].children[ri].textContent.trim());
                 var csp=rows[i].children[ri].getAttribute('colspan');
                 if(csp){
@@ -145,7 +173,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
           }
           this.grid.items = this.data;
-          console.log(this.grid.items)
+          //console.log(this.grid.items)
           // append conditional formatting from corresponding table cells
           this.grid.cellClassGenerator = function(cell){
             return rows[cell.row.index].children[cell.index].className;
@@ -305,13 +333,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           for(var idx in abstraction){
             if(idx>0){
-              console.log('will add a row');
+              //console.log('will add a row');
               host.header.addRow();
             }
-            console.log(typeof parseInt(idx));
+            //console.log(typeof parseInt(idx));
             if(parseInt(idx)===(parseInt(rowcount)-1)){
               host.header.defaultRow = parseInt(rowcount)-1;
-              console.log('defaultRow '+host.header.defaultRow);
+              //console.log('defaultRow '+host.header.defaultRow);
             }
             this._fillHeaderRow(idx,parseInt(rowcount),abstraction[idx],host);
           }
@@ -339,21 +367,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         },
         _sortChange:function(e){
-          console.log(e);
-          if(e.target.classList.contains('sort-desc') || e.target.classList.contains('sort-asc') ){
-            console.log(Polymer.dom(this.grid));
             var idx = this.grid.sortOrder[0].column;
-            console.log(idx);
             /*if this column was sorted before just flip it*/
             if(this._sortedColumn === idx){
               this.data.reverse();
-              this.grid.refreshItems();
             } else { //not sorted
               this.sorter();
-              this.grid.refreshItems();
             }
             this._sortedColumn = this.grid.sortOrder[0].column;
-          } else if(e.target.parentElement.localName === 'th' && e.target.parentElement.classList.contains('vaadin-grid-cell')){e.target.parentElement.click();}
         },
         sorter:function(){
           var grid = this.grid;
@@ -362,6 +383,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.data.sort(function(a,b){
             var x,y;
             x = a[idx]; y = b[idx];
+            var regex = /[<>]/g;
+            if(regex.test(x) || regex.test(y)){ // if we need to sort elements that have HTML like links
+              var tempEl1 = document.createElement('span'); tempEl1.innerHTML = x;
+              x=tempEl1.textContent.trim();
+              var tempEl2 = document.createElement('span'); tempEl2.innerHTML = y;
+              y=tempEl2.textContent.trim();
+            }
+            //console.log( document.createElement('span').innerHTML=)
             if(!isNaN(parseFloat(x)) && !isNaN(parseFloat(y))){
               return parseFloat(x) <  parseFloat(y) ? lesser :  parseFloat(x) >  parseFloat(y) ? -lesser : 0;
             } else {

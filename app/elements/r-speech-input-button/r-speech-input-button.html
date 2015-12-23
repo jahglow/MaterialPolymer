@@ -1,0 +1,325 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+<link rel="import" href="..\..\bower_components/iron-icons/av-icons.html">
+<link rel="import" href="..\..\bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="..\..\bower_components/voice-elements/dist/voice-player.html">
+<link rel="import" href="..\..\bower_components/voice-elements/dist/voice-recognition.html">
+<link rel="import" href="..\..\bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module id="r-speech-input-button">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+        position: relative;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+      }
+
+      :host #micContainer {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+
+      :host #micContainer[recognizing], :host #micContainer[speaking] {
+        z-index: 10;
+      }
+
+      :host .micIconWrapper {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+      }
+
+      :host iron-icon {
+        display: block;
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        width: 24px;
+        height: 24px;
+        pointer-events: none;
+      }
+
+      :host [recognizing]>.micIconWrapper, :host [speaking]>.micIconWrapper {
+        background-color: #d23f31;
+        box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      }
+      :host [speaking]>.micIconWrapper {
+        background-color: var(--accent-color, #1f8dd6);
+      }
+      :host [recognizing]>.micIconWrapper>iron-icon, :host [speaking]>.micIconWrapper>iron-icon{
+        color: #fff;
+      }
+
+      :host .ring {
+        display: none;
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        border-radius: 100%;
+      }
+
+      :host [recognizing] > .ring, :host [speaking] > .ring {
+        display: block;
+        background-color: rgba(0, 0, 0 , 0.1);
+        -webkit-animation: ring 1.2s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+      }
+
+      @-webkit-keyframes ring {
+        0% {
+          -webkit-transform: scale(0.5);
+        }
+        40% {
+          -webkit-transform: scale(0.8);
+        }
+        100% {
+          -webkit-transform: scale(1);
+        }
+      }
+
+      :host .ring2 {
+        display: none;
+        position: absolute;
+        top: -100%;
+        left: -100%;
+        width: 300%;
+        height: 300%;
+        border-radius: 100%;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+      }
+
+      :host [recognizing] > .ring2, :host [speaking] > .ring2 {
+        display: block;
+        -webkit-animation: ring2 1.5s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+      }
+
+      @-webkit-keyframes ring2 {
+        0% {
+          -webkit-transform: scale(0.3);
+        }
+        40% {
+          -webkit-transform: scale(0.5);
+        }
+        100% {
+          -webkit-transform: scale(1);
+        }
+      }
+    </style>
+
+    <div id="micContainer" recognizing$="{{recognizing}}" speaking$="{{speaking}}">
+      <div class="ring"></div>
+      <div class="ring2"></div>
+      <div class="micIconWrapper">
+        <iron-icon id="micIcon" icon$="av:[[micIcon]]"></iron-icon>
+      </div>
+    </div>
+    <voice-recognition id="speechToText" accent$="{{accent}}" continuous="false"></voice-recognition>
+    <iron-ajax id="ajax"
+               url=""
+               handle-as="json"
+               last-response="{{lastResponse}}"
+               debounce-duration="300"
+               verbose></iron-ajax>
+    <voice-player id="textToSpeech"></voice-player>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      var SUPPORTED_LANGS = ['af-ZA', 'id-ID', 'ms-MY', 'ca-ES', 'cs-CZ', 'de-DE', 'en-US', 'en-AU', 'en-CA', 'en-IN', 'en-NZ', 'en-ZA', 'en-GB', 'es-AR', 'es-BO', 'es-CL', 'es-CO', 'es-CR', 'es-EC', 'es-SV', 'es-ES', 'es-US', 'es-GT', 'es-HN', 'es-MX', 'es-NI', 'es-PA', 'es-PY', 'es-PE', 'es-PR', 'es-DO', 'es-UY', 'es-VE', 'eu-ES', 'fr-FR', 'gl-ES', 'hr_HR', 'zu-ZA', 'is-IS', 'it-IT', 'it-CH', 'hu-HU', 'nl-NL', 'nb-NO', 'pl-PL', 'pt-BR', 'pt-PT', 'ro-RO', 'sk-SK', 'fi-FI', 'sv-SE', 'tr-TR', 'bg-BG', 'ru-RU', 'sr-RS', 'ko-KR', 'zh-cmn-Hans-CN', 'cmn-Hans-CN', 'cmn-Hans-HK', 'cmn-Hant-TW', 'yue-Hant-HK', 'ja-JP', 'la'];
+      Polymer({
+        is: 'r-speech-input-button',
+        listeners:{
+          'micContainer.tap':'micTap',
+          'speechToText.start':'_recognitionStarted',
+          'speechToText.end':'_recognitionEnded',
+          'speechToText.abort':'_recognitionAborted',
+          'speechToText.result':'_processResult',
+          'ajax.response':'handleResponse',
+          'textToSpeech.end':'endedPlayback'
+        },
+
+        properties: {
+          /* set up values to work with api.ai*/
+          accessToken:{
+            type:String,
+            value: '2b151565ff7b4a8488f00acd7e80ab3e'
+          },
+          subscriptionKey:{
+            type:String,
+            value: 'e8be8c1e-e2dd-4f44-b769-9b8c49886ce4'
+          },
+          baseUrl:{
+            type:String,
+            value:'https://api.api.ai/v1/'
+          },
+          /* end of set up*/
+
+          recognizing: {
+            type: Boolean,
+            value: false,
+            notify: true
+          },
+          speaking: {
+            type: Boolean,
+            value: false,
+            notify: true
+          },
+          accent: {
+            type: String,
+            value: 'en-US',
+            observer: '_accentChanged',
+            notify: true
+          },
+          micIcon:{
+            type: String,
+            value: 'mic',
+            notify:true
+          },
+          lastResponse:{
+            type:Object
+          },
+          actionData:{
+            type:Object,
+            notify:true
+          },
+          context:String
+        },
+        /* -- Lifecycle ------------------------------------------------- */
+        micTap:function(e){
+          if(!this.recognizing){
+            this.$.speechToText.start();
+          } else {
+            this.$.speechToText.abort();
+          }
+        },
+        _recognitionStarted:function(e){
+          //console.log('recognition started');
+          //console.log(e);
+          this.recognizing=true;
+        },
+        _recognitionEnded:function(e){
+          //console.log('recognition ended');
+          //console.log(e);
+          this.micIcon='mic-none';
+          this.recognizing=false;
+        },
+        _recognitionAborted:function(e){
+          //console.log('recognition aborted');
+          //console.log(e);
+          this.recognizing=false;
+        },
+        _processResult:function(e){
+          //console.log('result received');
+          //console.log(e);
+          this.requestResponse(e);
+          this.$.speechToText.text="";
+        },
+
+        requestResponse:function(e){
+          console.log(e);
+          var text = e.detail.result;
+          //var text = e;
+          this.$.speechToText.stop();
+          console.log('recognized: '+text);
+          /*var contexts=[];
+          if(!this.lastResponse){
+            console.log('last response is undefined');
+            contexts.push(this.context);
+          } else {
+            if(this.lastResponse.result.contexts){
+              for(var i=0; i<this.lastResponse.result.contexts.length;i++){
+                contexts.push(this.lastResponse.result.contexts[i].name);
+              }
+            } else {
+              contexts = this.lastResponse.result.metadata.contexts;
+            }
+            //contexts = this.lastResponse.result.hasOwnProperty('contexts')?this.lastResponse.result.contexts.map(function(item){return item.name}):this.lastResponse.result.metadata.contexts.map(function(item){return item.name});
+            if(contexts.length===0){
+              contexts.push(this.context);
+            }
+          }console.log(contexts);*/
+
+          this.$.ajax.url = this.baseUrl + 'query/';
+          //this.$.ajax.body = JSON.stringify({ q: text, lang: this.findSupportedLang(this.accent), contexts: contexts, v:"20151222"});
+          var body = {};
+          body.q = text;
+          body.lang = this.findSupportedLang(this.accent).substring(0,2);
+          body.v = 20151222;
+          //if(!this.lastResponse){body.contexts = [this.context];}
+          this.$.ajax.body = JSON.stringify(body);
+
+          console.log(this.$.ajax.body);
+          this.$.ajax.headers = {"Authorization":"Bearer " + this.accessToken, "ocp-apim-subscription-key": this.subscriptionKey};
+          this.$.ajax.contentType = 'application/json; charset=utf-8';
+          this.$.ajax.method="POST";
+          this.$.ajax.generateRequest();
+        },
+        handleResponse:function(){
+          console.log('response received');
+          var r=this.lastResponse;
+          console.log(r);
+
+          if(r.status.code===200){
+            var speech = r.result.fulfillment?r.result.fulfillment.speech:r.result.speech;
+            if(speech.length>0){ // we have follow-up
+              this.$.textToSpeech.text = speech;
+              this.micIcon='volume-up';
+              this.speaking=true;
+              this.$.textToSpeech.speak();
+            } else {
+              this.micIcon='mic';
+            }
+            if(!r.result.actionIncomplete && r.result.hasOwnProperty('action') && r.result.action.length>0){ //we assume that the person has to provide answers to follow-ups
+              this.actionData = r;
+              console.log('applied latest data');
+              //this.fire('action-data-change',e);
+            }
+          }
+        },
+        endedPlayback:function(){
+          this.$.textToSpeech.text='';
+          this.speaking=false;
+          this.micIcon='mic';
+          if(!this.lastResponse.result.hasOwnProperty('action') || this.lastResponse.result.action.length===0){ //we assume that the person has to provide answers to follow-ups
+            this.$.speechToText.start();
+          }
+        },
+        _accentChanged: function() {
+          this.$.speechToText.accent = this.findSupportedLang(this.accent);
+        },
+        findSupportedLang: function(l) {
+          if (SUPPORTED_LANGS.indexOf(l) >= 0) {
+            return l;
+          } else {
+            var ll = l.substring(0, 2);
+            for (var i = 0, sl; sl = SUPPORTED_LANGS[i]; i++) {
+              if (sl.indexOf(ll) === 0) {
+                return sl;
+              }
+            }
+          }
+        }
+      });
+    })();
+  </script>
+</dom-module>
