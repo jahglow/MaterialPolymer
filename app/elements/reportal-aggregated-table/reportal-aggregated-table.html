@@ -11,6 +11,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="..\..\bower_components/polymer/polymer.html">
 <link rel="import" href="..\..\bower_components/vaadin-grid/vaadin-grid.html">
 <link rel="import" href="..\..\bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="..\reportal-table-behavior/reportal-table-behavior.html">
 
 
 <dom-module id="reportal-aggregated-table">
@@ -33,47 +34,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       Polymer({
         is: 'reportal-aggregated-table',
-        hostAttributes: {
-          'column-header-override': true
-        },
         listeners:{
           //'tap':'_sortChange',
           //'vgrid.sort-order-changed':'_sorttry'
           //'action-data-change':'voiceControl'
         },
         behaviors: [
-          Polymer.IronResizableBehavior
+          Polymer.IronResizableBehavior,
+          Polymer.ReportalTableBehavior
         ],
+
+        /*many properties and methods are inherited from ReportalTableBehavior */
 
         properties: {
           selectionMode:{
             type:String,
             value: 'disabled'
-          },
-          frozenColumns:{
-            type:Number,
-            value:0
-          },
-          colattrLegacy:{
-            type:String,
-            value:''
-          },
-          colattr:{
-            type:Array,
-            value:[]
-          },
-          columnHeaderOverride:{
-            type:Boolean,
-            value:false
-          },
-          data:{
-            type:Array,
-            value:[],
-            notify:true
-          },
-          actionData:{
-            type:Object,
-            observer:'voiceControl'
           },
           _sortedColumn:{
             type:Number,
@@ -86,39 +62,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           indexedHeader:{
             type:String,
             value:'#'
-          },
-          /* firstColumnHeadr allows to set the header of the first column (unsupported by Reportal natively)*/
-          firstColumnHeader:String,
-          visibleRows:Number,
-          vaadinID:String,
-          renderer:{
-            type: Object,
-            value: function(){
-              return {
-                html:function(cell){
-                  cell.element.innerHTML = cell.data;
-                },
-                striphtml:function(cell){
-                  var tempEl = document.createElement('span'); tempEl.innerHTML = cell.data;
-                  cell.element.innerHTML=tempEl.textContent.trim();
-                }
-              }
-            }
-          }
-        },
-        voiceControl:function(){
-          if(this.actionData.result.action && this.actionData.result.action.indexOf('table.')>-1){
-            console.log('we have the action');
-            var params = this.actionData.result.parameters;
-            var action = this.actionData.result.action.split('.')[1];
-            return this[action](params);
-          }
-        },
-        sortColumn:function(params){
-          console.log(params);
-          if(params.sortDirection && params.sortDirection.length>0 && params.columnNumber && params.columnNumber.length>0){
-            var column = params.columnNumber>0?parseInt(params.columnNumber)-1:this.grid.columns.length-1;
-            this.grid.sortOrder = [{column:column, direction:params.sortDirection}];
           }
         },
         ready:function(){
@@ -137,7 +80,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               if(this.indexed){this.frozenColumns+=1;}
               grid.frozenColumns=this.frozenColumns;
             }
-            this.vaadinID = this._guid();
             Polymer.dom(grid).setAttribute('id','vgrid');
             Polymer.dom(this.$.grid).appendChild(grid);
             var that=this;
@@ -147,7 +89,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         attached:function(){
           this.async(this.notifyResize,100);
         },
-        _sorttry:function(e){console.log('sorted')},
         _defineData:function(table){
           this.data=[];
           var rows;
@@ -188,42 +129,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
          }
          }
          },*/
-        /**
-         * Converts array["key","value"] to object {key:"value"} respecting int,string,bool
-         */
-        _a2o:function(obj,key,val){
-          if(obj && key){
-            if(val && val.length>0){
-              if(key!=='renderer'){
-                obj[key]=this._isInt(val)?parseInt(val):val;
-              } else { // process renderers via this.renderer.Renderer_name property
-                obj[key]=this.renderer[val];
-              }
-            } else {obj[key]=true;} //it's a boolean
-          }
-        },
-        /**
-         * Checks if value is a number
-         */
-        _isInt:function(val){
-          return (!isNaN(parseInt(val)) && parseInt(val).toString().length===val.length);
-        },
-        _processLegacyAttributes:function(data){
-          var aColAttrs=data.split(';'),attrPairs,attrPair;
-          for(var i=0;i<aColAttrs.length;i++){
-            var tempColAttr=[];
-            if(aColAttrs[i].length>0){
-              attrPairs=aColAttrs[i].split('|');
-              for(var ap=0;ap<attrPairs.length;ap++){
-                if(attrPairs[ap].length>0){
-                  attrPair=attrPairs[ap].split(':');
-                  tempColAttr.push(attrPair);
-                }
-              }
-            }
-            this.colattr.push(tempColAttr);
-          }
-        },
         _defineHeader:function(host,source){
           Object.size = function(obj) {
             var size = 0, key;
@@ -398,17 +303,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
           });
         },
-        _getImmediateChildrenByName:function(source, tagname){
-          return Polymer.dom(source).children.filter(function(item){return item.localName===tagname});
-        },
-        _guid:function(){
-          var S4 = function(){
-            return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
-          };
-          // then to call it, plus stitch in '4' in the third group
-          var guid = (S4() + S4() + '_' + S4() ).toLowerCase();
-          return(guid);
-        }
       });
     })();
   </script>

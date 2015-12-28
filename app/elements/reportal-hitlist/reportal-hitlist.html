@@ -10,11 +10,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="..\..\bower_components/polymer/polymer.html">
 <link rel="import" href="..\..\bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="..\..\bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="..\..\bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="..\..\bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="..\..\bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="..\..\bower_components/paper-item/paper-item.html">
+<link rel="import" href="..\..\bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="..\..\bower_components/paper-progress/paper-progress.html">
 <link rel="import" href="..\..\bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
 <dom-module id="reportal-hitlist">
   <template>
     <style>
-
+      :host{
+        display:block;
+      }
+      :host >paper-card {
+        display:block;
+      }
       input[type="checkbox"] + label:after {
         content: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTZweCIgaGVpZ2h0PSIxNnB4IiB2aWV3Qm94PSIwIDAgMTYgMTYiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMi4zMDEyODMyOCw4LjY2MzI1NTM5IEw1Ljk2ODk0OTUyLDEyLjI0NTM5ODcgQzYuMzYwNzYxNiwxMi42MjgwNzQ0IDYuOTg3NTAyMTUsMTIuNjI0Mzc3OSA3LjM3NDc3MzAyLDEyLjIzNzEwNyBMMTMuOTA0NzczMiw1LjcwNzEwNjc4IEMxNC4yOTUyOTc1LDUuMzE2NTgyNDkgMTQuMjk1Mjk3NSw0LjY4MzQxNzUxIDEzLjkwNDc3MzIsNC4yOTI4OTMyMiBDMTMuNTE0MjQ4OSwzLjkwMjM2ODkzIDEyLjg4MTA4NCwzLjkwMjM2ODkzIDEyLjQ5MDU1OTcsNC4yOTI4OTMyMiBMNS45NjA1NTk0NiwxMC44MjI4OTM0IEw3LjM2NjM4Mjk2LDEwLjgxNDYwMTggTDMuNjk4NzE2NzIsNy4yMzI0NTg1IEMzLjMwMzYxMzA3LDYuODQ2NTY3OTEgMi42NzA0OTIxNCw2Ljg1NDAzNjU3IDIuMjg0NjAxNTUsNy4yNDkxNDAyMiBDMS44OTg3MTA5Niw3LjY0NDI0Mzg4IDEuOTA2MTc5NjIsOC4yNzczNjQ4IDIuMzAxMjgzMjgsOC42NjMyNTUzOSBMMi4zMDEyODMyOCw4LjY2MzI1NTM5IFoiIGZpbGw9IiNmZmZmZmYiPjwvcGF0aD48L3N2Zz4=) !important;
       }
@@ -340,10 +352,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         padding-bottom: 16px;
       }
       :host paper-progress{
-          --paper-progress-active-color: var(--accent-color,#e91e63);
+        --paper-progress-active-color: var(--accent-color,#e91e63);
       }
+      :host #columnApply{
+        background: var(--default-primary-color, #03A9F4);
+        color: var(--text-primary-color, #FFFFFF);
+      }
+      :host #columnList paper-icon-item iron-icon{display:none}
+      :host #columnList paper-icon-item[checked] iron-icon{display:block}
     </style>
     <paper-card heading="hitlist">
+      <div id="gridControls" class="horizontal end-justified layout"></div>
+      <!--<paper-menu-button  horizontal-align="right" vertical-offset="52" ignore-select>
+          <paper-icon-button id="columnToggle" icon="view-column" class="dropdown-trigger"></paper-icon-button>
+          <paper-tooltip id="columnToggleTooltip" for="columnToggle" position="bottom"></paper-tooltip>
+          <paper-meterial class="dropdown-content">
+            <paper-item on-tap="columnReset" id="columnReset"></paper-item>
+            <paper-item on-tap="columnCheckall" id="columnCheckall"></paper-item>
+            <paper-listbox id="columnList" selected-attribute="checked" attr-for-selected="value" multi>
+              <template is="dom-repeat" items="[[columns]]" as="column">
+                <paper-icon-item value$="[[column.value]]"><iron-icon icon="check" item-icon></iron-icon>{{column.name}}</paper-icon-item>
+              </template>
+
+            </paper-listbox>
+            <paper-button id="columnCancel"></paper-button>
+            <paper-button raised id="columnApply"></paper-button>
+          </paper-meterial>
+        </paper-menu-button>-->
+
+
       <paper-progress hidden$="[[loaded]]" indeterminate style="width:100%"></paper-progress>
       <vaadin-grid id="hitlist"></vaadin-grid>
     </paper-card>
@@ -355,17 +392,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       Polymer({
         is: 'reportal-hitlist',
+        /*listeners:{
+         //'columnList.iron-select':'_selectOriginal',
+         //'columnList.iron-deselect':'_deselectOriginal'
+         },*/
 
         behaviors: [
-          Polymer.IronResizableBehavior
+          Polymer.IronResizableBehavior,
+          Polymer.ReportalTableBehavior
         ],
 
         properties: {
-          data: {
-            type: Array,
-            value: [],
-            notify: true
-          },
           longText:{
             type:String
           },
@@ -378,13 +415,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             value:false
           },
           previousSort:{
-            type:Object,
-            value:{}
+            type:Object
+          },
+          columns:{
+            type:Array,
+            notify:true
+          },
+          checkallLabels:{
+            type:Array,
+            value:[]
           }
         },
         attached:function(){
+          this.grid = this.$.hitlist;
           var that=this;
-          this.$.hitlist.addEventListener('sort-order-changed',function(e){return that._sortChange(e)});
+          this.grid.addEventListener('sort-order-changed',function(e){return that._sortChange(e)});
           //return that.debounce('getHitlist',function(){that._retrieveHitList()},50);
           if (typeof YUI !== 'undefined') {
             YUI().use('event-custom', function (Y) {
@@ -398,7 +443,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if(this.longText){
             var detailsOpenIndex = -1;
             // Show details for the selected row
-            var grid = this.$.hitlist;
+            var grid = this.grid;
             grid.addEventListener('selected-items-changed', function() {
               grid.setRowDetailsVisible(detailsOpenIndex, false);
               var selected = grid.selection.selected();
@@ -434,25 +479,41 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         },
         _retrieveHitList:function(){
-          this._getHitListHeading();
+          if(this.grid.columns.length===0){this._getHitListHeading();}
           this._getHitListData();
+          //this._getHitListColumnToggle();
           this.loaded=true;
         },
         _getHitListHeading:function(){
           var heading = this.querySelectorAll('.yui3-datatable-table>.yui3-datatable-columns>tr>th');
-          var grid = this.$.hitlist;
+          var grid = this.grid;
+
           if(grid.columns.length>0){grid.columns=[];}
           if(this.longText){
             var lt = this.longText.split(',');
           }
           if(heading && heading.length>0){
+            if(this.colattrLegacy && this.colattrLegacy.length>0){
+              this._processLegacyAttributes(this.colattrLegacy);
+            }
+
             for(var i=1;i<heading.length;i++){
               var attr={};
               attr.name = heading[i].textContent.trim();
               attr.sortable = heading[i].classList.contains('yui3-datatable-sortable-column')?true:false;
+              attr.hidable = true;
               if(lt && lt.indexOf((i).toString())>-1){
                 attr.maxWidth = parseInt(this.longTextWidth);
               }
+              var colattr = this.colattr;
+              if(colattr[i-1]){
+                for(var ci=0;ci<colattr[i-1].length;ci++){ // populate column properties
+                  if(colattr[i-1][ci].length>0){
+                    this._a2o(attr,colattr[i-1][ci][0],colattr[i-1][ci][1]);
+                  }
+                }
+              }
+              attr.hidingToggleText = attr.name;
               grid.addColumn(attr);
               if(heading[i].classList.contains('yui3-datatable-sorted')){
                 grid.sortOrder = heading[i].classList.contains('yui3-datatable-sorted-desc')? [{column: i-1, direction: "desc"}]:[{column: i-1, direction: "asc"}];
@@ -462,7 +523,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         _getHitListData:function(){
           var DS = this.querySelectorAll('tbody.yui3-datatable-data>tr');
-          var grid = this.$.hitlist;
+          var grid = this.grid;
           var items = [];
           if(DS && DS.length>0){
             for(var i=0;i<DS.length;i++){
@@ -476,14 +537,133 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             grid.size = items.length;
           }
         },
+        /*_getHitListColumnToggle:function(){
+         var nativeColumnToggle = this.querySelector('.yui3-datatable-table>thead th:first-child>.hitlist-btn');
+         this.$.columnToggleTooltip.textContent=nativeColumnToggle.getAttribute('title');//set tooltip text
+         nativeColumnToggle.click();
+         var self = this;
+         this.poll(function(){return self.querySelector('.hitlist>.hitlist-column-panel')},
+         function(){
+         var colDD= self.querySelector('.hitlist>.hitlist-column-panel');
+         if(colDD){
+         //set "Show default columns" dropdown text
+         self.$.columnReset.textContent=colDD.querySelector('.hitlist-column-panel-reset').textContent.trim();
+         //populate column action buttons
+         self.$.columnCancel.textContent = colDD.querySelector('.hitlist-column-panel-cancel').textContent.trim();
+         //self.$.columnCancel.addEventListener('tap',function(e){console.log(e.target.domHost.querySelector('.hitlist-column-panel-cancel'))});
+         self.$.columnApply.textContent = colDD.querySelector('.hitlist-column-panel-apply').textContent.trim();
+         //populate CheckAll button and columns to reflect checkboxes
+         var columns = Polymer.dom(colDD).querySelectorAll('.hitlist-column-row');
+         var aColumns = [];
+         for(var i=0;i<columns.length;i++){
+         var o={};
+         o.value=columns[i].children[0].value;
+         o.name=columns[i].children[1].textContent.trim();
+         console.log(o);
+         aColumns.push(o);
+         }
+         self.columns=aColumns;
+
+         self._columnCheckboxes();
+         }
+         },function(){
+         console.error('failed to find column control menu');
+         },5000,500);
+         },
+         columnReset:function(){
+         this.querySelector('.yui3-datatable-table>thead th:first-child>.hitlist-btn').click();
+         this.async(function(){console.log('click reset');this.querySelector('.hitlist-column-panel-reset').click();});
+         this.async(function () {
+         console.log('columnReset, calc anew');
+         this._columnCheckboxes();
+         }, 100);
+         },
+         columnCheckall:function(){
+         console.log(this.checkallLabels);
+         if(this.$.columnList.selectedValues.length>0 && this.$.columnList.selectedValues===this.columns.length){
+         this.$.columnList.selectedValues=[];
+         Polymer.dom(this.$.columnCheckall).textContent = this.checkallLabels[1];
+         //this.querySelector('.yui3-datatable-table>thead th:first-child>.hitlist-btn').click();
+         } else {
+         this.$.columnList.selectedValues=this.columns.map(function(item){return item.value});
+         Polymer.dom(this.$.columnCheckall).textContent = this.checkallLabels[0];
+         }
+         },
+         columnCancel:function(){
+         this.querySelector('.yui3-datatable-table>thead th:first-child>.hitlist-btn').click();
+         this.async(function (){this.querySelector('.hitlist-column-panel-cancel').click()},100);
+         //this.querySelector('paper-menu-button').close();
+         this.async(function (){this._columnCheckboxes();},150);
+         },
+         columnApply:function(){
+         this.querySelector('.yui3-datatable-table>thead th:first-child>.hitlist-btn').click();
+         var checkedItems=this.$.columnList.selectedItems;
+         checkedItems=checkedItems.map(function(item){return item.value});
+         console.log(checkedItems);
+         var cb = this.querySelector('.hitlist>.hitlist-column-panel .hitlist-column-row>input');
+         for(var i=0;i<cb.length;i++){
+         if(checkedItems.indexOf(cb[i].value)){
+         cb[i].checked=true;
+         } else {
+         cb[i].checked=false
+         }
+         }
+         //this.querySelector('paper-menu-button').close();
+         this.querySelector('.hitlist-column-panel-apply').click();
+         //this.async(function () {this._columnCheckboxes();}, 50);
+         },
+         _columnCheckboxes:function(){
+         console.log('_columnCheckboxes');
+         var colDD= this.querySelector('.hitlist>.hitlist-column-panel');
+         //set "Uncheck all" dropdown text
+         Polymer.dom(this.$.columnCheckall).textContent=colDD.querySelector('.hitlist-column-panel-checkall').textContent.trim();
+         var columns = Polymer.dom(colDD).querySelectorAll('.hitlist-column-row');
+         //take care of checked columns array
+         this.async(function(){
+         console.log('_columnCheckboxes async');
+         var checked = columns.filter(function(item){console.log(item.children[0]); return item.children[0].getAttribute('checked')==='checked'});
+         console.log(checked);
+         var map=checked.map(function(item){return item.children[0].value});
+         if(this.checkallLabels.length===0){
+         this.checkallLabels.push(colDD.querySelector('.hitlist-column-panel-checkall').textContent.trim());
+         colDD.querySelector('.hitlist-column-panel-checkall').click();
+         if(checked.length===columns.length){ // applied check all label
+         this.async(function(){this.checkallLabels.unshift(colDD.querySelector('.hitlist-column-panel-checkall').textContent.trim())},100);
+         } else {
+         this.async(function(){this.checkallLabels.push(colDD.querySelector('.hitlist-column-panel-checkall').textContent.trim())},100);
+         }
+         }
+         console.log(this.checkallLabels);
+         this.$.columnList.selectedValues= map;
+         console.log(map);
+         },100);
+         },
+         _selectOriginal:function(e){
+         console.log(e);
+         var el = this.querySelector('.hitlist>.hitlist-column-panel input[value="' + e.detail.item.value + '"]');
+         console.log('apply check')
+         el.setAttribute('checked',true);
+         el.checked=true;
+         console.log(el);
+         },
+         _deselectOriginal:function(e){
+         console.log(e);
+         var el = this.querySelector('.hitlist>.hitlist-column-panel input[value="' + e.detail.item.value + '"]');
+         console.log('remove check')
+         el.removeAttribute('checked');
+         el.checked=false;
+         console.log(el);
+         },*/
         _sortChange:function(e){
-          console.log(e.detail.value[0]);
-          console.log(this.previousSort);
           if(!this.previousSort || (this.previousSort && (this.previousSort.column !== e.detail.value[0].column || this.previousSort.direction !== e.detail.value[0].direction))){
             this.loaded=false;
-            this.previousSort = e.detail.value[0];
-            console.log(e.detail.value[0].column+1);
-            this.querySelectorAll('.yui3-datatable-columns th')[e.detail.value[0].column+1].click();
+            var column = this.querySelectorAll('.yui3-datatable-columns th')[e.detail.value[0].column+1];
+            if(column.classList.contains('yui3-datatable-sorted') && !this.previousSort){
+              this.previousSort = e.detail.value[0];
+            } else {
+              column.click();
+              this.previousSort = e.detail.value[0];
+            }
           }
         }
 

@@ -1,0 +1,149 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+
+
+<script>
+  'use strict';
+  Polymer.ReportalTableBehavior = {
+    hostAttributes: {
+      'column-header-override': true
+    },
+    properties: {
+
+      /**
+       * The title of the card.
+       */
+      frozenColumns:{
+        type:Number,
+        value:0
+      },
+      colattrLegacy:{
+        type:String,
+        value:''
+      },
+      colattr:{
+        type:Array,
+        value:[]
+      },
+      columnHeaderOverride:{
+        type:Boolean,
+        value:false
+      },
+      data:{
+        type:Array,
+        value:[],
+        notify:true
+      },
+      actionData:{
+        type:Object,
+        observer:'voiceControl'
+      },
+      visibleRows:Number,
+      renderer:{
+        type: Object,
+        value: function(){
+          return {
+            html:function(cell){
+              cell.element.innerHTML = cell.data;
+            },
+            striphtml:function(cell){
+              var tempEl = document.createElement('span'); tempEl.innerHTML = cell.data;
+              cell.element.innerHTML=tempEl.textContent.trim();
+            }
+          }
+        }
+      },
+      assisted:{
+        type:Boolean,
+        value:false
+      }
+    },
+    voiceControl:function(){
+      if(this.actionData.result.action && this.actionData.result.action.indexOf('table.')>-1){
+        console.log('we have the action');
+        var params = this.actionData.result.parameters;
+        var action = this.actionData.result.action.split('.')[1];
+        return this[action](params);
+      }
+    },
+    sortColumn:function(params){
+      console.log(params);
+      if(params.sortDirection && params.sortDirection.length>0 && params.columnNumber && params.columnNumber.length>0){
+        var column = params.columnNumber>0?parseInt(params.columnNumber)-1:this.grid.columns.length-1;
+        this.grid.sortOrder = [{column:column, direction:params.sortDirection}];
+      }
+    },
+    /**
+     * Converts array["key","value"] to object {key:"value"} respecting int,string,bool
+     */
+    _a2o:function(obj,key,val){
+      if(obj && key){
+        if(val && val.length>0){
+          if(key!=='renderer'){
+            obj[key]=this._isInt(val)?parseInt(val):val;
+          } else { // process renderers via this.renderer.Renderer_name property
+            obj[key]=this.renderer[val];
+          }
+        } else {obj[key]=true;} //it's a boolean
+      }
+    },
+    /**
+     * Checks if value is a number
+     */
+    _isInt:function(val){
+      return (!isNaN(parseInt(val)) && parseInt(val).toString().length===val.length);
+    },
+    _processLegacyAttributes:function(data){
+      var aColAttrs=data.split(';'),attrPairs,attrPair;
+      for(var i=0;i<aColAttrs.length;i++){
+        var tempColAttr=[];
+        if(aColAttrs[i].length>0){
+          attrPairs=aColAttrs[i].split('|');
+          for(var ap=0;ap<attrPairs.length;ap++){
+            if(attrPairs[ap].length>0){
+              attrPair=attrPairs[ap].split(':');
+              tempColAttr.push(attrPair);
+            }
+          }
+        }
+        this.colattr.push(tempColAttr);
+      }
+    },
+    _getImmediateChildrenByName:function(source, tagname){
+      return Polymer.dom(source).children.filter(function(item){return item.localName===tagname});
+    },
+    poll:function(fn, callback, errback, timeout, interval) {
+      var endTime = Number(new Date()) + (timeout || 2000);
+      interval = interval || 100;
+
+      (function p() {
+        // If the condition is met, we're done!
+        if(fn()) {
+          callback();
+        }
+        // If the condition isn't met but the timeout hasn't elapsed, go again
+        else if (Number(new Date()) < endTime) {
+          setTimeout(p, interval);
+        }
+        // Didn't match and too much time, reject!
+        else {
+          errback(new Error('timed out for ' + fn + ': ' + arguments));
+        }
+      })();
+    }
+
+
+
+  };
+
+</script>
+
