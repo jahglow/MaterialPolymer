@@ -78,7 +78,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         is: 'report-master',
         listeners:{
           'paper-header-transform':'_condenseHeader',
-          'tap':'_panelToggle'
+          'tap':'_panelToggle',
         },
         properties:{
           replaceLoadingAnimation:{
@@ -89,7 +89,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         ready:function(){
           if(this.replaceLoadingAnimation){this._replaceLoadingAnimation();}
         },
-
         _panelToggle:function(e){
           if(e.target.hasAttribute('paper-drawer-toggle') || e.target.parentNode.hasAttribute('paper-drawer-toggle')){
             this.$.paperDrawerPanel.openDrawer();

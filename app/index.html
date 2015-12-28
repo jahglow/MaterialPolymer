@@ -42,6 +42,896 @@ body.loading{overflow:hidden}
 </head>
 
 <body class="loading fullbleed layout vertical">
+<style>
+  .hitlist-container, .hitlist-container *
+  {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+  .hitlist-container
+  {
+    text-align:left;
+    font-size: 10px;
+    font-family: Verdana, arial, sans-serif;
+  }
+
+  .hitlist .yui3-datatable-table
+  {
+    cursor: pointer;
+    empty-cells: show;
+  }
+
+  .hitlist .yui3-datatable-cell
+  {
+    zoom: 1;
+    empty-cells: show;
+    font-family: verdana, arial, sans-serif;
+    font-size: 11px;
+  }
+
+  .hitlist .yui3-datatable-header
+  {
+    cursor: default;
+    white-space:nowrap;
+  }
+
+  /* Reusable gradients */
+  .light-grey .hitlist .yui3-datatable-header,
+  .light-grey .hitlist .yui3-datatable-odd:hover .yui3-datatable-cell,
+  .light-grey .hitlist .yui3-datatable-even:hover .yui3-datatable-cell,
+  .light-grey .hitlist-nav-prev,
+  .light-grey .hitlist-nav-next,
+  .light-grey .hitlist-nav-page,
+  .light-grey a.hitlist-nav-prev.disabled:active,
+  .light-grey a.hitlist-nav-next.disabled:active,
+  .light-grey a.hitlist-nav-page.disabled:active,
+  .light-grey a.hitlist-nav-prev.disabled:hover,
+  .light-grey a.hitlist-nav-next.disabled:hover,
+  .light-grey a.hitlist-nav-page.disabled:hover
+  {
+    background-color: #F1F1F1;
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#F9F9F9),to(#ECECEC));
+    background-image: -webkit-linear-gradient(top,#F9F9F9,#ECECEC);
+    background-image:    -moz-linear-gradient(top,#F9F9F9,#ECECEC);
+    background-image:     -ms-linear-gradient(top,#F9F9F9,#ECECEC);
+    background-image:      -o-linear-gradient(top,#F9F9F9,#ECECEC);
+    background-image:         linear-gradient(top,#F9F9F9,#ECECEC);
+  }
+
+  .light-grey .hitlist th.yui3-datatable-sorted,
+  .light-grey .hitlist-dropdown-button,
+  .light-grey .hitlist-btn,
+  .light-grey .hitlist-dropdown-panel,
+  .light-grey .hitlist-column-panel
+  {
+    background-color: #F4F4F4;
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#F4F4F4),to(#ECECEC));
+    background-image: -webkit-linear-gradient(top,#F4F4F4,#ECECEC);
+    background-image:    -moz-linear-gradient(top,#F4F4F4,#ECECEC);
+    background-image:     -ms-linear-gradient(top,#F4F4F4,#ECECEC);
+    background-image:      -o-linear-gradient(top,#F4F4F4,#ECECEC);
+    background-image:         linear-gradient(top,#F4F4F4,#ECECEC);
+  }
+
+  .light-grey .hitlist-nav-prev:hover,
+  .light-grey .hitlist-nav-next:hover,
+  .light-grey .hitlist-nav-page:hover
+  {
+    background-color: #F1F1F1;
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#F9F9F9),to(#d4d4d4));
+    background-image: -webkit-linear-gradient(top,#F9F9F9,#d4d4d4);
+    background-image:    -moz-linear-gradient(top,#F9F9F9,#d4d4d4);
+    background-image:     -ms-linear-gradient(top,#F9F9F9,#d4d4d4);
+    background-image:      -o-linear-gradient(top,#F9F9F9,#d4d4d4);
+    background-image:         linear-gradient(top,#F9F9F9,#d4d4d4);
+  }
+
+  .light-grey .hitlist-nav-prev:active,
+  .light-grey .hitlist-nav-next:active,
+  .light-grey .hitlist-nav-page:active
+  {
+    background-color: #F1F1F1;
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#d4d4d4),to(#F9F9F9));
+    background-image: -webkit-linear-gradient(top,#d4d4d4,#F9F9F9);
+    background-image:    -moz-linear-gradient(top,#d4d4d4,#F9F9F9);
+    background-image:     -ms-linear-gradient(top,#d4d4d4,#F9F9F9);
+    background-image:      -o-linear-gradient(top,#d4d4d4,#F9F9F9);
+    background-image:         linear-gradient(top,#d4d4d4,#F9F9F9);
+  }
+
+  .light-grey .hitlist-dropdown-button:hover,
+  .light-grey .hitlist-btn:hover
+  {
+    background: #e7e7e7;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#e7e7e7), color-stop(100%,#e1e1e1));
+    background: -webkit-linear-gradient(top,  #e7e7e7 0%,#e1e1e1 100%);
+    background:    -moz-linear-gradient(top,  #e7e7e7 0%,#e1e1e1 100%);
+    background:     -ms-linear-gradient(top,  #e7e7e7 0%,#e1e1e1 100%);
+    background:      -o-linear-gradient(top,  #e7e7e7 0%,#e1e1e1 100%);
+    background:         linear-gradient(top,  #e7e7e7 0%,#e1e1e1 100%);
+  }
+
+  .light-grey a.hitlist-nav-prev.disabled:hover,
+  .light-grey a.hitlist-nav-next.disabled:hover,
+  .light-grey a.hitlist-nav-page.disabled:hover
+  {
+    border: 1px solid #DFDFDF;
+    cursor: default;
+  }
+
+  .light-grey .hitlist th.yui3-datatable-header, .light-grey  div.yui3-datatable-sort-liner {
+    font-family: verdana, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  .light-grey .hitlist-page-info {
+    color: #666;
+    padding: 2px 0px 0px 5px;
+  }
+
+  /* rounded corners */
+  .light-grey .hitlist .yui3-datatable-table
+  {
+    /* border: 1px solid #DFDFDF; */
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+  }
+
+  .light-grey .hitlist thead tr th:first-child
+  {
+    -webkit-border-radius: 6px 0px 0px 0px;
+    -moz-border-radius: 6px 0px 0px 0px;
+    border-radius: 6px 0px 0px 0px;
+  }
+
+  .light-grey .hitlist thead tr th:last-child
+  {
+    -webkit-border-radius: 0px 6px 0px 0px;
+    -moz-border-radius: 0px 6px 0px 0px;
+    border-radius: 0px 6px 0px 0px;
+  }
+
+  .light-grey .hitlist tbody tr:last-child td:first-child
+  {
+    -webkit-border-radius: 0px 0px 0px 6px;
+    -moz-border-radius: 0px 0px 0px 6px;
+    border-radius: 0px 0px 0px 6px;
+  }
+
+  .light-grey .hitlist tbody tr:last-child td:last-child
+  {
+    -webkit-border-radius: 0px 0px 6px 0px;
+    -moz-border-radius: 0px 0px 6px 0px;
+    border-radius: 0px 0px 6px 0px;
+  }
+
+  .light-grey .hitlist tbody tr:last-child td
+  {
+    border-bottom:none;
+  }
+
+  .light-grey .hitlist th, .light-grey  .hitlist td
+  {
+    padding: 5px 11px;
+    color: #4d4d4d;
+  }
+
+  /* Rows */
+  .light-grey .hitlist .yui3-datatable-odd
+  {
+    background-color: #FCFCFC;
+  }
+
+  .light-grey .hitlist .yui3-datatable-even
+  {
+    background-color: #F9F9F9;
+  }
+
+  .hitlist td.yui3-datatable-cell {
+    font-size: 11px;
+  }
+
+  .light-grey .hitlist-selected-row .yui3-datatable-cell
+  {
+    background:#D8EBF8 !important;
+    border-top: 1px solid #e7f2ff;
+  }
+
+  .light-grey .yui3-datatable-cell a:link,
+  .light-grey .yui3-datatable-cell a:visited
+  {
+    color:#000;
+  }
+
+  .light-grey .hitlist-selected-row
+  {
+    background:#D8EBF8 !important;
+  }
+
+  .light-grey .hitlist-selected-row .yui3-datatable-sorted
+  {
+    background:#D8EBF8 !important;
+  }
+
+  .light-grey .hitlist tr td
+  {
+    border-top: 1px solid #ffffff;
+    border-bottom: 1px solid #dfdfdf;
+  }
+
+  .light-grey .hitlist tr th
+  {
+    border-top: 1px solid #ffffff;
+    border-bottom: 1px solid #dfdfdf;
+    font-weight: bold;
+    text-align: left;
+    line-height: 20px;
+    text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.7);
+  }
+
+
+  /* Sortable */
+  .light-grey .hitlist th.yui3-datatable-sorted
+  {
+    border-left: 1px dashed #dfdfdf;
+    border-right: 1px dashed #dfdfdf;
+    padding: 5px 10px;
+    color:#000;
+  }
+
+  .light-grey .hitlist th.yui3-datatable-sorted:last-child
+  {
+    border-left: 1px dashed #dfdfdf;
+    border-right: none;
+    padding: 5px 11px 5px 10px;
+  }
+
+  .light-grey .hitlist th.yui3-datatable-sorted:first-child
+  {
+    border-left: none;
+    border-right: 1px dashed #dfdfdf;
+    padding: 5px 10px 5px 11px;
+  }
+
+  .light-grey .hitlist td.yui3-datatable-sorted
+  {
+    background: #f4f4f4;
+    border-left: 1px dashed #dfdfdf;
+    border-right: 1px dashed #dfdfdf;
+    padding: 5px 10px;
+  }
+
+  .light-grey .hitlist td.yui3-datatable-sorted:last-child
+  {
+    border-left: 1px dashed #dfdfdf;
+    border-right: none;
+  }
+
+  .light-grey .hitlist td.yui3-datatable-sorted:first-child
+  {
+    border-left: 1px dashed #dfdfdf;
+    border-right: none;
+  }
+
+  .light-grey .hitlist th.yui3-datatable-sorted
+  {
+    color:#323232;
+  }
+
+  .light-grey .hitlist td.yui3-datatable-sorted
+  {
+    color:#000;
+  }
+
+  /* Sorting */
+  .hitlist th.yui3-datatable-sortable-column
+  {
+    cursor: pointer;
+  }
+
+  .hitlist th.yui3-datatable-sortable-column .yui3-datatable-sort-indicator
+  {
+    background-image: url('/cf_clientutil/images/hitlist-sortindicator.gif');
+    background-repeat: no-repeat;
+    background-position: center -60px;
+    width: 20px;
+    height: 14px;
+    display:inline-block;
+  }
+
+  .hitlist th.yui3-datatable-sorted.yui3-datatable-sorted-desc .yui3-datatable-sort-indicator
+  {
+    background-position: center 7px;
+  }
+
+  .hitlist th.yui3-datatable-sorted .yui3-datatable-sort-indicator
+  {
+    background-position: center -25px;
+  }
+
+  .light-grey .hitlist .yui3-datatable-sort-liner:focus
+  {
+    outline: none;
+    color:#000;
+    text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.7);
+  }
+
+  /* navigation */
+
+  .hitlist-nav
+  {
+    margin-top: 10px;
+  }
+
+  .light-grey .hitlist-nav-prev,
+  .light-grey .hitlist-nav-next,
+  .light-grey .hitlist-nav-page
+  {
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    border: 1px solid #DFDFDF;
+  }
+
+  .hitlist-nav-prev,
+  .hitlist-nav-next,
+  .hitlist-nav-page
+  {
+    line-height: 25px;
+    text-align: center;
+    text-decoration: none;
+    color:#000;
+    display:inline-block;
+    padding: 0px 8px;
+    margin: 0px 1px;
+    height: 25px;
+    min-width: 60px;
+  }
+
+  .light-grey .hitlist-nav-prev:hover,
+  .light-grey .hitlist-nav-next:hover,
+  .light-grey .hitlist-nav-page:hover
+  {
+    border: 1px solid #ccc;
+  }
+
+  .light-grey .hitlist-nav-prev:active,
+  .light-grey .hitlist-nav-next:active,
+  .light-grey .hitlist-nav-page:active
+  {
+    border: 1px solid #ccc;
+  }
+
+  .light-grey .hitlist-nav-prev.disabled,
+  .light-grey .hitlist-nav-next.disabled {
+    color: #AAA !important;
+  }
+
+  .light-grey .hitlist-nav-page-active
+  {
+    border: 1px solid #CCC;
+    color:#0780d4;
+    -webkit-box-shadow: 0px 0px 2px #0780d4;
+    -moz-box-shadow: 0px 0px 2px #0780d4;
+    box-shadow: 0px 0px 2px #0780d4;
+  }
+
+  .hitlist-pagination
+  {
+    display:inline;
+  }
+
+  /* filter list */
+  .light-grey .hitlist-dropdown-button,
+  .light-grey .hitlist-dropdown-button.hitlist-dropdown-panel-open,
+  .light-grey .hitlist-btn
+  {
+    border: 1px solid #DFDFDF;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    color: #4D4D4D;
+    text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.7);
+  }
+
+  .hitlist-dropdown-button,
+  .hitlist-btn
+  {
+    display:inline-block;
+    padding: 5px 6px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    float: left;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+
+  .hitlist-btn
+  {
+    display:inline-block;
+    padding: 4px 4px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    float: left;
+    font-weight: bold;
+  }
+
+  .hitlist-dropdown-arrow
+  {
+    width: 22px;
+    height: 12px;
+    background: no-repeat center center url(/cf_clientutil/images/hitlist-filterpanel.png);
+    display:inline-block;
+  }
+
+  /* Hitlist filter*/
+  .hitlist-active-filter
+  {
+    display:inline-block;
+    position: relative;
+    top: 10px;
+  }
+
+  .light-grey .hitlist-filter
+  {
+    border: 1px solid #8dd0f6;
+    padding: 2px 4px;
+    background: #d8ebf8;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    color: #2d424e;
+  }
+
+  .hitlist-filter
+  {
+    display:inline;
+    margin: 3px;
+    font-size: 12px;
+    float:left;
+    -webkit-transition: opacity 0.3s ease-in-out;
+    -moz-transition: opacity 0.3s ease-in-out;
+    -o-transition: opacity 0.3s ease-in-out;
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  .hitlist-filter-name
+  {
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display:inline-block;
+    float:left;
+    white-space: nowrap;
+    max-width: 60px;
+    -webkit-transition: max-width 0.3s ease-in-out;
+    -moz-transition: max-width 0.3s ease-in-out;
+    -o-transition: max-width 0.3s ease-in-out;
+    transition: max-width 0.3s ease-in-out;
+  }
+
+  .hitlist-filter:hover .hitlist-filter-name
+  {
+    font-weight: bold;
+    display:inline-block;
+    max-width: 1000px; /* transition from a set width to auto cause snap */
+    display:block;
+    float:left;
+  }
+
+  .hitlist-filter-fade-out {
+    opacity: 0;
+    -webkit-transition: opacity .25s ease-in-out;
+    -moz-transition: opacity .25s ease-in-out;
+    -o-transition: opacity .25s ease-in-out;
+    transition: opacity .25s ease-in-out;
+  }
+
+  .hitlist-filter-value, .hitlist-filter-operator
+  {
+    float:left;
+    display:inline-block;
+    margin-left: 5px;
+  }
+
+  .hitlist-filter-wrapper
+  {
+    display:inline-block;
+  }
+
+  .hitlist-filter-remove
+  {
+    display:block;
+    float:left;
+    position:relative;
+    top: 1px;
+    width: 13px;
+    height: 13px;
+    margin-right: 2px;
+    background: no-repeat center center url(data:image/gif;base64,R0lGODlhCQAJAIABAI3Q9v///yH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4wLWMwNjEgNjQuMTQwOTQ5LCAyMDEwLzEyLzA3LTEwOjU3OjAxICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1LjEgV2luZG93cyIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo5REMyQTlBQ0MwMkQxMUUxQTEzMUE0QUM2MThCMEU5NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo5REMyQTlBREMwMkQxMUUxQTEzMUE0QUM2MThCMEU5NyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjlEQzJBOUFBQzAyRDExRTFBMTMxQTRBQzYxOEIwRTk3IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjlEQzJBOUFCQzAyRDExRTFBMTMxQTRBQzYxOEIwRTk3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Af/+/fz7+vn49/b19PPy8fDv7u3s6+rp6Ofm5eTj4uHg397d3Nva2djX1tXU09LR0M/OzczLysnIx8bFxMPCwcC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWko6KhoJ+enZybmpmYl5aVlJOSkZCPjo2Mi4qJiIeGhYSDgoGAf359fHt6eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTUlFQT05NTEtKSUhHRkVEQ0JBQD8+PTw7Ojk4NzY1NDMyMTAvLi0sKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQAAIfkEAQAAAQAsAAAAAAkACQAAAhEEgmib7NbWSYFROSt8GVNdAAA7);
+  }
+
+  .hitlist-filter-remove:hover
+  {
+    display:inline-block;
+    background: no-repeat center center url(data:image/gif;base64,R0lGODlhDQANAJECAJzR9djr+P///wAAACH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4wLWMwNjEgNjQuMTQwOTQ5LCAyMDEwLzEyLzA3LTEwOjU3OjAxICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1LjEgV2luZG93cyIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo3OTYyODlGN0M0MjQxMUUxOUM2NkZENzI5MUUwNzc3NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo3OTYyODlGOEM0MjQxMUUxOUM2NkZENzI5MUUwNzc3NyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjc5NjI4OUY1QzQyNDExRTE5QzY2RkQ3MjkxRTA3Nzc3IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjc5NjI4OUY2QzQyNDExRTE5QzY2RkQ3MjkxRTA3Nzc3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Af/+/fz7+vn49/b19PPy8fDv7u3s6+rp6Ofm5eTj4uHg397d3Nva2djX1tXU09LR0M/OzczLysnIx8bFxMPCwcC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWko6KhoJ+enZybmpmYl5aVlJOSkZCPjo2Mi4qJiIeGhYSDgoGAf359fHt6eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTUlFQT05NTEtKSUhHRkVEQ0JBQD8+PTw7Ojk4NzY1NDMyMTAvLi0sKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQAAIfkEAQAAAgAsAAAAAA0ADQAAAh4UjgmmjREUTDCeKidudTqwOZ2VReHlgamafQ7jCgUAOw==);
+  }
+
+  /* Dropdown filter panel */
+  .light-grey .hitlist-dropdown-panel,
+  .light-grey .hitlist-column-panel
+  {
+    border: 1px solid #ccc;
+    -webkit-border-radius: 0px 6px 6px 6px;
+    -moz-border-radius: 0px 6px 6px 6px;
+    border-radius: 0px 6px 6px 6px;
+    -webkit-box-shadow: 0px 2px 5px #ccc;
+    -moz-box-shadow: 0px 2px 5px #ccc;
+    box-shadow: 0px 2px 5px #ccc;
+  }
+
+  .hitlist-dropdown-panel,
+  .hitlist-column-panel
+  {
+    padding: 10px;
+    min-width: 260px;
+  }
+
+  .hitlist-dropdown-panel-hidden
+  {
+    visibility: hidden;
+    display: none;
+  }
+
+  .hitlist-dropdown-panel .hitlist-dropdown-panel-fields
+  {
+    text-align: left;
+  }
+  .hitlist-opentext-field {
+    width: 20em;
+  }
+
+  .hitlist-dropdown-panel label
+  {
+    max-width: 50em;
+    display:block;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+  }
+
+  .hitlist-dropdown-panel .hitlist-dropdown-sublabel
+  {
+    display:inline;
+  }
+
+  .hitlist-dropdown-panel
+  {
+    position: absolute;
+    z-index: 999;
+    *width: 500px;
+    display:block;
+  }
+
+  .hitlist-dropdown-filter
+  {
+    margin-bottom: 10px;
+    min-height: 49px;
+  }
+
+  .light-grey .hitlist-dropdown-panel-open
+  {
+    background-color: #f4f4f4;
+    background-image: none;
+    -webkit-border-radius: 6px 6px 0px 0;
+    -moz-border-radius: 6px 6px 0px 0;
+    border-radius: 6px 6px 0px 0;
+  }
+  .hitlist-dropdown-panel-open
+  {
+    border-bottom: none;
+  }
+
+  .hitlist-dropdown-filter-placeholder
+  {
+    display:inline;
+  }
+
+  .hitlist-filter-calicon
+  {
+    vertical-align:bottom;
+    margin: 2px;
+  }
+
+  .light-grey .hitlist-dropdown-panel input,
+  .light-grey .hitlist-dropdown-panel select
+  {
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    border: 1px solid #CCC;
+  }
+
+  .hitlist-filter-item
+  {
+    margin-bottom: 7px;
+  }
+
+  .hitlist-filter-item select
+  {
+    padding: 2px;
+    height: 23px;
+    width: 250px;
+  }
+
+  .hitlist-filter-item input
+  {
+    padding: 2px;
+    height: 20px;
+    width: 250px;
+  }
+
+  .hitlist-filter-item input.ac
+  {
+    height:18px;
+    width: 230px;
+  }
+
+  .hitlist-filter-item img.aci
+  {
+    vertical-align:bottom;
+  }
+
+  .light-grey .hitlist-toggle-field input /* greater then, between etc. */
+  {
+    margin-top: 1px;
+    position: relative;
+    top: 1px;
+    width: 80px;
+  }
+
+  .light-grey .hitlist-filter-item label
+  {
+    font-size: 12px;
+    font-weight: bold;
+    color:#444;
+  }
+
+  .hitlist-dropdown-panel-buttons
+  {
+    float:right;
+  }
+
+
+  .hitlist-dropdown-filter-apply,
+  .hitlist-dropdown-clear,
+  .hitlist-dropdown-cancel
+  {
+    float:left;
+    display:block;
+  }
+
+  .hitlist-dropdown-filter-apply,
+  .hitlist-dropdown-clear
+  {
+    margin-left: 10px;
+  }
+
+  .hitlist-dropdown-cancel
+  {
+    line-height: 20px;
+  }
+
+
+  .light-grey .hitlist-btn
+  {
+    display:block;
+    border: 1px solid #dfdfdf;
+    background-color: #F1F1F1;
+    background: -webkit-gradient(linear,left top,left bottom,from(#F9F9F9),to(#ECECEC));
+    background: -webkit-linear-gradient(top,#F9F9F9,#ECECEC);
+    background:    -moz-linear-gradient(top,#F9F9F9,#ECECEC);
+    background:     -ms-linear-gradient(top,#F9F9F9,#ECECEC);
+    background:      -o-linear-gradient(top,#F9F9F9,#ECECEC);
+    background:         linear-gradient(top,#F9F9F9,#ECECEC);
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    width: 23px;
+  }
+
+  .light-grey .hitlist-btn:hover
+  {
+    background: #e7e7e7;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#e7e7e7), color-stop(100%,#e1e1e1));
+    background: -webkit-linear-gradient(top,  #e7e7e7 0%,#e1e1e1 100%);
+    background:    -moz-linear-gradient(top,  #e7e7e7 0%,#e1e1e1 100%);
+    background:     -ms-linear-gradient(top,  #e7e7e7 0%,#e1e1e1 100%);
+    background:      -o-linear-gradient(top,  #e7e7e7 0%,#e1e1e1 100%);
+    background:         linear-gradient(top,  #e7e7e7 0%,#e1e1e1 100%);
+  }
+
+  .light-grey .yui3-datatable-header.yui3-datatable-col-___MODIFY_COLUMNS___
+  {
+    padding: 5px;
+  }
+
+  .light-grey .yui3-datatable-col-___MODIFY_COLUMNS___ .hitlist-btn
+  {
+    margin: 0px;
+    line-height: 13px;
+  }
+
+  .hitlist-filter-item
+  {
+    white-space:nowrap;
+    padding: 3px;
+    height: 45px;
+  }
+
+  .hitlist-filter-item > select,  .hitlist-filter-item > input[type=text]{
+    margin-top: 2px;
+  }
+
+
+  .hitlist-filter-text-field {
+    width: 8em;
+    margin-left: 4px;
+  }
+
+  .light-grey .hitlist-loading
+  {
+    border:10px solid #6E86A4;
+    border-top:10px solid rgba(0,0,0,0);
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    border-radius: 50px;
+  }
+
+  .hitlist-loading
+  {
+    display:block;
+    width: 50px;
+    height: 50px;
+    margin:0 auto;
+    -webkit-animation:rotate 1.5s infinite linear;
+    -moz-animation:rotate 1.5s infinite linear;
+  }
+
+  @-webkit-keyframes rotate {
+    0%   { -webkit-transform:rotate(0deg); opacity: .7;}
+    50%  { -webkit-transform:rotate(180deg); opacity: 1;}
+    100% { -webkit-transform:rotate(360deg); opacity: .7;}
+  }
+
+  @-moz-keyframes rotate {
+    0%   { -moz-transform:rotate(0deg); opacity: .7;}
+    50%  { -moz-transform:rotate(180deg); opacity: 1;}
+    100% { -moz-transform:rotate(360deg); opacity: .7;}
+  }
+
+  .light-grey .hitlist-dropdown-clear
+  {
+    color:#000;
+  }
+
+  .light-grey .hitlist-column-panel .yui3-widget-buttons
+  {
+    width: 100%;
+    text-align: right;
+    display:block;
+  }
+
+  .light-grey .hitlist-column-panel .yui3-button
+  {
+    margin: 0px 0px 0px 6px;
+  }
+
+  .light-grey .hitlist-column-panel-cancel,
+  .light-grey .hitlist-column-panel-reset:link,
+  .light-grey .hitlist-column-panel-reset:visited,
+  .light-grey .hitlist-column-panel-checkall:link,
+  .light-grey .hitlist-column-panel-checkall:visited,
+  .light-grey .hitlist-dropdown-cancel:link,
+  .light-grey .hitlist-dropdown-cancel:visited
+  {
+    background:none;
+    border: none;
+    color:#345FCB;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .light-grey .hitlist-column-panel-cancel:hover,
+  .light-grey .hitlist-column-panel-reset:hover,
+  .light-grey .hitlist-column-panel-checkall:hover,
+  .light-grey .hitlist-dropdown-cancel:hover
+  {
+    text-decoration: underline;
+  }
+
+  .hitlist-column-panel-cancel
+  {
+    font-size: 11px;
+    line-height: 20px;
+  }
+
+  .hitlist-column-panel-nav
+  {
+    margin-top: 10px;
+    display:block;
+    text-align: right;
+  }
+
+  .hitlist-column-row input[type="checkbox"]
+  {
+    display:inline-block;
+    margin: 3px;
+  }
+
+  .hitlist-column-row label
+  {
+    position:relative;
+    top: -2px;
+  }
+
+  .hitlist-column-panel-reset
+  {
+    line-height: 20px;
+    margin-bottom: 5px;
+    display:block;
+    float: left;
+  }
+
+  .hitlist-column-panel-checkall
+  {
+    line-height: 20px;
+    margin-bottom: 5px;
+    text-align: right;
+    display:block;
+  }
+
+  .hitlist-column
+  {
+    float:left;
+    margin-right: 20px;
+  }
+
+  .hitlist-btn span{
+    background: url('/cf_clientutil/images/addremove.png');
+    width: 14px;
+    height: 14px;
+    display:inline-block;
+  }
+
+  .hitlist-active-filters
+  {
+    *height: 35px;
+  }
+
+  div.hitlist-container
+  {
+    visibility:visible;
+  }
+
+  .yui-ac
+  {
+    text-align:left;
+  }
+
+  th.utilityCol
+  {
+    width: 40px;
+  }
+</style>
 <span id="browser-sync-binding"></span>
 
 <div id="splash"></div>
@@ -97,8 +987,8 @@ body.loading{overflow:hidden}
         Polymer({
           is: 'global-scope',
           attached: function () {
-            this.updateStyles();
-          }
+            //this.updateStyles();
+          },
         })
      });
     }
@@ -232,31 +1122,93 @@ body.loading{overflow:hidden}
         <paper-radio-button name="large">Large</paper-radio-button>
       </paper-radio-group>
 
+<reportal-hitlist long-text="7,8">
+  <div class="light-grey hitlist-container" id="yui_3_8_0_5_1450967691909_16">
+    <div class="hitlist-export-button hitlist-btn" title="Export"><img src="/cf_clientutil/images/excel.png" height="14" width="14"></div>
+    <div class="hitlist-dropdown-button"><span class="hitlist-dropdown-arrow"></span></div>
+    <!-- Filter badges start -->
+    <div class="hitlist-active-filters reportal-clearfix">
+      <div class="hitlist-filter-wrapper reportal-clearfix" id="yui_3_8_0_5_1450967691909_249"></div>
+    </div>
+    <div class="hitlist-dropdown-panel hitlist-dropdown-panel-hidden">
+      <div class="hitlist-dropdown-panel-fields"></div>
+      <div class="hitlist-dropdown-panel-buttons">
+        <a class="hitlist-dropdown-cancel" href="#">Cancel</a>
+        <button class="hitlist-dropdown-clear yui3-button">Clear all</button>
+        <button class="hitlist-dropdown-filter-apply yui3-button yui3-button-primary">Apply filter</button>
+      </div>
+    </div>
+    <div id="p_ctl01_ctl00_hitlist" class="hitlist">
+      <div id="yui_3_8_0_5_1450967691909_22" class="yui3-widget yui3-datatable yui3-datatable-sortable yui3-datatable-focused">
+        <div id="yui_3_8_0_5_1450967691909_24" class="yui3-datatable-content">
+          <table cellspacing="0" class="yui3-datatable-table table table-hover" id="yui_3_8_0_5_1450967691909_149">
+            <colgroup id="yui_3_8_0_5_1450967691909_209"><col style="width: 40px;"><col><col><col><col><col><col><col><col></colgroup>
+            <thead class="yui3-datatable-columns" id="yui_3_8_0_5_1450967691909_152">
+            <tr id="yui_3_8_0_5_1450967691909_376">
+              <th id="yui_3_8_0_5_1450967691909_36" colspan="1" rowspan="1" class="yui3-datatable-header utilityCol yui3-datatable-first-header yui3-datatable-col-___MODIFY_COLUMNS___" scope="col" data-yui3-col-id="___MODIFY_COLUMNS___">
+                <span class="hitlist-btn" title="Show / Hide columns">
+                  <span>&nbsp;</span>
+                </span>
+              </th>
+              <th id="yui_3_8_0_5_1450967691909_37" colspan="1" rowspan="1" class="yui3-datatable-header yui3-datatable-col-interview_end yui3-datatable-sortable-column" scope="col" data-yui3-col-id="interview_end" abbr="Time of response" title="Sort by Time of response" aria-labelledby="yui_3_8_0_5_1450967691909_37">
+                <div class="yui3-datatable-sort-liner" tabindex="0" id="yui_3_8_0_5_1450967691909_415">Time of response<span class="yui3-datatable-sort-indicator"></span></div>
+              </th>
+              <th id="yui_3_8_0_5_1450967691909_38" colspan="1" rowspan="1" class="yui3-datatable-header yui3-datatable-col-ContactFullName yui3-datatable-sortable-column" scope="col" data-yui3-col-id="ContactFullName" abbr="Contact Full Name" title="Sort by Contact Full Name" aria-labelledby="yui_3_8_0_5_1450967691909_38">
+                <div class="yui3-datatable-sort-liner" tabindex="0">Contact Full Name<span class="yui3-datatable-sort-indicator"></span></div>
+              </th>
+              <th id="yui_3_8_0_5_1450967691909_39" colspan="1" rowspan="1" class="yui3-datatable-header yui3-datatable-col-email yui3-datatable-sortable-column" scope="col" data-yui3-col-id="email" abbr="E-mail" title="Sort by E-mail" aria-labelledby="yui_3_8_0_5_1450967691909_39"><div class="yui3-datatable-sort-liner" tabindex="0">E-mail<span class="yui3-datatable-sort-indicator"></span></div></th>
+              <th id="yui_3_8_0_5_1450967691909_40" colspan="1" rowspan="1" class="yui3-datatable-header yui3-datatable-col-Telephone1 yui3-datatable-sortable-column" scope="col" data-yui3-col-id="Telephone1" abbr="Phone" title="Sort by Phone" aria-labelledby="yui_3_8_0_5_1450967691909_40"><div class="yui3-datatable-sort-liner" tabindex="0">Phone<span class="yui3-datatable-sort-indicator"></span></div></th>
+              <th id="yui_3_8_0_5_1450967691909_41" colspan="1" rowspan="1" class="yui3-datatable-header yui3-datatable-col-NPS yui3-datatable-sortable-column" scope="col" data-yui3-col-id="NPS" abbr="NPS®" title="Sort by NPS®" aria-labelledby="yui_3_8_0_5_1450967691909_41"><div class="yui3-datatable-sort-liner" tabindex="0">NPS®<span class="yui3-datatable-sort-indicator"></span></div></th>
+              <th id="yui_3_8_0_5_1450967691909_42" colspan="1" rowspan="1" class="yui3-datatable-header yui3-datatable-col-NES yui3-datatable-sortable-column" scope="col" data-yui3-col-id="NES" abbr="NES" title="Sort by NES" aria-labelledby="yui_3_8_0_5_1450967691909_42"><div class="yui3-datatable-sort-liner" tabindex="0">NES<span class="yui3-datatable-sort-indicator"></span></div></th>
+              <th id="yui_3_8_0_5_1450967691909_43" colspan="1" rowspan="1" class="yui3-datatable-header yui3-datatable-col-NPSWhy yui3-datatable-sortable-column" scope="col" data-yui3-col-id="NPSWhy" abbr="NPS® Comments" title="Sort by NPS® Comments" aria-labelledby="yui_3_8_0_5_1450967691909_43"><div class="yui3-datatable-sort-liner" tabindex="0">NPS® Comments<span class="yui3-datatable-sort-indicator"></span></div></th>
+              <th id="yui_3_8_0_5_1450967691909_44" colspan="1" rowspan="1" class="yui3-datatable-header yui3-datatable-col-NESWhy yui3-datatable-sortable-column" scope="col" data-yui3-col-id="NESWhy" abbr="NES Comments" title="Sort by NES Comments" aria-labelledby="yui_3_8_0_5_1450967691909_44"><div class="yui3-datatable-sort-liner" tabindex="0">NES Comments<span class="yui3-datatable-sort-indicator"></span></div></th>
+            </tr>
+            </thead>
+            <tbody class="yui3-datatable-message" id="yui_3_8_0_5_1450967691909_224"><tr id="yui_3_8_0_5_1450967691909_378">
+              <td class="yui3-datatable-message-content" colspan="9">Loading data, please wait...</td>
+            </tr>
+            </tbody>
+            <tbody class="yui3-datatable-data">
+            <tr id="yui_3_8_0_5_1450967691909_353" data-yui3-record="model_1" class="yui3-datatable-even">
+              <td class="yui3-datatable-col-___MODIFY_COLUMNS___ utilityCol yui3-datatable-cell hitlisttdcell ">&nbsp;</td>
+              <td class="yui3-datatable-col-interview_end  yui3-datatable-cell hitlisttdcell  date-font">2015-06-10 00:00:00</td>
+              <td class="yui3-datatable-col-ContactFullName  yui3-datatable-cell hitlisttdcell ">Mr. JOHN MORLEY</td>
+              <td class="yui3-datatable-col-email  yui3-datatable-cell hitlisttdcell ">JOHNRMORLEY@AOL.COM</td>
+              <td class="yui3-datatable-col-Telephone1  yui3-datatable-cell hitlisttdcell ">+441256764372</td>
+              <td class="yui3-datatable-col-NPS  yui3-datatable-cell hitlisttdcell ">7</td>
+              <td class="yui3-datatable-col-NES  yui3-datatable-cell hitlisttdcell ">8</td>
+              <td class="yui3-datatable-col-NPSWhy  yui3-datatable-cell hitlisttdcell ">I had to follow up on my order as it did not appear on Parcelforce tracker. *company* customer services were extremely helpful and my order suddenly appeared on the tracker as received at delivery depot It seems that Parcelforce initially lost track of and then found the parcel a day later </td>
+              <td class="yui3-datatable-col-NESWhy  yui3-datatable-cell hitlisttdcell ">As long as this was an isolated issue with Parcelforce there is no need for change.  Might be worth tracking Parcelforce service for a while to see how frequently deliveries go astray</td>
+            </tr>
+            <tr id="yui_3_8_0_5_1450967691909_354" data-yui3-record="model_2" class="yui3-datatable-odd"><td class="yui3-datatable-col-___MODIFY_COLUMNS___ utilityCol yui3-datatable-cell hitlisttdcell ">&nbsp;</td><td class="yui3-datatable-col-interview_end  yui3-datatable-cell hitlisttdcell  date-font">2015-06-10 00:00:00</td><td class="yui3-datatable-col-ContactFullName  yui3-datatable-cell hitlisttdcell ">SIG.RA CARLA BANDINI</td><td class="yui3-datatable-col-email  yui3-datatable-cell hitlisttdcell ">CARLA.BANDINI@AUREL.IT</td><td class="yui3-datatable-col-Telephone1  yui3-datatable-cell hitlisttdcell ">+390546941124</td><td class="yui3-datatable-col-NPS  yui3-datatable-cell hitlisttdcell ">5</td><td class="yui3-datatable-col-NES  yui3-datatable-cell hitlisttdcell ">5</td><td class="yui3-datatable-col-NPSWhy  yui3-datatable-cell hitlisttdcell ">poco efficienti nel dare risposte </td><td class="yui3-datatable-col-NESWhy  yui3-datatable-cell hitlisttdcell ">-</td></tr><tr id="yui_3_8_0_5_1450967691909_355" data-yui3-record="model_3" class="yui3-datatable-even"><td class="yui3-datatable-col-___MODIFY_COLUMNS___ utilityCol yui3-datatable-cell hitlisttdcell ">&nbsp;</td><td class="yui3-datatable-col-interview_end  yui3-datatable-cell hitlisttdcell  date-font">2015-06-10 00:00:00</td><td class="yui3-datatable-col-ContactFullName  yui3-datatable-cell hitlisttdcell ">Mr. GARY ENGLAND</td><td class="yui3-datatable-col-email  yui3-datatable-cell hitlisttdcell ">GARY@HYPRO.CO.UK</td><td class="yui3-datatable-col-Telephone1  yui3-datatable-cell hitlisttdcell ">+441626868143</td><td class="yui3-datatable-col-NPS  yui3-datatable-cell hitlisttdcell ">10</td><td class="yui3-datatable-col-NES  yui3-datatable-cell hitlisttdcell ">9</td><td class="yui3-datatable-col-NPSWhy  yui3-datatable-cell hitlisttdcell ">excellent value for money and very prompt delivery</td><td class="yui3-datatable-col-NESWhy  yui3-datatable-cell hitlisttdcell ">just keep on providing the good service</td></tr><tr id="yui_3_8_0_5_1450967691909_356" data-yui3-record="model_4" class="yui3-datatable-odd"><td class="yui3-datatable-col-___MODIFY_COLUMNS___ utilityCol yui3-datatable-cell hitlisttdcell ">&nbsp;</td><td class="yui3-datatable-col-interview_end  yui3-datatable-cell hitlisttdcell  date-font">2015-06-10 00:00:00</td><td class="yui3-datatable-col-ContactFullName  yui3-datatable-cell hitlisttdcell ">Mr. SEKSIT DISARO</td><td class="yui3-datatable-col-email  yui3-datatable-cell hitlisttdcell ">ZEKZIT@GMAIL.COM</td><td class="yui3-datatable-col-Telephone1  yui3-datatable-cell hitlisttdcell ">+66897366554</td><td class="yui3-datatable-col-NPS  yui3-datatable-cell hitlisttdcell ">0</td><td class="yui3-datatable-col-NES  yui3-datatable-cell hitlisttdcell ">0</td><td class="yui3-datatable-col-NPSWhy  yui3-datatable-cell hitlisttdcell ">??????????????????????????????????????????????????? ????????????????? ????????????????????????? ????????????????????</td><td class="yui3-datatable-col-NESWhy  yui3-datatable-cell hitlisttdcell ">?????????????????? ???????????????????????????????????????? ???????????????????? ????????????????? ??????????????????????????? ????????????????????????????????????????? ???????????????????</td></tr><tr id="yui_3_8_0_5_1450967691909_357" data-yui3-record="model_5" class="yui3-datatable-even"><td class="yui3-datatable-col-___MODIFY_COLUMNS___ utilityCol yui3-datatable-cell hitlisttdcell ">&nbsp;</td><td class="yui3-datatable-col-interview_end  yui3-datatable-cell hitlisttdcell  date-font">2015-06-10 00:00:00</td><td class="yui3-datatable-col-ContactFullName  yui3-datatable-cell hitlisttdcell ">Mr. REG PERKINS</td><td class="yui3-datatable-col-email  yui3-datatable-cell hitlisttdcell ">REG.G.PERKINS@BTINTERNET.COM</td><td class="yui3-datatable-col-Telephone1  yui3-datatable-cell hitlisttdcell ">+441761232372</td><td class="yui3-datatable-col-NPS  yui3-datatable-cell hitlisttdcell ">10</td><td class="yui3-datatable-col-NES  yui3-datatable-cell hitlisttdcell ">10</td><td class="yui3-datatable-col-NPSWhy  yui3-datatable-cell hitlisttdcell ">Items arrived next day and as ordered </td><td class="yui3-datatable-col-NESWhy  yui3-datatable-cell hitlisttdcell ">No,all worked out fine </td></tr><tr id="yui_3_8_0_5_1450967691909_358" data-yui3-record="model_6" class="yui3-datatable-odd"><td class="yui3-datatable-col-___MODIFY_COLUMNS___ utilityCol yui3-datatable-cell hitlisttdcell ">&nbsp;</td><td class="yui3-datatable-col-interview_end  yui3-datatable-cell hitlisttdcell  date-font">2015-06-10 00:00:00</td><td class="yui3-datatable-col-ContactFullName  yui3-datatable-cell hitlisttdcell ">Mr. FRED HEWITT</td><td class="yui3-datatable-col-email  yui3-datatable-cell hitlisttdcell ">HEWY42@YAHOO.COM.AU</td><td class="yui3-datatable-col-Telephone1  yui3-datatable-cell hitlisttdcell ">+61746224412</td><td class="yui3-datatable-col-NPS  yui3-datatable-cell hitlisttdcell ">7</td><td class="yui3-datatable-col-NES  yui3-datatable-cell hitlisttdcell ">10</td><td class="yui3-datatable-col-NPSWhy  yui3-datatable-cell hitlisttdcell ">You pay for good service.</td><td class="yui3-datatable-col-NESWhy  yui3-datatable-cell hitlisttdcell ">-</td></tr><tr id="yui_3_8_0_5_1450967691909_359" data-yui3-record="model_7" class="yui3-datatable-even"><td class="yui3-datatable-col-___MODIFY_COLUMNS___ utilityCol yui3-datatable-cell hitlisttdcell ">&nbsp;</td><td class="yui3-datatable-col-interview_end  yui3-datatable-cell hitlisttdcell  date-font">2015-06-10 00:00:00</td><td class="yui3-datatable-col-ContactFullName  yui3-datatable-cell hitlisttdcell ">Mr. MICK LOWE</td><td class="yui3-datatable-col-email  yui3-datatable-cell hitlisttdcell ">SALES@ZED-TG.CO.UK</td><td class="yui3-datatable-col-Telephone1  yui3-datatable-cell hitlisttdcell ">+441932251440</td><td class="yui3-datatable-col-NPS  yui3-datatable-cell hitlisttdcell ">10</td><td class="yui3-datatable-col-NES  yui3-datatable-cell hitlisttdcell ">10</td><td class="yui3-datatable-col-NPSWhy  yui3-datatable-cell hitlisttdcell ">Easy to order. Goods delivered quicky and no problems.</td><td class="yui3-datatable-col-NESWhy  yui3-datatable-cell hitlisttdcell ">No - all good.</td></tr><tr id="yui_3_8_0_5_1450967691909_360" data-yui3-record="model_8" class="yui3-datatable-odd"><td class="yui3-datatable-col-___MODIFY_COLUMNS___ utilityCol yui3-datatable-cell hitlisttdcell ">&nbsp;</td><td class="yui3-datatable-col-interview_end  yui3-datatable-cell hitlisttdcell  date-font">2015-06-10 00:00:00</td><td class="yui3-datatable-col-ContactFullName  yui3-datatable-cell hitlisttdcell ">Mr. DAVID CONNELLY</td><td class="yui3-datatable-col-email  yui3-datatable-cell hitlisttdcell ">DAVID.CONNELLY@BEMCO.CO.UK</td><td class="yui3-datatable-col-Telephone1  yui3-datatable-cell hitlisttdcell ">+441416479271</td><td class="yui3-datatable-col-NPS  yui3-datatable-cell hitlisttdcell ">10</td><td class="yui3-datatable-col-NES  yui3-datatable-cell hitlisttdcell ">10</td><td class="yui3-datatable-col-NPSWhy  yui3-datatable-cell hitlisttdcell ">Excellent stock, easy to use website, great service. </td><td class="yui3-datatable-col-NESWhy  yui3-datatable-cell hitlisttdcell ">As a wholesaler we look to sell on products we buy from yourself, so slightly more competitive prices would be good.</td></tr><tr id="yui_3_8_0_5_1450967691909_361" data-yui3-record="model_9" class="yui3-datatable-even"><td class="yui3-datatable-col-___MODIFY_COLUMNS___ utilityCol yui3-datatable-cell hitlisttdcell ">&nbsp;</td><td class="yui3-datatable-col-interview_end  yui3-datatable-cell hitlisttdcell  date-font">2015-06-10 00:00:00</td><td class="yui3-datatable-col-ContactFullName  yui3-datatable-cell hitlisttdcell ">Mr. CARMO RAMOS ANGELO</td><td class="yui3-datatable-col-email  yui3-datatable-cell hitlisttdcell ">GERAL.TELEFOZ@GMAIL.COM</td><td class="yui3-datatable-col-Telephone1  yui3-datatable-cell hitlisttdcell ">+351233418225</td><td class="yui3-datatable-col-NPS  yui3-datatable-cell hitlisttdcell ">9</td><td class="yui3-datatable-col-NES  yui3-datatable-cell hitlisttdcell ">10</td><td class="yui3-datatable-col-NPSWhy  yui3-datatable-cell hitlisttdcell ">SATISFEITO COM O VOSSO SERVIÇO E RAPIDEZ</td><td class="yui3-datatable-col-NESWhy  yui3-datatable-cell hitlisttdcell ">-</td></tr><tr id="yui_3_8_0_5_1450967691909_362" data-yui3-record="model_10" class="yui3-datatable-odd"><td class="yui3-datatable-col-___MODIFY_COLUMNS___ utilityCol yui3-datatable-cell hitlisttdcell ">&nbsp;</td><td class="yui3-datatable-col-interview_end  yui3-datatable-cell hitlisttdcell  date-font">2015-06-10 00:00:00</td><td class="yui3-datatable-col-ContactFullName  yui3-datatable-cell hitlisttdcell ">M G. NABOUT</td><td class="yui3-datatable-col-email  yui3-datatable-cell hitlisttdcell ">GREGORY.NABOUT@SPEOS.BE</td><td class="yui3-datatable-col-Telephone1  yui3-datatable-cell hitlisttdcell ">+3271820945</td><td class="yui3-datatable-col-NPS  yui3-datatable-cell hitlisttdcell ">8</td><td class="yui3-datatable-col-NES  yui3-datatable-cell hitlisttdcell ">7</td><td class="yui3-datatable-col-NPSWhy  yui3-datatable-cell hitlisttdcell ">Parce que le choix sur le site est grand et les délais de livraison rapides.</td><td class="yui3-datatable-col-NESWhy  yui3-datatable-cell hitlisttdcell ">Il n'est pas toujours évident de trouver un objet technique en anglais.</td></tr><tr id="yui_3_8_0_5_1450967691909_363" data-yui3-record="model_11" class="yui3-datatable-even"><td class="yui3-datatable-col-___MODIFY_COLUMNS___ utilityCol yui3-datatable-cell hitlisttdcell ">&nbsp;</td><td class="yui3-datatable-col-interview_end  yui3-datatable-cell hitlisttdcell  date-font">2015-06-10 00:00:00</td><td class="yui3-datatable-col-ContactFullName  yui3-datatable-cell hitlisttdcell ">Mr. WAYNE HIGGERSON</td><td class="yui3-datatable-col-email  yui3-datatable-cell hitlisttdcell ">WAYNE@PASHLEY.CO.UK</td><td class="yui3-datatable-col-Telephone1  yui3-datatable-cell hitlisttdcell ">+441789292263</td><td class="yui3-datatable-col-NPS  yui3-datatable-cell hitlisttdcell ">10</td><td class="yui3-datatable-col-NES  yui3-datatable-cell hitlisttdcell ">10</td><td class="yui3-datatable-col-NPSWhy  yui3-datatable-cell hitlisttdcell ">very helpful, my complaint was dealt with quickly and efficiently. </td><td class="yui3-datatable-col-NESWhy  yui3-datatable-cell hitlisttdcell ">-</td></tr><tr id="yui_3_8_0_5_1450967691909_364" data-yui3-record="model_12" class="yui3-datatable-odd"><td class="yui3-datatable-col-___MODIFY_COLUMNS___ utilityCol yui3-datatable-cell hitlisttdcell ">&nbsp;</td><td class="yui3-datatable-col-interview_end  yui3-datatable-cell hitlisttdcell  date-font">2015-06-10 00:00:00</td><td class="yui3-datatable-col-ContactFullName  yui3-datatable-cell hitlisttdcell ">Mr. MARTIN MILLENER</td><td class="yui3-datatable-col-email  yui3-datatable-cell hitlisttdcell ">MILLENERS@HOTMAIL.COM</td><td class="yui3-datatable-col-Telephone1  yui3-datatable-cell hitlisttdcell ">-</td><td class="yui3-datatable-col-NPS  yui3-datatable-cell hitlisttdcell ">9</td><td class="yui3-datatable-col-NES  yui3-datatable-cell hitlisttdcell ">9</td><td class="yui3-datatable-col-NPSWhy  yui3-datatable-cell hitlisttdcell ">In stock, reasonable price</td><td class="yui3-datatable-col-NESWhy  yui3-datatable-cell hitlisttdcell ">-</td></tr><tr id="yui_3_8_0_5_1450967691909_365" data-yui3-record="model_13" class="yui3-datatable-even"><td class="yui3-datatable-col-___MODIFY_COLUMNS___ utilityCol yui3-datatable-cell hitlisttdcell ">&nbsp;</td><td class="yui3-datatable-col-interview_end  yui3-datatable-cell hitlisttdcell  date-font">2015-06-10 00:00:00</td><td class="yui3-datatable-col-ContactFullName  yui3-datatable-cell hitlisttdcell ">Mrs. SHASTA KHAN</td><td class="yui3-datatable-col-email  yui3-datatable-cell hitlisttdcell ">WIRELINESOLUTIONSLTD@VIRGINMEDIA.COM</td><td class="yui3-datatable-col-Telephone1  yui3-datatable-cell hitlisttdcell ">+447403618621</td><td class="yui3-datatable-col-NPS  yui3-datatable-cell hitlisttdcell ">7</td><td class="yui3-datatable-col-NES  yui3-datatable-cell hitlisttdcell ">10</td><td class="yui3-datatable-col-NPSWhy  yui3-datatable-cell hitlisttdcell ">If the prices were more competitive then I would refer colleagues for sure.</td><td class="yui3-datatable-col-NESWhy  yui3-datatable-cell hitlisttdcell ">n/a</td></tr><tr id="yui_3_8_0_5_1450967691909_366" data-yui3-record="model_14" class="yui3-datatable-odd"><td class="yui3-datatable-col-___MODIFY_COLUMNS___ utilityCol yui3-datatable-cell hitlisttdcell ">&nbsp;</td><td class="yui3-datatable-col-interview_end  yui3-datatable-cell hitlisttdcell  date-font">2015-06-10 00:00:00</td><td class="yui3-datatable-col-ContactFullName  yui3-datatable-cell hitlisttdcell ">SIG EMANUELE FARACE</td><td class="yui3-datatable-col-email  yui3-datatable-cell hitlisttdcell ">FARACEEMANUELE@GOOGLEMAIL.COM</td><td class="yui3-datatable-col-Telephone1  yui3-datatable-cell hitlisttdcell ">+393492941358</td><td class="yui3-datatable-col-NPS  yui3-datatable-cell hitlisttdcell ">10</td><td class="yui3-datatable-col-NES  yui3-datatable-cell hitlisttdcell ">10</td><td class="yui3-datatable-col-NPSWhy  yui3-datatable-cell hitlisttdcell ">E' fornita di tutto</td><td class="yui3-datatable-col-NESWhy  yui3-datatable-cell hitlisttdcell ">al momento no</td></tr><tr id="yui_3_8_0_5_1450967691909_367" data-yui3-record="model_15" class="yui3-datatable-even"><td class="yui3-datatable-col-___MODIFY_COLUMNS___ utilityCol yui3-datatable-cell hitlisttdcell ">&nbsp;</td><td class="yui3-datatable-col-interview_end  yui3-datatable-cell hitlisttdcell  date-font">2015-06-10 00:00:00</td><td class="yui3-datatable-col-ContactFullName  yui3-datatable-cell hitlisttdcell ">Herr HELMUT PRIES</td><td class="yui3-datatable-col-email  yui3-datatable-cell hitlisttdcell ">H.PRIES@HOEDTKE.DE</td><td class="yui3-datatable-col-Telephone1  yui3-datatable-cell hitlisttdcell ">-</td><td class="yui3-datatable-col-NPS  yui3-datatable-cell hitlisttdcell ">10</td><td class="yui3-datatable-col-NES  yui3-datatable-cell hitlisttdcell ">10</td><td class="yui3-datatable-col-NPSWhy  yui3-datatable-cell hitlisttdcell ">schnelle Lieferung</td><td class="yui3-datatable-col-NESWhy  yui3-datatable-cell hitlisttdcell ">-</td></tr><tr id="yui_3_8_0_5_1450967691909_368" data-yui3-record="model_16" class="yui3-datatable-odd"><td class="yui3-datatable-col-___MODIFY_COLUMNS___ utilityCol yui3-datatable-cell hitlisttdcell ">&nbsp;</td><td class="yui3-datatable-col-interview_end  yui3-datatable-cell hitlisttdcell  date-font">2015-06-10 00:00:00</td><td class="yui3-datatable-col-ContactFullName  yui3-datatable-cell hitlisttdcell ">Herr ANTON RASS</td><td class="yui3-datatable-col-email  yui3-datatable-cell hitlisttdcell ">ANTON.RASS@VAMIBK.AT</td><td class="yui3-datatable-col-Telephone1  yui3-datatable-cell hitlisttdcell ">+4351259717260</td><td class="yui3-datatable-col-NPS  yui3-datatable-cell hitlisttdcell ">3</td><td class="yui3-datatable-col-NES  yui3-datatable-cell hitlisttdcell ">2</td><td class="yui3-datatable-col-NPSWhy  yui3-datatable-cell hitlisttdcell ">Der Katalog ist zu umfangreich. Die Suche ist teilweise kaum mehr möglich. Die Beschreibung der Produkte nicht aussagekräftig. Die Suchparameter teilweise falsch gewählt. </td><td class="yui3-datatable-col-NESWhy  yui3-datatable-cell hitlisttdcell ">-</td></tr><tr id="yui_3_8_0_5_1450967691909_369" data-yui3-record="model_17" class="yui3-datatable-even"><td class="yui3-datatable-col-___MODIFY_COLUMNS___ utilityCol yui3-datatable-cell hitlisttdcell ">&nbsp;</td><td class="yui3-datatable-col-interview_end  yui3-datatable-cell hitlisttdcell  date-font">2015-06-10 00:00:00</td><td class="yui3-datatable-col-ContactFullName  yui3-datatable-cell hitlisttdcell ">Mr. JOSE LUIS SANTOS</td><td class="yui3-datatable-col-email  yui3-datatable-cell hitlisttdcell ">JLSANTOS@PECOFRISA.ES</td><td class="yui3-datatable-col-Telephone1  yui3-datatable-cell hitlisttdcell ">+34976451145</td><td class="yui3-datatable-col-NPS  yui3-datatable-cell hitlisttdcell ">5</td><td class="yui3-datatable-col-NES  yui3-datatable-cell hitlisttdcell ">3</td><td class="yui3-datatable-col-NPSWhy  yui3-datatable-cell hitlisttdcell ">falta de información estado de pedido, falta de claridad situación de pago etc...     </td><td class="yui3-datatable-col-NESWhy  yui3-datatable-cell hitlisttdcell ">primero no hay acceso al pedido, después información muy limitada, la única información  aceptable la telefónica y mediante un 902.</td></tr><tr id="yui_3_8_0_5_1450967691909_370" data-yui3-record="model_18" class="yui3-datatable-odd"><td class="yui3-datatable-col-___MODIFY_COLUMNS___ utilityCol yui3-datatable-cell hitlisttdcell ">&nbsp;</td><td class="yui3-datatable-col-interview_end  yui3-datatable-cell hitlisttdcell  date-font">2015-06-10 00:00:00</td><td class="yui3-datatable-col-ContactFullName  yui3-datatable-cell hitlisttdcell ">SIG PAOLO TORNARI</td><td class="yui3-datatable-col-email  yui3-datatable-cell hitlisttdcell ">INFO@MOTOR-TECNICA.IT</td><td class="yui3-datatable-col-Telephone1  yui3-datatable-cell hitlisttdcell ">+390161240137</td><td class="yui3-datatable-col-NPS  yui3-datatable-cell hitlisttdcell ">8</td><td class="yui3-datatable-col-NES  yui3-datatable-cell hitlisttdcell ">8</td><td class="yui3-datatable-col-NPSWhy  yui3-datatable-cell hitlisttdcell ">Qualita dei prodotti, ampiezza della gamma e velocita di spedizione</td><td class="yui3-datatable-col-NESWhy  yui3-datatable-cell hitlisttdcell ">-</td></tr><tr id="yui_3_8_0_5_1450967691909_371" data-yui3-record="model_19" class="yui3-datatable-even"><td class="yui3-datatable-col-___MODIFY_COLUMNS___ utilityCol yui3-datatable-cell hitlisttdcell ">&nbsp;</td><td class="yui3-datatable-col-interview_end  yui3-datatable-cell hitlisttdcell  date-font">2015-06-10 00:00:00</td><td class="yui3-datatable-col-ContactFullName  yui3-datatable-cell hitlisttdcell ">M J. HEDAN</td><td class="yui3-datatable-col-email  yui3-datatable-cell hitlisttdcell ">JHEDAN@LGTREMPART.FR</td><td class="yui3-datatable-col-Telephone1  yui3-datatable-cell hitlisttdcell ">+33491143280</td><td class="yui3-datatable-col-NPS  yui3-datatable-cell hitlisttdcell ">10</td><td class="yui3-datatable-col-NES  yui3-datatable-cell hitlisttdcell ">10</td><td class="yui3-datatable-col-NPSWhy  yui3-datatable-cell hitlisttdcell ">richesse des références simplicité pour les trouver et aide efficace au cas ou</td><td class="yui3-datatable-col-NESWhy  yui3-datatable-cell hitlisttdcell ">-</td></tr><tr id="yui_3_8_0_5_1450967691909_372" data-yui3-record="model_20" class="yui3-datatable-odd"><td class="yui3-datatable-col-___MODIFY_COLUMNS___ utilityCol yui3-datatable-cell hitlisttdcell ">&nbsp;</td><td class="yui3-datatable-col-interview_end  yui3-datatable-cell hitlisttdcell  date-font">2015-06-10 00:00:00</td><td class="yui3-datatable-col-ContactFullName  yui3-datatable-cell hitlisttdcell ">Ms. ROSALET GADOR</td><td class="yui3-datatable-col-email  yui3-datatable-cell hitlisttdcell ">AREAEESERV_10@YAHOO.COM</td><td class="yui3-datatable-col-Telephone1  yui3-datatable-cell hitlisttdcell ">+63323018532</td><td class="yui3-datatable-col-NPS  yui3-datatable-cell hitlisttdcell ">7</td><td class="yui3-datatable-col-NES  yui3-datatable-cell hitlisttdcell ">10</td><td class="yui3-datatable-col-NPSWhy  yui3-datatable-cell hitlisttdcell ">most likely I recommend *company* to my friend but not for my respective clients.</td><td class="yui3-datatable-col-NESWhy  yui3-datatable-cell hitlisttdcell ">-</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="hitlist-page-info"></div>
+    <div class="hitlist-nav">
+      <a class="hitlist-nav-prev hitlist-nav-button disabled" href="#">Previous</a>
+      <span class="hitlist-pagination-count">1-20 (24181)</span>
+      <a class="hitlist-nav-next hitlist-nav-button" href="#">Next</a>
+    </div>
+  </div>
+</reportal-hitlist>
 
+      <hc-sparkline reflow
+        width="400"
+        series='[{"data": [2,10,32,100,84,120,95,155]}]'>
+      </hc-sparkline>
 
-      <reportal-list class="dd" force-custom-label>
-        <div class="wrapper-label">Customer Group</div>
-          <span class="reportal_hide_print">
-            <select name="c39860b07_abd2_4972_b62f_d0d00900fb63" id="c39860b07_abd2_4972_b62f_d0d00900fb63"  multiple="multiple">
-              <option value=""></option>
-              <option value="r:s:Z1">Global</option>
-              <option value="r:s:Z2">Corporate</option>
-              <option value="r:s:Z3">Key</option>
-              <option selected="selected" value="r:s:Z4">Standard</option>
-              <option value="r:s:Z5">Private</option>
-              <option selected="selected" value="r:s:Z6">Distributor</option>
-              <option value="r:s:Z7">Vendor (Buyback)</option>
-              <option selected="selected" value="r:s:Z8">Staff</option>
-              <option value="r:s:Z9">Intercompany</option>
-              <option value="r:s:ZA">Nursery</option>
-              <option value="r:s:NA">Not assigned</option>
+      <kpi-tile heading="Big Aggregated Table">
+        <div class="tile-content">
+        </div>
+      </kpi-tile>
 
-            </select>
-          </span>
-      </reportal-list>
       <div class="layout horizontal wrap">
-
-        <kpi-tile heading="Promoters" class="flex-1" context="table" assisted>
+</div>
+      <div class="layout horizontal wrap">
+        <!--<kpi-tile heading="Promoters" class="flex-1" context="table" assisted>
           <div class="tile-content">
             <div class="layout horizontal flex-12">
               <reportal-aggregated-table indexed indexed-header="index" assisted colattr-legacy="sortable|headerContent:Sections|hidable|hidingToggleText:Sections;sortable|hidingToggleText:Marget|hidable;hidable;hidable;hidable|renderer:html|sortable;hidable|sortable">
@@ -433,112 +1385,90 @@ body.loading{overflow:hidden}
             <paper-button>Some action</paper-button>
           </div>
           <div id="info">Hello, this is some info about<br> NPS</div>
-        </kpi-tile>
+        </kpi-tile>-->
 
-        <!--<kpi-tile heading="Big Aggregated Table" class="flex-8">
+       <!-- <kpi-tile heading="Big Aggregated Table">
+          <div class="extraHeaderContent" style="margin-right:50px">
+            <reportal-list style="overflow: hidden; height: inherit;">
+              <div class="wrapper-label">Customer Group</div>
+          <span class="reportal_hide_print">
+            <select name="c39860b07_abd2_4972_b62f_d0d00900fb63" id="c39860b07_abd2_4972_b62f_d0d00900fb63"  multiple="multiple">
+              <option value=""></option>
+              <option value="r:s:Z1">Global</option>
+              <option value="r:s:Z2">Corporate</option>
+              <option value="r:s:Z3">Key</option>
+              <option selected="selected" value="r:s:Z4">Standard</option>
+              <option value="r:s:Z5">Private</option>
+              <option selected="selected" value="r:s:Z6">Distributor</option>
+              <option value="r:s:Z7">Vendor (Buyback)</option>
+              <option selected="selected" value="r:s:Z8">Staff</option>
+              <option value="r:s:Z9">Intercompany</option>
+              <option value="r:s:ZA">Nursery</option>
+              <option value="r:s:NA">Not assigned</option>
+
+            </select>
+          </span>
+            </reportal-list>
+
+          </div>
                 <div class="tile-content">
                   <div class="layout horizontal flex-12">
-                <reportal-aggregated-table id="l2" selection-mode="multi" indexed visible-rows="10" frozen-columns="1" colattr-legacy="sortable|sort-direction:asc;sortable|hidable;sortable|hidable;sortable;sortable;"><table id="confirmit_agg_table" class="t0_table table table-hover">
-                    <thead>
-                    <tr class="t0_tr">
-                      <th>stores</th>
-                      <th class="t0_chc">Store rating</th>
-                      <th class="t0_chc">Questions asked</th>
-                      <th class="t0_chc">Listening</th>
-                      <th class="t0_chc">Store rating2</th>
-                      <th class="t0_chc">Questions asked2</th>
-                      <th class="t0_chc">Listening2</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr class="t0_tr">
-                      <td class="t0_rhc table-row-header">TS001</td>
-                      <td class="t0_dc">5.9</td>
-                      <td class="t0_dc">3.6</td>
-                      <td class="t0_dc">3.1</td>
-                      <td class="t0_dc">5.9</td>
-                      <td class="t0_dc">3.6</td>
-                      <td class="t0_dc">3.1</td>
-                    </tr>
-                    <tr class="t0_tr">
-                      <td class="t0_rhc table-row-header">TS002</td>
-                      <td class="t0_dc" style="color:red">7.0</td>
-                      <td class="t0_dc">4.0</td>
-                      <td class="t0_dc">5.0</td>
-                      <td class="t0_dc">7.0</td>
-                      <td class="t0_dc">4.0</td>
-                      <td class="t0_dc">5.0</td>
-                    </tr>
-                    <tr class="t0_tr">
-                      <td class="t0_rhc table-row-header">TS003</td>
-                      <td class="t0_dc">3.0</td>
-                      <td class="t0_dc">4.0</td>
-                      <td class="t0_dc">2.0</td>
-                      <td class="t0_dc">3.0</td>
-                      <td class="t0_dc">4.0</td>
-                      <td class="t0_dc">2.0</td>
-                    </tr>
-                    <tr class="t0_tr">
-                      <td class="t0_rhc table-row-header">TS004</td>
-                      <td class="t0_dc">10.0</td>
-                      <td class="t0_dc">4.0</td>
-                      <td class="t0_dc">4.0</td>
-                      <td class="t0_dc">10.0</td>
-                      <td class="t0_dc">4.0</td>
-                      <td class="t0_dc">4.0</td>
-                    </tr>
-                    <tr class="t0_tr">
-                      <td class="t0_rhc table-row-header">TS005</td>
-                      <td class="t0_dc">3.0</td>
-                      <td class="t0_dc">2.0</td>
-                      <td class="t0_dc">2.0</td>
-                      <td class="t0_dc">3.0</td>
-                      <td class="t0_dc">2.0</td>
-                      <td class="t0_dc">2.0</td>
-                    </tr>
-                    <tr class="t0_tr">
-                      <td class="t0_rhc table-row-header">TS006</td>
-                      <td class="t0_dc">6.3</td>
-                      <td class="t0_dc">3.7</td>
-                      <td class="t0_dc">3.3</td>
-                      <td class="t0_dc">6.3</td>
-                      <td class="t0_dc">3.7</td>
-                      <td class="t0_dc">3.3</td>
-                    </tr>
-                    <tr class="t0_tr">
-                      <td class="t0_rhc table-row-header">TS007</td>
-                      <td class="t0_dc">7.5</td>
-                      <td class="t0_dc">4.0</td>
-                      <td class="t0_dc">4.0</td>
-                      <td class="t0_dc">7.5</td>
-                      <td class="t0_dc">4.0</td>
-                      <td class="t0_dc">4.0</td>
-                    </tr>
-                    <tr class="t0_tr">
-                      <td class="t0_rhc table-row-header">TS008</td>
-                      <td class="t0_dc">5.0</td>
-                      <td class="t0_dc">3.0</td>
-                      <td class="t0_dc">3.0</td>
-                      <td class="t0_dc">5.0</td>
-                      <td class="t0_dc">3.0</td>
-                      <td class="t0_dc">3.0</td>
-                    </tr>
-                    <tr class="t0_tr">
-                      <td class="t0_rhc table-row-header">Average</td>
-                      <td class="t0_dc">5.9</td>
-                      <td class="t0_dc">3.6</td>
-                      <td class="t0_dc">3.2</td>
-                      <td class="t0_dc">5.9</td>
-                      <td class="t0_dc">3.6</td>
-                      <td class="t0_dc">3.2</td>
-                    </tr>
-                    </tbody>
-                  </table>
+                <reportal-aggregated-table id="l2" indexed  frozen-columns="1" colattr-legacy="sortable|sort-direction:asc;sortable|hidable;sortable|hidable;sortable;sortable;renderer:html">
+                  <table id="confirmit_agg_table" class="t0_table bgred_txtwhite"><colgroup><col width="500px"><col><col><col><col><col width="200px"><col><col><col><col></colgroup><thead>
+                  <tr class="t0_tr">
+                    <td rowspan="2">
+                    </td>
+                    <td class="t0_chc bgred_txtwhite" rowspan="2">N</td>
+                    <td class="t0_chc bgred_txtwhite" rowspan="2">% Fav</td>
+                    <td class="t0_chc bgred_txtwhite" rowspan="2">% Neut</td>
+                    <td class="t0_chc bgred_txtwhite" rowspan="2">% Unfav</td>
+                    <td class="t0_chc bgred_txtwhite" rowspan="2" width="200px">%</td>
+                    <td class="t0_chc bgred_txtwhite" colspan="4">% difference on Favourable score</td>
+                  </tr>
+                  <tr class="t0_tr">
+                    <td class="t0_chc bgred_txtwhite">Our 2013 Results</td>
+                    <td class="t0_chc bgred_txtwhite">General Industry</td>
+                    <td class="t0_chc bgred_txtwhite">Global HP Companies</td>
+                    <td class="t0_chc bgred_txtwhite">BSI Total 2015</td>
+                  </tr>
+                  </thead><tbody><tr class="t0_tr">
+                    <td class="t0_rhc bgpink">I have a good understanding of the company's strategy and goals </td>
+                    <td class="t0_dc bgpink">2600</td><td class="t0_dc cf_Green bgpink">84</td><td class="t0_dc cf_Yellow bgpink">11</td><td class="t0_dc cf_Grey bgpink">5</td><td class="t0_dc bgpink" style="margin:0;padding:2px;height:100%;" id="yui_3_8_0_1_1450954137696_29"><table class="barchart" border="0" width="100%" height="100%" cellpadding="0" cellspacing="0" style="height: 48px;"><tbody><tr>
+                    <td class="barchart-cell" title="% Fav" width="84%" style="background:#75ad40;border-left:1px solid black">&nbsp;</td>
+                    <td class="barchart-cell" title="% Neut" width="11%" style="background:#ffc800;">&nbsp;</td>
+                    <td class="barchart-cell" title="%Unfav" width="5%" style="background:#c5c5c5;">&nbsp;</td>
+                  </tr></tbody></table>
+                  </td><td class="t0_dc bgpink">1</td><td class="t0_dc bgpink">6</td><td class="t0_dc bgpink">3</td><td class="t0_dc bgpink">&nbsp;</td></tr>
+                  <tr class="t0_tr">
+                    <td class="t0_rhc bgpink">I believe that the company's strategy and goals are the right ones for the company at this time </td>
+                    <td class="t0_dc bgpink">2600</td><td class="t0_dc cf_Green bgpink">70</td><td class="t0_dc cf_Yellow bgpink">21</td><td class="t0_dc cf_Grey bgpink">9</td><td class="t0_dc bgpink" style="margin:0;padding:2px;height:100%;" id="yui_3_8_0_1_1450954137696_32"><table class="barchart" border="0" width="100%" height="100%" cellpadding="0" cellspacing="0" style="height: 48px;"><tbody><tr>
+                    <td class="barchart-cell" title="% Fav" width="70%" style="background:#75ad40;border-left:1px solid black">&nbsp;</td>
+                    <td class="barchart-cell" title="% Neut" width="21%" style="background:#ffc800;">&nbsp;</td>
+                    <td class="barchart-cell" title="%Unfav" width="9%" style="background:#c5c5c5;">&nbsp;</td>
+                  </tr></tbody></table>
+                  </td><td class="t0_dc cf_Red bgpink">-1</td><td class="t0_dc bgpink">1</td><td class="t0_dc cf_Red bgpink">-3</td><td class="t0_dc bgpink">&nbsp;</td></tr>
+                  <tr class="t0_tr">
+                    <td class="t0_rhc bgpink">I understand the relationship between my job and the company's strategy and goals </td>
+                    <td class="t0_dc bgpink">2600</td><td class="t0_dc cf_Green bgpink">83</td><td class="t0_dc cf_Yellow bgpink">12</td><td class="t0_dc cf_Grey bgpink">5</td><td class="t0_dc bgpink" style="margin:0;padding:2px;height:100%;" id="yui_3_8_0_1_1450954137696_35"><table class="barchart" border="0" width="100%" height="100%" cellpadding="0" cellspacing="0" style="height: 48px;"><tbody><tr>
+                    <td class="barchart-cell" title="% Fav" width="83%" style="background:#75ad40;border-left:1px solid black">&nbsp;</td>
+                    <td class="barchart-cell" title="% Neut" width="12%" style="background:#ffc800;">&nbsp;</td>
+                    <td class="barchart-cell" title="%Unfav" width="5%" style="background:#c5c5c5;">&nbsp;</td>
+                  </tr></tbody></table>
+                  </td><td class="t0_dc bgpink">0</td><td class="t0_dc bgpink">2</td><td class="t0_dc cf_Red bgpink">-1</td><td class="t0_dc bgpink">&nbsp;</td></tr>
+                  <tr class="t0_tr">
+                    <td class="t0_rhc bgpink">Its business prospects over the next 2-3 years </td>
+                    <td class="t0_dc bgpink">2600</td><td class="t0_dc cf_Green bgpink">78</td><td class="t0_dc cf_Yellow bgpink">16</td><td class="t0_dc cf_Grey bgpink">5</td><td class="t0_dc bgpink" style="margin:0;padding:2px;height:100%;" id="yui_3_8_0_1_1450954137696_38"><table class="barchart" border="0" width="100%" height="100%" cellpadding="0" cellspacing="0" style="height: 34px;"><tbody><tr>
+                    <td class="barchart-cell" title="% Fav" width="78%" style="background:#75ad40;border-left:1px solid black">&nbsp;</td>
+                    <td class="barchart-cell" title="% Neut" width="17%" style="background:#ffc800;">&nbsp;</td>
+                    <td class="barchart-cell" title="%Unfav" width="5%" style="background:#c5c5c5;">&nbsp;</td>
+                  </tr></tbody></table>
+                  </td><td class="t0_dc bgpink">0</td><td class="t0_dc bgpink">7</td><td class="t0_dc bgpink">0</td><td class="t0_dc bgpink">&nbsp;</td></tr>
+                  </tbody></table>
                 </reportal-aggregated-table>
                 </div></div>
                 <div id="info">Hello, this is some info about<br> NPS</div>
 
-              </kpi-tile>-->
+              </kpi-tile>
       </div>
       <paper-material elevation="1">
         <reportal-filter-summary use-grouping class="bottom-title paper-font-subhead"><div class="filter-summary"><table cellpadding="5" cellspacing="0">
@@ -630,7 +1560,7 @@ body.loading{overflow:hidden}
 
         <!--kpi-tabbed-chart heading="NPS&reg;" info="Hello, this is some info about<br> NPS" height="420px" selected=""></kpi-tabbed-chart -->
 
-        <div class="flex layout vertical" style="min-width:250px">
+        <!--<div class="flex layout vertical" style="min-width:250px">
           <kpi-tile heading="Promoters"  >
             <div class="tile-content">
               <div class="layout vertical flex-12">
@@ -688,7 +1618,7 @@ body.loading{overflow:hidden}
           </div>
           <div id="info">Hello, this is some info about<br> NPS</div>
 
-        </kpi-tile>
+        </kpi-tile>-->
       </div>
     </div>
   </paper-scroll-header-panel>

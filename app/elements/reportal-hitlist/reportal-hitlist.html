@@ -1,0 +1,493 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+<link rel="import" href="..\..\bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="..\..\bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
+<dom-module id="reportal-hitlist">
+  <template>
+    <style>
+
+      input[type="checkbox"] + label:after {
+        content: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTZweCIgaGVpZ2h0PSIxNnB4IiB2aWV3Qm94PSIwIDAgMTYgMTYiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMi4zMDEyODMyOCw4LjY2MzI1NTM5IEw1Ljk2ODk0OTUyLDEyLjI0NTM5ODcgQzYuMzYwNzYxNiwxMi42MjgwNzQ0IDYuOTg3NTAyMTUsMTIuNjI0Mzc3OSA3LjM3NDc3MzAyLDEyLjIzNzEwNyBMMTMuOTA0NzczMiw1LjcwNzEwNjc4IEMxNC4yOTUyOTc1LDUuMzE2NTgyNDkgMTQuMjk1Mjk3NSw0LjY4MzQxNzUxIDEzLjkwNDc3MzIsNC4yOTI4OTMyMiBDMTMuNTE0MjQ4OSwzLjkwMjM2ODkzIDEyLjg4MTA4NCwzLjkwMjM2ODkzIDEyLjQ5MDU1OTcsNC4yOTI4OTMyMiBMNS45NjA1NTk0NiwxMC44MjI4OTM0IEw3LjM2NjM4Mjk2LDEwLjgxNDYwMTggTDMuNjk4NzE2NzIsNy4yMzI0NTg1IEMzLjMwMzYxMzA3LDYuODQ2NTY3OTEgMi42NzA0OTIxNCw2Ljg1NDAzNjU3IDIuMjg0NjAxNTUsNy4yNDkxNDAyMiBDMS44OTg3MTA5Niw3LjY0NDI0Mzg4IDEuOTA2MTc5NjIsOC4yNzczNjQ4IDIuMzAxMjgzMjgsOC42NjMyNTUzOSBMMi4zMDEyODMyOCw4LjY2MzI1NTM5IFoiIGZpbGw9IiNmZmZmZmYiPjwvcGF0aD48L3N2Zz4=) !important;
+      }
+      .vaadin-grid-sidebar-button:after {
+        content: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDAwMDAwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTEwIDE4aDVWNWgtNXYxM3ptLTYgMGg1VjVINHYxM3pNMTYgNXYxM2g1VjVoLTV6Ii8+ICAgIDxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=) !important;
+      }
+      .vaadin-grid-sidebar-content::content span:before {
+        content: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjMDAwMDAwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPiAgICA8cGF0aCBkPSJNOSAxNi4xN0w0LjgzIDEybC0xLjQyIDEuNDFMOSAxOSAyMSA3bC0xLjQxLTEuNDF6Ii8+PC9zdmc+) !important;
+      }
+      :host ::content #hWrapper{
+        -webkit-flex:inherit !important;
+        flex:inherit !important;
+      }
+      :host ::content div.hitlist-container{
+        font-size:inherit !important;
+        font-family:inherit !important;
+      }
+      :host ::content .light-grey .hitlist .yui3-datatable-table {
+        border:0 !important;
+        -webkit-border-radius:0 !important;
+        -moz-border-radius:0 !important;
+        border-radius:0 !important;
+      }
+      :host ::content .light-grey .hitlist thead tr th:first-child{
+        -webkit-border-radius: 0 !important;
+        -moz-border-radius: 0 !important;
+        border-radius: 0 !important;
+      }
+      :host ::content .light-grey .hitlist th.yui3-datatable-header,
+      :host ::content .light-grey div.yui3-datatable-sort-liner{
+        font-family: inherit !important;
+        font-size: inherit !important;
+        font-weight: 600;
+      }
+      :host ::content .hitlist .yui3-datatable-header,
+      :host ::content .hitlist-nav-prev,
+      :host ::content .hitlist-nav-next,
+      :host ::content .hitlist-nav-page{
+        background-color: transparent !important;
+        background-image: none !important;
+      }
+      :host ::content a.hitlist-nav-prev.disabled:active,
+      :host ::content a.hitlist-nav-next.disabled:active,
+      :host ::content a.hitlist-nav-page.disabled:active,
+      :host ::content a.hitlist-nav-prev.disabled:hover,
+      :host ::content a.hitlist-nav-next.disabled:hover,
+      :host ::content a.hitlist-nav-page.disabled:hover,
+      :host ::content .hitlist .yui3-datatable-odd:hover .yui3-datatable-cell,
+      :host ::content .hitlist .yui3-datatable-even:hover .yui3-datatable-cell{
+        background-color: #EEEEEE !important;
+        background-image: none !important;
+      }
+
+      :host ::content .hitlist tr th{
+        border-top: 0 !important;
+        text-shadow: none !important;
+      }
+
+      :host ::content .hitlist th,
+      :host ::content .hitlist td{
+        padding: 16px 24px 16px 24px !important;
+        color: inherit !important;
+      }
+
+      :host ::content .hitlist th.yui3-datatable-sorted {
+        color: rgba(0, 0, 0, 0.87) !important;
+        border-left: 0 !important;
+        border-right: 0 !important;
+        padding: 0 24px 0 24px !important;
+      }
+      :host ::content .hitlist th.yui3-datatable-sorted,
+      :host ::content .hitlist-dropdown-button,
+      :host ::content .hitlist-btn,
+      :host ::content .hitlist-dropdown-panel,
+      :host ::content .hitlist-column-panel{
+        background-color: transparent !important;
+        background-image: none !important;
+      }
+      :host ::content .hitlist th.yui3-datatable-sortable-column .yui3-datatable-sort-indicator{ /*neither*/
+        padding-left: 8px !important;
+        position: relative !important;
+        top: 4px !important;
+        background-image: none !important;
+      }
+      :host ::content .hitlist th.yui3-datatable-sorted .yui3-datatable-sort-indicator{ /*descending*/
+        content: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+PHN2ZyB3aWR0aD0iMTJweCIgaGVpZ2h0PSIxMnB4IiB2aWV3Qm94PSIwIDAgMTIgMTIiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeG1sbnM6c2tldGNoPSJodHRwOi8vd3d3LmJvaGVtaWFuY29kaW5nLmNvbS9za2V0Y2gvbnMiPiAgICAgICAgPHRpdGxlPlNoYXBlPC90aXRsZT4gICAgPGRlc2M+Q3JlYXRlZCB3aXRoIFNrZXRjaC48L2Rlc2M+ICAgIDxkZWZzPjwvZGVmcz4gICAgPGcgaWQ9IlBhZ2UtMSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc2tldGNoOnR5cGU9Ik1TUGFnZSI+ICAgICAgICA8cGF0aCBkPSJNNSwzLjggTDUsMTIgTDcsMTIgTDcsMy44IEwxMC41LDcuNCBMMTEuOSw1LjkgTDYsMCBMMCw1LjkgTDEuNCw3LjQgTDUsMy44IFoiIGlkPSJTaGFwZSIgZmlsbC1vcGFjaXR5PSIwLjg3IiBmaWxsPSIjMDAwMDAwIiBza2V0Y2g6dHlwZT0iTVNTaGFwZUdyb3VwIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg1Ljk1MDAwMCwgNi4wMDAwMDApIHNjYWxlKDEsIC0xKSB0cmFuc2xhdGUoLTUuOTUwMDAwLCAtNi4wMDAwMDApICI+PC9wYXRoPiAgICA8L2c+PC9zdmc+) !important
+      }
+      :host ::content .hitlist th.yui3-datatable-sorted.yui3-datatable-sorted-desc .yui3-datatable-sort-indicator{/*ascending*/
+        content: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+PHN2ZyB3aWR0aD0iMTJweCIgaGVpZ2h0PSIxMnB4IiB2aWV3Qm94PSIwIDAgMTIgMTIiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeG1sbnM6c2tldGNoPSJodHRwOi8vd3d3LmJvaGVtaWFuY29kaW5nLmNvbS9za2V0Y2gvbnMiPiAgICAgICAgPHRpdGxlPlNoYXBlPC90aXRsZT4gICAgPGRlc2M+Q3JlYXRlZCB3aXRoIFNrZXRjaC48L2Rlc2M+ICAgIDxkZWZzPjwvZGVmcz4gICAgPGcgaWQ9IlBhZ2UtMSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc2tldGNoOnR5cGU9Ik1TUGFnZSI+ICAgICAgICA8cGF0aCBkPSJNNSwzLjggTDUsMTIgTDcsMTIgTDcsMy44IEwxMC41LDcuNCBMMTEuOSw1LjkgTDYsMCBMMCw1LjkgTDEuNCw3LjQgTDUsMy44IFoiIGlkPSJTaGFwZSIgZmlsbC1vcGFjaXR5PSIwLjg3IiBmaWxsPSIjMDAwMDAwIiBza2V0Y2g6dHlwZT0iTVNTaGFwZUdyb3VwIj48L3BhdGg+ICAgIDwvZz48L3N2Zz4=) !important;
+        top: 3px !important;
+      }
+      :host ::content .hitlist tr td {
+        border-top: 0 !important;
+        border-bottom: 1px solid #e3e3e3 !important;
+      }
+      :host ::content .hitlist td.yui3-datatable-sorted{
+        background: #FFFFFF !important;
+        border-left: 0 !important;
+        border-right: 0 !important;
+      }
+      :host ::content .hitlist .yui3-datatable-cell{
+        font-family: inherit !important;
+        font-size:13px !important;
+        color: rgba(0, 0, 0, 0.87) !important;
+      }
+      :host ::content .hitlisttdcell{
+        border:0 !important;
+      }
+
+
+
+      :host ::content .yui3-datatable-table tr {
+        height: var(--reportal-hitlist-row-height, 48px);
+        /*left: 0;
+        top: 0;
+        position: absolute;*/
+      }
+
+
+      :host ::content .yui3-datatable-data td {
+        border-bottom: 1px solid #e3e3e3;
+        opacity: 1;
+      }
+
+      /* Row styles */
+      .vaadin-grid-row {
+        box-sizing: border-box;
+        display: block;
+      }
+
+      tbody:not(.touch):not(.scrolling) .vaadin-grid-row:hover td {
+        background-color: #eeeeee;
+      }
+
+      .vaadin-grid-row-selected td {
+        background-color: #f5f5f5;
+      }
+
+      /* Focus styles */
+      :host ::content .yui3-datatable-data>tr:after {
+        background-color: var(--default-primary-color, #03A9F4);
+        bottom: 0;
+        content: "";
+        height: 2px;
+        left: 0;
+        pointer-events: none;
+        position: absolute;
+        right: 0;
+        transition: all 0.16s ease-in-out;
+        -webkit-transform: scaleX(0.0);
+        transform: scaleX(0.0);
+        z-index: 1;
+      }
+
+      :host ::content :focus .yui3-datatable-data>tr:after {
+        -webkit-transform: scaleX(1.0);
+        transform: scaleX(1.0);
+      }
+
+      :host ::content :focus .yui3-datatable-data>tr {
+        -webkit-animation: v-grid-row-focused 820ms ease-in-out;
+        animation: v-grid-row-focused 820ms ease-in-out;
+      }
+
+      @-webkit-keyframes vaadin-grid-row-focused {
+        50% {
+          color: #03A9F4;
+        } 100% {
+            color: inherit;
+          }
+      }
+
+      @keyframes vaadin-grid-row-focused {
+        50% {
+          color: #03A9F4;
+        } 100% {
+            color: inherit;
+          }
+      }
+
+      /* Grid cell */
+      :host ::content .yui3-datatable-cell {
+        -webkit-align-items: center;
+        align-items: center;
+        background-color: white;
+        box-sizing: border-box;
+        /*display: -webkit-inline-flex;
+        display: inline-flex;*/
+        height: inherit;
+        overflow: hidden;
+        transition: opacity 0.1s ease-in;
+      }
+
+      /* Grid header */
+      :host ::content .yui3-datatable-columns {
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06),
+        0 2px 0 rgba(0, 0, 0, 0.075),
+        0 3px 0 rgba(0, 0, 0, 0.05),
+        0 4px 0 rgba(0, 0, 0, 0.015);
+        box-sizing: border-box;
+        /*display: block;
+        left: 0;
+        position: absolute;
+        top: 0;
+        z-index: 10;
+        padding-right: 2px;*/
+      }
+
+      :host ::content .yui3-datatable-columns>tr {
+        color: rgba(0, 0, 0, 0.54);
+        font-size: 12px;
+        height: var(--reportal-hitlist-header-row-height, 56px);
+      }
+
+      :host ::content .yui3-datatable-header th {
+        font-weight: 500;
+        text-align: left;
+      }
+
+
+      /* Input styles */
+      input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+      }
+
+      input[type="checkbox"] + label {
+        position: relative;
+        left: 0;
+        box-sizing: border-box;
+        display: block;
+        width: 18px;
+        height: 18px;
+        border: 2px solid #7a7a7a;
+        border-radius: 2px;
+        cursor: pointer;
+        transition: background-color 120ms, border-color 120ms;
+      }
+
+      input[type="checkbox"]:focus {
+        outline: none;
+      }
+
+      input[type="checkbox"] + label:after {
+        content: url(img/tick.svg);
+        position: absolute;
+        top: -1px;
+        left: -1px;
+        display: block;
+        width: 16px;
+        height: 17px;
+        transition: all 200ms;
+        -webkit-transform: scale(0);
+        transform: scale(0);
+        -webkit-transform-origin: 40% 80%;
+        transform-origin: 40% 80%;
+      }
+
+      input[type="checkbox"]:checked + label {
+        background-color: var(--default-primary-color, #03A9F4);
+        border-color: transparent;
+      }
+
+      input[type="checkbox"]:checked + label:after {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+      }
+
+      input[type="checkbox"]:indeterminate + label:after {
+        content: "–";
+        font-family: arial;
+        font-weight: bold;
+        font-size: 14px;
+        line-height: 1;
+        text-align: center;
+        -webkit-transform: scale(1);
+        transform: scale(1);
+        transition: none;
+      }
+
+      /* Activation "splash" */
+      input[type="checkbox"] + label:before {
+        content: "";
+        position: absolute;
+        top: -13px;
+        left: -13px;
+        width: 41px;
+        height: 41px;
+        border-radius: 50%;
+        background-color: #666;
+        opacity: 0;
+        -webkit-transform: scale(0.8);
+        transform: scale(0.8);
+        transition: all 180ms cubic-bezier(0.75,.0,0.25,1);
+      }
+
+      input[type="checkbox"] + label:active:before {
+        transform: scale(1.1);
+        opacity: 0.15;
+        transition-duration: 80ms;
+        transition-property: all;
+      }
+
+      input[type="checkbox"]:checked + label:before {
+        background-color: var(--default-primary-color, #03A9F4);
+      }
+
+      :host #hitlist ::content .detailsPaper{
+        padding:16px;
+        margin: 2px auto;
+      }
+      :host #hitlist ::content .detailsPaper>.details_qTitle{
+        font-size: 14px;
+        font-weight: 600;
+        padding-bottom: 8px;
+        color: rgba(0,0,0,0.55);
+      }
+      :host #hitlist ::content .detailsPaper>.details_qText{
+        font-size: 12px;
+        white-space: normal;
+      }
+      :host #hitlist ::content .detailsPaper>.details_qText:not(:last-child){
+        padding-bottom: 16px;
+      }
+      :host paper-progress{
+          --paper-progress-active-color: var(--accent-color,#e91e63);
+      }
+    </style>
+    <paper-card heading="hitlist">
+      <paper-progress hidden$="[[loaded]]" indeterminate style="width:100%"></paper-progress>
+      <vaadin-grid id="hitlist"></vaadin-grid>
+    </paper-card>
+    <div id="hWrapper"><content></content></div>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'reportal-hitlist',
+
+        behaviors: [
+          Polymer.IronResizableBehavior
+        ],
+
+        properties: {
+          data: {
+            type: Array,
+            value: [],
+            notify: true
+          },
+          longText:{
+            type:String
+          },
+          longTextWidth:{
+            type:Number,
+            value:250
+          },
+          loaded:{
+            type:Boolean,
+            value:false
+          },
+          previousSort:{
+            type:Object,
+            value:{}
+          }
+        },
+        attached:function(){
+          var that=this;
+          this.$.hitlist.addEventListener('sort-order-changed',function(e){return that._sortChange(e)});
+          //return that.debounce('getHitlist',function(){that._retrieveHitList()},50);
+          if (typeof YUI !== 'undefined') {
+            YUI().use('event-custom', function (Y) {
+              Y.Global.on('hitlistloaded', function () {
+                return that.debounce('getHitlist',function(){that._retrieveHitList()},100);
+              });
+            });
+          }
+
+          /* trim text on long fields and display it in a card on row-click*/
+          if(this.longText){
+            var detailsOpenIndex = -1;
+            // Show details for the selected row
+            var grid = this.$.hitlist;
+            grid.addEventListener('selected-items-changed', function() {
+              grid.setRowDetailsVisible(detailsOpenIndex, false);
+              var selected = grid.selection.selected();
+              if (selected.length == 1) {
+                grid.setRowDetailsVisible(selected[0], true);
+                detailsOpenIndex = selected[0];
+              }
+            });
+            grid.rowDetailsGenerator = function(rowIndex) {
+              var elem = document.createElement('paper-material');
+              elem.setAttribute('elevation', 4);
+              elem.classList.add('detailsPaper');
+              var columns = that.longText.split(',');
+              grid.getItem(rowIndex, function(error, item) {
+                if (!error) {
+                  var questionRow = document.createElement('div');
+                  for(var i=0;i<columns.length;i++){
+                    var questionTitle = document.createElement('div');
+                    questionTitle.classList.add('details_qTitle');
+                    questionTitle.textContent = grid.columns[parseInt(columns[i])-1].name;
+                    var questionText = document.createElement('div');
+                    questionText.classList.add('details_qText');
+                    questionText.textContent = item[parseInt(columns[i])-1];
+                    questionRow.appendChild(questionTitle);
+                    questionRow.appendChild(questionText);
+                  }
+                  elem.innerHTML = questionRow.innerHTML;
+                }
+              });
+              return elem;
+            }
+          }
+
+        },
+        _retrieveHitList:function(){
+          this._getHitListHeading();
+          this._getHitListData();
+          this.loaded=true;
+        },
+        _getHitListHeading:function(){
+          var heading = this.querySelectorAll('.yui3-datatable-table>.yui3-datatable-columns>tr>th');
+          var grid = this.$.hitlist;
+          if(grid.columns.length>0){grid.columns=[];}
+          if(this.longText){
+            var lt = this.longText.split(',');
+          }
+          if(heading && heading.length>0){
+            for(var i=1;i<heading.length;i++){
+              var attr={};
+              attr.name = heading[i].textContent.trim();
+              attr.sortable = heading[i].classList.contains('yui3-datatable-sortable-column')?true:false;
+              if(lt && lt.indexOf((i).toString())>-1){
+                attr.maxWidth = parseInt(this.longTextWidth);
+              }
+              grid.addColumn(attr);
+              if(heading[i].classList.contains('yui3-datatable-sorted')){
+                grid.sortOrder = heading[i].classList.contains('yui3-datatable-sorted-desc')? [{column: i-1, direction: "desc"}]:[{column: i-1, direction: "asc"}];
+              }
+            }
+          }
+        },
+        _getHitListData:function(){
+          var DS = this.querySelectorAll('tbody.yui3-datatable-data>tr');
+          var grid = this.$.hitlist;
+          var items = [];
+          if(DS && DS.length>0){
+            for(var i=0;i<DS.length;i++){
+              var row=[];
+              for(var td=1;td<DS[i].children.length;td++){
+                row.push(DS[i].children[td].textContent.trim());
+              }
+              items.push(row);
+            }
+            grid.items = items;
+            grid.size = items.length;
+          }
+        },
+        _sortChange:function(e){
+          console.log(e.detail.value[0]);
+          console.log(this.previousSort);
+          if(!this.previousSort || (this.previousSort && (this.previousSort.column !== e.detail.value[0].column || this.previousSort.direction !== e.detail.value[0].direction))){
+            this.loaded=false;
+            this.previousSort = e.detail.value[0];
+            console.log(e.detail.value[0].column+1);
+            this.querySelectorAll('.yui3-datatable-columns th')[e.detail.value[0].column+1].click();
+          }
+        }
+
+      });
+    })();
+  </script>
+</dom-module>

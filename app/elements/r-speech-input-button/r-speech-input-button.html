@@ -155,7 +155,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           'speechToText.abort':'_recognitionAborted',
           'speechToText.result':'_processResult',
           'ajax.response':'handleResponse',
-          'textToSpeech.end':'endedPlayback'
+          'textToSpeech.end':'endedPlayback',
+          'textToSpeech.cancel':'endedPlayback'
         },
 
         properties: {
@@ -206,10 +207,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         /* -- Lifecycle ------------------------------------------------- */
         micTap:function(e){
-          if(!this.recognizing){
+          if(!this.recognizing && !this.speaking){
             this.$.speechToText.start();
-          } else {
+          } else if(this.recognizing){
             this.$.speechToText.abort();
+          } else if(this.speaking){ // tap while speaking stops speaking
+            this.$.textToSpeech.cancel();
           }
         },
         _recognitionStarted:function(e){
@@ -238,6 +241,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         requestResponse:function(e){
           console.log(e);
           var text = e.detail.result;
+          //alert(text);
           //var text = e;
           this.$.speechToText.stop();
           console.log('recognized: '+text);
@@ -259,12 +263,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
           }console.log(contexts);*/
 
-          this.$.ajax.url = this.baseUrl + 'query/';
+          this.$.ajax.url = this.baseUrl + 'query/?v=20151201';
           //this.$.ajax.body = JSON.stringify({ q: text, lang: this.findSupportedLang(this.accent), contexts: contexts, v:"20151222"});
           var body = {};
           body.q = text;
           body.lang = this.findSupportedLang(this.accent).substring(0,2);
-          body.v = 20151222;
+          //body.v = '20151201';
           //if(!this.lastResponse){body.contexts = [this.context];}
           this.$.ajax.body = JSON.stringify(body);
 
@@ -275,12 +279,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.$.ajax.generateRequest();
         },
         handleResponse:function(){
-          console.log('response received');
+          //alert('response received');
           var r=this.lastResponse;
           console.log(r);
 
           if(r.status.code===200){
-            var speech = r.result.fulfillment?r.result.fulfillment.speech:r.result.speech;
+            var speech = r.result.fulfillment.speech;
+            //alert(speech);
             if(speech.length>0){ // we have follow-up
               this.$.textToSpeech.text = speech;
               this.micIcon='volume-up';
@@ -289,10 +294,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             } else {
               this.micIcon='mic';
             }
-            if(!r.result.actionIncomplete && r.result.hasOwnProperty('action') && r.result.action.length>0){ //we assume that the person has to provide answers to follow-ups
+            console.log(!r.result.actionIncomplete);
+            if(!r.result.actionIncomplete && r.result.hasOwnProperty('action') && r.result.action.length>0){ // we assume we have all answers
               this.actionData = r;
               console.log('applied latest data');
               //this.fire('action-data-change',e);
+            } else {//we assume that the person has to provide answers to follow-ups
+              this.$.speechToText.start();
             }
           }
         },
