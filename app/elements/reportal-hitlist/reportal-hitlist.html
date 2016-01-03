@@ -18,6 +18,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="..\..\bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="..\..\bower_components/paper-progress/paper-progress.html">
 <link rel="import" href="..\..\bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="..\..\bower_components/iron-ajax/iron-ajax.html">
 <dom-module id="reportal-hitlist">
   <template>
     <style>
@@ -360,7 +361,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       :host #columnList paper-icon-item iron-icon{display:none}
       :host #columnList paper-icon-item[checked] iron-icon{display:block}
+      :host #hWrapper{display:none}
     </style>
+    <!--<iron-ajax id="ajax"
+               url=""
+               handle-as="json"
+               last-response="{{magic}}"
+               debounce-duration="300"
+               verbose></iron-ajax>-->
     <paper-card heading="hitlist">
       <div id="gridControls" class="horizontal end-justified layout"></div>
       <!--<paper-menu-button  horizontal-align="right" vertical-offset="52" ignore-select>
@@ -389,7 +397,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
     (function() {
       'use strict';
+      /*var GlobalHitlistConfig = {};
+      document.addEventListener("DOMContentLoaded", function() {
+        var scripts = document.querySelectorAll('script');
+        if(scripts){
+          for(var i=scripts.length;i>0;i--){
+            if(scripts[i] && scripts[i].text && scripts[i].text.indexOf('Y.Reportal.HitList,')>-1){
+              var hitlistScript = scripts[i].text;
+              var re = /(Y\.Reportal\.HitList,)\s(.*?)\);/gi;
+              GlobalHitlistConfig = JSON.parse(re.exec(hitlistScript)[2]);
+              break;
+            }
 
+          }
+        }*/
       Polymer({
         is: 'reportal-hitlist',
         /*listeners:{
@@ -424,11 +445,55 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           checkallLabels:{
             type:Array,
             value:[]
-          }
+          },
+          magic:{type:Object,observer:'parseResponse'},
+          hitlistData:{type:Object,observer:'parseData'}
         },
-        attached:function(){
-          this.grid = this.$.hitlist;
+        requestResponse:function(options){
+
+          var o = this.hitlistData.serviceUrl.split('?');
+          var _basePath = o[0];
+          var params = {PageId:this.hitlistData.pageId, Preview:this.hitlistData.preview};
+          if(o[1]){
+            var pairs = o[1].split('&');
+            if(pairs && pairs.length>0){
+              for(var oi=0;oi<pairs.length;oi++){
+                var a = pairs[oi].split('=');
+                params[a[0]]=a[1];
+              }
+            }
+          }
+          if(options && typeof options === Object){
+            for (var attrname in options) { params[attrname] = options[attrname]; }
+          }
+          if (document.querySelector('#PageStateId')) {
+            params.pageStateId=document.querySelector('#PageStateId').value;
+          }
+
+          this.$.ajax.url = _basePath;
+          //this.$.ajax.body = JSON.stringify({ q: text, lang: this.findSupportedLang(this.accent), contexts: contexts, v:"20151222"});
+          this.$.ajax.params = params;
+
+          console.log(this.$.ajax.params);
+          console.log(this.$.ajax.url);
+          //this.$.ajax.headers = {"Authorization":"Bearer " + this.accessToken, "ocp-apim-subscription-key": this.subscriptionKey};
+          //this.$.ajax.contentType = 'application/json; charset=utf-8';
+          this.$.ajax.method="GET";
+          this.$.ajax.generateRequest();
+        },
+parseData:function(){
+  console.log(this.hitlistData);
+  this.requestResponse({initialLoad:1});
+},
+parseResponse:function(){
+  console.log(this.magic);
+},
+        ready:function(){
           var that=this;
+          //turn on generating hitlist from config
+          //this.hitlistData = GlobalHitlistConfig;
+          //this.requestResponse();
+          this.grid = this.$.hitlist;
           this.grid.addEventListener('sort-order-changed',function(e){return that._sortChange(e)});
           //return that.debounce('getHitlist',function(){that._retrieveHitList()},50);
           if (typeof YUI !== 'undefined') {
@@ -668,6 +733,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
 
       });
+      //});
+
     })();
   </script>
 </dom-module>

@@ -345,7 +345,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <iron-icon hidden$="[[!icon]]" icon="[[icon]]"></iron-icon>
             <div hidden$="[[!heading]]" id="tileHeading" >[[heading]]</div>
             <div class="extraHeaderContainer"><content select=".extraHeaderContent"></content></div>
-            <r-speech-input-button hidden$="[[!assisted]]" context$={{context}} action-data="{{actionData}}"></r-speech-input-button>
+            <template is="dom-if" if$="{{speechEnabled}}">
+              <r-speech-input-button hidden$="[[!assisted]]" context$={{context}} action-data="{{actionData}}"></r-speech-input-button>
+            </template>
             <div hidden$="[[!info]]" class="button" on-click="_displayInfo">
               <iron-icon  icon="info-outline" id="infoIcon"></iron-icon>
               <paper-tooltip for="infoIcon" position="bottom" offset="0">[[tooltip]]</paper-tooltip>
@@ -392,10 +394,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         context:{
           type:String,
           notify:true
+        },
+        speechEnabled:{
+          type:Boolean,
+          value:false
         }
 
       },
+      created:function(){
+        //check if we have WebSpeech API wirking
+      },
       ready:function(){
+        if(window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition || window.oSpeechRecognition){
+          this.speechEnabled = true;
+        }
         var _this = this;
         this._computeHeadingClass();
         this.async(this._computeInfo);
