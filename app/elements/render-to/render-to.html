@@ -1,0 +1,63 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+
+<dom-module id="render-to">
+  <template>
+    <content></content>
+  </template>
+  <script>
+  (function() {
+    'use strict';
+    Polymer({
+      /*
+      * <render-to action="prepend" to="#someElement"> text and <div>HTML</div> </render-to>
+      * is used when you want to move some code into another location without using JavaScript
+      * action:
+       * append = append child, where "to" is a host element,
+       * prepend = insert before first-child, where "to" is a host element,
+       * innerHTML = replace innerHTML of "to"
+       * outerHTML = replace "to" with <render-to> contents
+       * before = place <render-to> contents before "to" element
+       * after = place <render-to> contents after "to" element
+      */
+      is: 'render-to',
+      properties: {
+        action: {
+          type: String,
+          value: 'append'// append|prepend|innerHTML|outerHTML|before|after
+        },
+        to:String
+      },
+      ready:function(){
+        var to = document.querySelector(this.to);
+        if(this.action!=='innerHTML' && this.action!=='outerHTML'){
+          var content = Polymer.dom(this).getEffectiveChildNodes();
+          console.log(content);
+          if(content && this.to && this.to.length>0){
+            for(var i=0;i<content.length;i++){
+              switch(this.action){
+                case 'append': to.appendChild(content[i]); break;
+                case 'prepend': to.insertBefore(content[i],to.firstChild); break;
+                case 'before': to.parentNode.insertBefore(content[i],to); break;
+                case 'after': to.parentNode.insertBefore(content[i],to.nextSibling); break;
+              }
+            }
+          }
+        } else {
+          this.action === 'innerHTML'? to.innerHTML = this.innerHTML: to.outerHTML = this.innerHTML;
+          this.innerHTML = '';
+        }
+      }
+    });
+  })();
+  </script>
+</dom-module>

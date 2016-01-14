@@ -1116,12 +1116,14 @@
     </paper-toolbar>
 
     <div class="content">
-      <paper-radio-group selected="small">
-        <paper-radio-button name="small">Small</paper-radio-button>
-        <paper-radio-button name="medium">Medium</paper-radio-button>
-        <paper-radio-button name="large">Large</paper-radio-button>
-      </paper-radio-group>
 
+<render-to to="#filters>div>.dateRange" action="outerHTML">
+  <paper-radio-group selected="small">
+    <paper-radio-button name="small">Small</paper-radio-button>
+    <paper-radio-button name="medium">Medium</paper-radio-button>
+    <paper-radio-button name="large">Large</paper-radio-button>
+  </paper-radio-group>
+</render-to>
       <reportal-hitlist long-text="7,8">
         <div class="light-grey hitlist-container" id="yui_3_8_0_5_1450967691909_16">
           <div class="hitlist-export-button hitlist-btn" title="Export"><img src="/cf_clientutil/images/excel.png" height="14" width="14"></div>
