@@ -1,0 +1,149 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+<link rel="import" href="..\..\bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="..\..\bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="..\..\bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="..\..\bower_components/iron-icons/social-icons.html">
+<link rel="import" href="..\..\bower_components/iron-icon/iron-icon.html">
+
+
+<dom-module id="kpi-tile-basic">
+  <template strip-whitespace>
+    <style>
+      :host {
+        padding: 0 16px 16px 16px;
+        @apply(--layout-horizontal);
+        @apply(--layout-wrap);
+        @apply(--layout-flex-12);
+        @apply(--layout-end);
+      }
+      :host .digit{
+        font-size: 3.5rem;
+        font-weight:400;
+      }
+      :host> .dynamics {
+        padding:0 0 4px 16px;
+      }
+      :host>iron-icon.roleIcon{
+        --iron-icon-width:5em;
+        --iron-icon-height:5em;
+        margin-right:16px;
+        color:var(--paper-grey-600);
+        @apply(--kpi-tile-role-icon);
+      }
+      :host:not([role])>iron-icon.roleIcon{display:none}
+      :host>.data{
+        @apply(--layout-vertical);
+        @apply(--layout-center-justified);
+        margin: auto 0;
+      }
+      :host[role]>.data{
+        @apply(--layout-flex);
+        @apply(--layout-center);
+      }
+
+      :host .kpi-details{
+        border: 0; margin: 0; margin-right:-16px; padding-left:16px;
+        @apply(--layout-flex);
+      }
+      :host .kpi-details>div{
+        padding:0 16px 0 0;
+        line-height: 2em;
+        /*display: table-row;*/
+        font-size: 13px;
+        border-bottom:1px solid #e0e0e0;
+        @apply(--layout-horizontal);
+
+      }
+      :host .kpi-details>div:last-of-type{
+        border-bottom:0px
+      }
+      :host .kpi-details iron-icon {
+        color: var(--kpi-tile--basic-details-icon, rgba(0,0,0,0.55));
+        --iron-icon-height:16px;
+        --iron-icon-width:16px;
+        vertical-align: middle;
+        padding-right: 5px;
+      }
+      :host .details-label{
+        width:70%;
+        text-align: left;
+        white-space: nowrap;}
+      :host .details-value{text-align: right;
+        width:30%;
+        padding-right:16px;
+      }
+      .base{
+        color:var(--paper-grey-500);
+        font-size: 0.8em;
+        text-transform: uppercase;
+        @apply(--kpi-tile-role-base);
+      }
+      :host .red,:host iron-icon.detractor, :host .detractor{ color: var(--conditional-formatting-red, --paper-red-500);}
+      :host .amber,:host iron-icon.passive,  :host .passive{ color: var(--conditional-formatting-amber, --paper-amber-500);}
+      :host .grey{ color: var(--conditional-formatting-grey, --paper-grey-500);}
+      :host .green,:host iron-icon.promoter,  :host .promoter{ color: var(--conditional-formatting-green, --paper-green-500);}
+    </style>
+    <iron-icon icon="{{roleIcon}}" class="roleIcon"></iron-icon>
+    <div class="data">
+      <div class$="digit {{color}}">[[value]]</div>
+      <div hidden$="[[!base]]" class="base">[[base]]</div>
+    </div>
+    <template is="dom-if" if="[[dynamics]]">
+      <div class$="dynamics {{dynamicsColor}}">
+        <iron-icon icon$="[[dynamicsIcon]]" hidden$="[[!dynamicsIcon]]"></iron-icon><span>[[dynamics]]</span>
+      </div>
+    </template>
+    <template is="dom-if" if="[[details]]">
+      <div class="kpi-details layout vertical">
+        <template is="dom-repeat" items="[[details]]" as="detail">
+          <div>
+            <div class="flex-3 details-label"><iron-icon icon="[[detail.icon]]" hidden$="[[!detail.icon]]"></iron-icon> [[detail.label]]</div>
+            <div class$="flex-1 details-value [[detail.color]]">[[detail.value]]</div>
+          </div>
+        </template>
+      </div>
+    </template>
+
+  </template>
+  <script>
+    (function() {
+      'use strict';
+      Polymer({
+        is: 'kpi-tile-basic',
+        properties:{
+          details:Array,
+          roleIcon:{
+            type:String,
+            notify:true
+          },
+          icons:{
+            type:String,
+            value: 'social:mood,face,social:mood-bad' //"promoterIcon,passiveIcon,detractorIcon"
+          },
+          role:String
+        },
+        ready:function() {
+          if (this.role) {
+            var aIcons = this.icons.split(',');
+            switch (this.role) {
+              case 'promoter':  this.roleIcon = aIcons[0]; break;
+              case 'passive':this.roleIcon = aIcons[1];break;
+              case 'detractor':this.roleIcon = aIcons[2];break;
+            }
+            this.$$('.roleIcon').classList.add(this.role);this.$$('.digit').classList.add(this.role);
+          }
+        }
+      });
+    })();
+  </script>
+</dom-module>
