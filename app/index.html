@@ -950,9 +950,9 @@
         @apply(--layout-flex);
       }
 
-      #reportalPage>::content kpi-tile{width:calc(98.66% - 16px); margin: 16px 8px; min-width:250px;}
+      #reportalPage>::content r-card{width:calc(98.66% - 16px); margin: 16px 8px; min-width:250px;}
       #reportalPage>::content #materialVOCoverview, #reportalPage>::content #VOC1{margin-bottom:32px;min-width:250px;}
-      #reportalPage>::content #VOC1 kpi-tile .tile-content{padding:0 16px 16px 16px;}
+      #reportalPage>::content #VOC1 r-card .tile-content{padding:0 16px 16px 16px;}
 
     </style>
     <report-master >
@@ -1243,22 +1243,22 @@
                     series='[{"data": [2,10,32,100,84,120,95,155]}]'>
       </hc-sparkline>
 <div class="layout horizontal wrap">
-  <kpi-tile heading="NPS" class="flex-2">
+  <r-card heading="NPS" class="flex-2">
     <div id="content">
       <kpi-tile-basic value="56" color="red" details='[{"label":"Target:","value":"15","icon":"device:gps-fixed"},{"label":"Gap to target:","value":"50","color":"green","icon":"editor:space-bar"},{"label":"Last period:","value":"55","color":"amber","icon":"undo"},{"label":"Movement:","value":"10","color":"amber","icon":"trending-flat"},{"label":"Respondents:","value":"1024","icon":"social:group"}]' ></kpi-tile-basic>
     </div>
-  </kpi-tile>
-  <kpi-tile heading="NES" class="flex">
+  </r-card>
+  <r-card heading="NES" class="flex">
     <div id="content">
       <kpi-tile-basic value="46" color="amber" dynamics-icon="expand-more" dynamics="1% since last month" dynamics-color="red" class="layout vertical center"></kpi-tile-basic>
     </div>
-  </kpi-tile>
-  <kpi-tile heading="NES" class="flex">
+  </r-card>
+  <r-card heading="NES" class="flex">
     <div id="content">
       <kpi-tile-basic value="46" color="amber" dynamics-icon="expand-more" dynamics="1% since last month" dynamics-color="red"></kpi-tile-basic>
     </div>
-  </kpi-tile>
-  <kpi-tile heading="Promoters" class="flex-2">
+  </r-card>
+  <r-card heading="Promoters" class="flex-2">
     <div id="content">
       <kpi-tile-basic value="65%" role="promoter" base="Base: 658" ></kpi-tile-basic>
     </div>
@@ -1266,28 +1266,28 @@
       <div style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
     </div>
     <div id="info"> <div>some</div> extra <b>HTML</b></div>
-  </kpi-tile>
-  <kpi-tile heading="Passive" calculate-height class="flex">
+  </r-card>
+  <r-card heading="Passive" calculate-height class="flex">
     <div id="content">
       <kpi-tile-basic value="14%" role="passive" base="Base: 149" ></kpi-tile-basic>
     </div>
     <div class="tile-actions">
       <div style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
     </div>
-  </kpi-tile>
-  <kpi-tile heading="Detractors" class="flex">
+  </r-card>
+  <r-card heading="Detractors" class="flex">
     <div id="content">
       <kpi-tile-basic value="21%" role="detractor" base="Base: 216" ></kpi-tile-basic>
     </div>
     <div class="tile-actions">
       <div style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
     </div>
-  </kpi-tile>
+  </r-card>
 </div>
       <div class="layout horizontal wrap">
       </div>
       <div class="layout horizontal wrap">
-        <kpi-tile heading="Promoters" class="flex-1" context="table" assisted style="display:none">
+        <r-card heading="Promoters" class="flex-1" context="table" assisted style="display:none">
           <div id="content">
             <div class="layout horizontal flex-12">
               <reportal-aggregated-table indexed indexed-header="index" assisted colattr-legacy="sortable|headerContent:Sections|hidable|hidingToggleText:Sections;sortable|hidingToggleText:Marget|hidable;hidable;hidable;hidable|renderer:html|sortable;hidable|sortable">
@@ -1464,7 +1464,7 @@
             <paper-button>Some action</paper-button>
           </div>
           <div id="info">Hello, this is some info about<br> NPS</div>
-        </kpi-tile>
+        </r-card>
       </div>
     </div>
   </paper-scroll-header-panel>

@@ -58,8 +58,8 @@
 
 <body unresolved class="fullbleed layout vertical">
 <style is="custom-style">
-  #firstRow>kpi-tile{
-  --kpi-tile:{
+  #firstRow>r-card{
+  --r-card:{
      display: block;
      width: calc(50% - 20px);
      min-width: 220px;
@@ -71,15 +71,15 @@
     width: calc(50% - 20px);
     min-width: 220px;
     }
-  #firstRow> div> kpi-tile{
-  --kpi-tile:{
+  #firstRow> div> r-card{
+  --r-card:{
      display: block;
      width: calc(100% - 20px) !important;
      min-width: 220px;
      margin: 10px;
    };}
-  #secondRow kpi-tile{
-  --kpi-tile:{
+  #secondRow r-card{
+  --r-card:{
     display: block;
     width: calc(100% - 20px) !important;
     min-width: 220px;
@@ -222,7 +222,7 @@
         <div class="content">
 
           <div class="layout horizontal wrap" id="firstRow">
-            <kpi-tile heading="NPS&reg;" icon="thumbs-up-down" info="Hello, this is some info about<br> NPS" height="420px">
+            <r-card heading="NPS&reg;" icon="thumbs-up-down" info="Hello, this is some info about<br> NPS" height="420px">
               <div class="tile-content">
                 <radial-gauge min="-100" max="100" primary='{"val":"20","decimal":"0","color":"red","animated":"true","prefix":"","suffix":""}' secondary='{"val":"56","color":"grey","label":"true","icon":"device:gps-fixed"}' labels></radial-gauge>
                 <radial-gauge min="0" max="10" primary='{"val":"6.2","decimal":"1","color":"amber","animated":"true","prefix":"","suffix":""}' secondary='{"val":"9.1","color":"green","label":"true","icon":"undo"}' dynamics='{"icon":"trending-down","color":"red","val":"36%"}' labels labelposition="bottom" style="padding-top:20px"></radial-gauge>
@@ -230,27 +230,27 @@
               <div class="tile-actions">
                 <paper-button>VIEW DETAILS</paper-button>
               </div>
-            </kpi-tile>
+            </r-card>
             <div class="layout vertical wrap flex">
-              <kpi-tile heading="NPS&reg;" info="Hello, this is some info about<br> NPS" height="200px">
+              <r-card heading="NPS&reg;" info="Hello, this is some info about<br> NPS" height="200px">
                 <div class="tile-content">
                   <radial-gauge min="-100" max="100" primary='{"val":"70","decimal":"0","color":"green","animated":"true","prefix":"","suffix":""}' secondary='{"val":"10","color":"amber","label":"true","icon":"device:gps-fixed"}' labels></radial-gauge>
                 </div>
 
-              </kpi-tile>
-              <kpi-tile heading="Response rate" icon="assessment" info="This is some info about Response rate..." height="200px">
+              </r-card>
+              <r-card heading="Response rate" icon="assessment" info="This is some info about Response rate..." height="200px">
                 <div class="tile-content">
                   <radial-gauge min="0" max="100" primary='{"val":"56.3","decimal":"1","color":"green","animated":"true","prefix":"","suffix":"%"}' secondary='{"val":"33%","color":"red","label":"true","icon":"undo"}' dynamics='{"icon":"trending-up","color":"green","val":"48%"}' labels></radial-gauge>
                 </div>
 
-              </kpi-tile></div>
+              </r-card></div>
           </div>
 
 
           <div class="layout horizontal wrap" id="secondRow">
             <kpi-tabbed-chart heading="NPS&reg; Trending" info="NPS trending shown over different periods" height="420px" selected=""></kpi-tabbed-chart>
 
-           <!-- <kpi-tile heading="NPS&reg;" icon="thumbs-up-down" info="Hello, this is some info about<br> NPS" height="420px">
+           <!-- <r-card heading="NPS&reg;" icon="thumbs-up-down" info="Hello, this is some info about<br> NPS" height="420px">
               <div class="tile-content">
                 <radial-gauge min="-100" max="100" primary='{"val":"20","decimal":"0","color":"red","animated":"true","prefix":"","suffix":""}' secondary='{"val":"56","color":"grey","label":"true","icon":"device:gps-fixed"}' labels></radial-gauge>
                 <radial-gauge min="0" max="10" primary='{"val":"6.2","decimal":"1","color":"amber","animated":"true","prefix":"","suffix":""}' secondary='{"val":"9.1","color":"green","label":"true","icon":"undo"}' dynamics='{"icon":"trending-down","color":"red","val":"36%"}' labels labelposition="bottom" style="padding-top:20px"></radial-gauge>
@@ -258,7 +258,7 @@
               <div class="tile-actions">
                 <paper-button>VIEW DETAILS</paper-button>
               </div>
-            </kpi-tile> -->
+            </r-card> -->
 
           </div>
 

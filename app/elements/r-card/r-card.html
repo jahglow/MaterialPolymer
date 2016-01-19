@@ -15,7 +15,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="..\..\bower_components/paper-styles/paper-styles.html">
 <link rel="import" href="..\neon-animated-pages-autosize/neon-animated-pages-autosize.html">
 <link rel="import" href="..\..\bower_components/neon-animation/neon-animations.html">
-<link rel="import" href="..\kpi-tile-behavior/kpi-tile-behavior.html">
+<link rel="import" href="..\r-card-behavior/r-card-behavior.html">
 <link rel="import" href="..\..\bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
 
 
@@ -37,7 +37,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         padding-top:0;
         position:relative;
         overflow:auto;
-        @apply(--kpi-tile-reveal);
+        @apply(--r-card-reveal);
       }
       #container{
         @apply(--layout-vertical);
@@ -51,7 +51,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </div>
   </template>
 </dom-module>
-<dom-module id="kpi-content">
+<dom-module id="r-card-content">
   <template strip-whitespace>
     <style>
       :host {
@@ -68,7 +68,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         position:relative;
         @apply(--layout-self-stretch);
         height: 100%;
-        @apply(--kpi-tile-content);
+        @apply(--r-card-content);
       }
       #container{
         @apply(--layout-self-stretch);
@@ -80,7 +80,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         border-top: 1px solid #e8e8e8;
         padding: 5px 16px;
         position:relative;
-        @apply(--kpi-tile-actions);
+        @apply(--r-card-actions);
       }
       :host ::content #info{display:none}
     </style>
@@ -94,7 +94,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <script>
   (function() {
     Polymer({
-      is: 'kpi-content',
+      is: 'r-card-content',
       behaviors: [
         Polymer.NeonSharedElementAnimatableBehavior
       ],
@@ -182,7 +182,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   })();
 </script>
 
-<dom-module id="kpi-tile">
+<dom-module id="r-card">
   <template strip-whitespace>
     <style>
       :host {
@@ -193,7 +193,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         border-radius: 2px;
         min-width:200px;
         @apply(--layout-vertical);
-        @apply(--kpi-tile);
+        @apply(--r-card);
       }
       :host>reveal-content{display:none}
 
@@ -215,15 +215,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host.valign #tile,:host.valign ::content #container{
         @apply(--layout-vertical);
       }
-
-
-      /*     :host.valign-middle kpi-content{
-             top: 0;
-             left: 0;
-             bottom: 0;
-             right: 0;
-             height: 100%;
-           }*/
       :host neon-animated-pages-autosize {
         height:100%;
       }
@@ -242,7 +233,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         position: relative;
         @apply(--layout-horizontal);
         @apply(--layout-center);
-        @apply(--kpi-tile-header);
+        @apply(--r-card-header);
       }
       :host .header iron-icon {
         padding:16px 24px;
@@ -264,18 +255,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         padding: 16px 24px;
         font-size: 20px;
         font-weight: 500;
-        color: var(--kpi-tile-header-color, #000);
+        color: var(--r-card-header-color, #000);
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
 
         @apply(--layout-flex);
-        @apply(--kpi-tile-header-text);
+        @apply(--r-card-header-text);
       }
 
       :host .image>.header .title-text, .image>.header iron-icon {
         color:white !important;
-        @apply(--kpi-tile-header-image-text);
+        @apply(--r-card-header-image-text);
       }
       :host .header .title-text.pl0{
         padding-left:0 !important;
@@ -293,7 +284,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --iron-icon-width:24px;}
 
       :host #revealContent{
-        @apply(--kpi-tile-reveal);
+        @apply(--r-card-reveal);
       }
       :host .image{
         background-size: cover;
@@ -302,7 +293,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         margin-bottom: 16px;
         border-top-left-radius: 2px;
         border-top-right-radius: 2px;
-        @apply(--kpi-tile-header-image);
+        @apply(--r-card-header-image);
       }
 
       /* specific styles for reportal-aggregated-table */
@@ -324,7 +315,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         height:100% !important;
       }
       :host .extraHeaderContainer{
-        @apply(--kpi-tile-extra-header-content);
+        @apply(--r-card-extra-header-content);
       }
       :host .extraHeaderContainer ::content reportal-list{
         margin:-16px 0;
@@ -333,12 +324,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
     <paper-material animated$="[[animatedShadow]]" elevation="[[elevation]]"></paper-material>
     <neon-animated-pages-autosize selected="0" calculate-height$="[[calculateHeight]]" id="revealPage">
-      <kpi-content id="tile" >
+      <r-card-content id="tile" >
         <div class="header-wrapper">
           <div class="header">
             <iron-icon hidden$="[[!icon]]" icon="[[icon]]"></iron-icon>
             <div hidden$="[[!heading]]" id="tileHeading" >[[heading]]</div>
-            <div class="extraHeaderContainer"><content select=".extraHeaderContent"></content></div>
+            <div class="extraHeaderContainer"><content select="#controls"></content></div>
             <template is="dom-if" if$="{{speechEnabled}}">
               <r-speech-input-button hidden$="[[!assisted]]" context$={{context}} action-data="{{actionData}}"></r-speech-input-button>
             </template>
@@ -353,7 +344,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="tile-content">
           <content></content>
         </div>
-      </kpi-content>
+      </r-card-content>
 
       <template is="dom-if" if="[[revealStampRequested]]" id="revealTemplate">
         <reveal-content id="rc" >
@@ -378,9 +369,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     'use strict';
 
     new Polymer({
-      is: 'kpi-tile',
+      is: 'r-card',
       behaviors: [
-        Polymer.KpiTileBehavior,
+        Polymer.RCardBehavior,
         Polymer.IronResizableBehavior
       ],
       listeners: {
@@ -474,7 +465,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         } else {
           this._onRevealStamped();
         }
-        //this.$.revealTemplate.render();
         this.async(function(){
         });
       },
@@ -490,7 +480,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
         this.classList.add('valign');
         this.$.revealPage.classList.add('layout','vertical','flex');
-
       },
       _computeHeadingClass: function() {
         var cls = ['title-text'];
@@ -511,7 +500,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       _computeInfo: function() {
         if(!this.info && !this._infoStamped){
-          console.log('info not defined')
           var supposedInfo = Polymer.dom(this).querySelector('#info');
           if(supposedInfo){
             this.querySelector('#revealContent').innerHTML = this.info = supposedInfo.innerHTML;
@@ -519,12 +507,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             Polymer.dom(this).removeChild(supposedInfo);
           }
         } else if(this.info && this.info.length>0 && !this._infoStamped){ // passed as attribute
-          console.log('info defined')
-
-          //this.async(function(){
           this.querySelector('#revealContent').innerHTML = this.info;
           this._infoStamped=true;
-          //});
         }
       }
 
