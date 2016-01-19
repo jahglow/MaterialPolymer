@@ -29,16 +29,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host .digit{
         font-size: 3.5rem;
         font-weight:400;
+        @apply(--kpi-tile-basic-value);
       }
       :host> .dynamics {
         padding:0 0 4px 16px;
+        @apply(--kpi-tile-basic-dynamics);
+
       }
       :host>iron-icon.roleIcon{
         --iron-icon-width:5em;
         --iron-icon-height:5em;
         margin-right:16px;
         color:var(--paper-grey-600);
-        @apply(--kpi-tile-role-icon);
+        @apply(--kpi-tile-basic-roleicon);
       }
       :host:not([role])>iron-icon.roleIcon{display:none}
       :host>.data{
@@ -68,25 +71,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         border-bottom:0px
       }
       :host .kpi-details iron-icon {
-        color: var(--kpi-tile--basic-details-icon, rgba(0,0,0,0.55));
+        color: rgba(0,0,0,0.55);
         --iron-icon-height:16px;
         --iron-icon-width:16px;
         vertical-align: middle;
         padding-right: 5px;
+        @apply(--kpi-tile-basic-details-icon);
+
       }
       :host .details-label{
-        width:70%;
         text-align: left;
-        white-space: nowrap;}
+        white-space: nowrap;
+        @apply(--kpi-tile-basic-details-label);
+      }
       :host .details-value{text-align: right;
-        width:30%;
         padding-right:16px;
+        @apply(--kpi-tile-basic-details-value);
+
       }
       .base{
         color:var(--paper-grey-500);
         font-size: 0.8em;
         text-transform: uppercase;
-        @apply(--kpi-tile-role-base);
+        @apply(--kpi-tile-basic-base);
       }
       :host .red,:host iron-icon.detractor, :host .detractor{ color: var(--conditional-formatting-red, --paper-red-500);}
       :host .amber,:host iron-icon.passive,  :host .passive{ color: var(--conditional-formatting-amber, --paper-amber-500);}

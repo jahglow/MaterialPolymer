@@ -21,79 +21,73 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
 <dom-module id="reveal-content">
-  <style>
-    :host {
-      display: block;
-      overflow: hidden;
-      height:inherit;
-    }
-    #placeholder {
-      opacity: 0;
-      background-color: grey;
-    }
-    :host ::content .tile-content {
-      padding: 16px;
-      padding-top:0;
-      position:relative;
-      overflow:auto;
-      @apply(--kpi-tile-reveal);
-    }
-    #container{
-      @apply(--layout-vertical);
-      @apply(--layout-fit);
-
-    }
-
-  </style>
-  <template>
-
+  <template strip-whitespace>
+    <style>
+      :host {
+        display: block;
+        overflow: hidden;
+        height:inherit;
+      }
+      #placeholder {
+        opacity: 0;
+        background-color: grey;
+      }
+      :host ::content .tile-content {
+        padding: 16px;
+        padding-top:0;
+        position:relative;
+        overflow:auto;
+        @apply(--kpi-tile-reveal);
+      }
+      #container{
+        @apply(--layout-vertical);
+        @apply(--layout-flex);
+        @apply(--layout-fit);
+      }
+    </style>
     <div id="placeholder" class="fit"></div>
-
     <div id="container">
-      <content select="div"></content>
+      <content></content>
     </div>
-
   </template>
 </dom-module>
 <dom-module id="kpi-content">
-  <style>
-    :host {
-      display: block;
-      overflow: hidden;
-      height:inherit;
-      @apply(--layout-vertical);
-    }
-    #placeholder {
-      opacity: 0;
-      background-color: grey;
-    }
-    #container>::content>.tile-content {
-      position:relative;
-      @apply(--layout-self-stretch);
-      height: 100%;
-      @apply(--kpi-tile-content);
-    }
-    #container{
-      @apply(--layout-self-stretch);
-      height:100%;
-      @apply(--layout-vertical);
-    }
-    :host ::content .tile-actions {
-      border-top: 1px solid #e8e8e8;
-      padding: 5px 16px;
-      position:relative;
-      @apply(--kpi-tile-actions);
-    }
-    :host ::content #info{display:none}
-  </style>
-  <template>
-
+  <template strip-whitespace>
+    <style>
+      :host {
+        display: block;
+        overflow: hidden;
+        height:inherit;
+        @apply(--layout-flex);
+      }
+      #placeholder {
+        opacity: 0;
+        background-color: grey;
+      }
+      #container>::content>.tile-content {
+        position:relative;
+        @apply(--layout-self-stretch);
+        height: 100%;
+        @apply(--kpi-tile-content);
+      }
+      #container{
+        @apply(--layout-self-stretch);
+        height:100%;
+        @apply(--layout-vertical);
+        @apply(--layout-flex);
+      }
+      :host ::content .tile-actions {
+        border-top: 1px solid #e8e8e8;
+        padding: 5px 16px;
+        position:relative;
+        @apply(--kpi-tile-actions);
+      }
+      :host ::content #info{display:none}
+    </style>
     <div id="placeholder" class="fit"></div>
-
     <div id="container">
-      <content select="div"></content>
+      <content></content>
     </div>
-
   </template>
 </dom-module>
 
@@ -189,29 +183,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </script>
 
 <dom-module id="kpi-tile">
-  <template>
+  <template strip-whitespace>
     <style>
       :host {
         display: block;
         position: relative;
         box-sizing: border-box;
-        will-change:height;
-        transition: height 0.25s ease-in;
         background: #fff;
         border-radius: 2px;
         min-width:200px;
+        @apply(--layout-vertical);
         @apply(--kpi-tile);
-
       }
       :host>reveal-content{display:none}
-      :host.valign #tile>::content .tile-content{
-        @apply(--layout-horizontal);
-        @apply(--layout-self-stretch);
-        @apply(--layout-center);
+
+
+      /* TODO: refactor below two declarations */
+
+      :host.valign #tile .tile-content /*::content #content*/{
+        @apply(--layout-vertical);
         @apply(--layout-flex);
       }
-      :host.flex #tile>::content .tile-content{
+      :host.flex #tile ::content #content{
         @apply(--layout-horizontal);
+        @apply(--layout-flex);
         @apply(--layout-self-stretch);
         @apply(--layout-center);
       }
@@ -219,7 +214,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         /*:host.valign>#revealPage,*/
       :host.valign #tile,:host.valign ::content #container{
         @apply(--layout-vertical);
-        @apply(--layout-flex);
       }
 
 
@@ -230,43 +224,43 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
              right: 0;
              height: 100%;
            }*/
-      neon-animated-pages-autosize {
+      :host neon-animated-pages-autosize {
         height:100%;
       }
 
-      paper-material {
+      :host paper-material {
         border-radius: inherit;
         @apply(--layout-fit);
       }
 
       /* IE 10 support for HTML5 hidden attr */
-      [hidden] {
+      :host [hidden] {
         display: none !important;
       }
 
-      .header {
+      :host .header {
         position: relative;
         @apply(--layout-horizontal);
         @apply(--layout-center);
         @apply(--kpi-tile-header);
       }
-      .header iron-icon {
+      :host .header iron-icon {
         padding:16px 24px;
         --iron-icon-height:20px;
         --iron-icon-width:20px;
         color:inherit
       }
 
-      .header img {
+      :host .header img {
         width: 100%;
         pointer-events: none;
       }
-      .image .header{
+      :host .image .header{
         padding-top: calc(56.25% - 56px);
         background: linear-gradient(to top, rgba(0,0,0,0.4) 0%,rgba(0,0,0,0.3) 8%, rgba(0,0,0,0.2) 15%, rgba(0,0,0,0.1) 25%, rgba(0,0,0,0) 60%);
       }
 
-      .header .title-text {
+      :host .header .title-text {
         padding: 16px 24px;
         font-size: 20px;
         font-weight: 500;
@@ -279,30 +273,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         @apply(--kpi-tile-header-text);
       }
 
-      .image>.header .title-text, .image>.header iron-icon {
+      :host .image>.header .title-text, .image>.header iron-icon {
         color:white !important;
         @apply(--kpi-tile-header-image-text);
       }
-      .header .title-text.pl0{
+      :host .header .title-text.pl0{
         padding-left:0 !important;
       }
-      .header .title-text.pr0{
+      :host .header .title-text.pr0{
         padding-right:0 !important;
       }
-      .header .title-text.pr0.pl0{
+      :host .header .title-text.pr0.pl0{
         text-align: center;
       }
-      .button {cursor:pointer}
-      .button iron-icon{
+      :host .button {cursor:pointer}
+      :host .button iron-icon{
         padding:12px;
         --iron-icon-height:24px;
         --iron-icon-width:24px;}
 
-
-      #revealContent{
+      :host #revealContent{
         @apply(--kpi-tile-reveal);
       }
-      .image{
+      :host .image{
         background-size: cover;
         -moz-background-size: cover;  /* Firefox 3.6 */
         background-position: 50% 50%;  /* Internet Explorer 7/8 */
@@ -313,17 +306,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       /* specific styles for reportal-aggregated-table */
-      :host #tile>::content .tile-content reportal-aggregated-table .vaadin-grid-sidebar.vaadin-grid{
+      :host #tile ::content reportal-aggregated-table .vaadin-grid-sidebar.vaadin-grid{
         top: -54px;
       }
 
-      :host.hasInfo #tile>::content .tile-content reportal-aggregated-table .vaadin-grid-sidebar.vaadin-grid{
+      :host.hasInfo #tile ::content reportal-aggregated-table .vaadin-grid-sidebar.vaadin-grid{
         right: 40px;
       }
-      :host[assisted] #tile>::content .tile-content reportal-aggregated-table .vaadin-grid-sidebar.vaadin-grid{
+      :host[assisted] #tile ::content reportal-aggregated-table .vaadin-grid-sidebar.vaadin-grid{
         right: 40px;
       }
-      :host[assisted].hasInfo #tile>::content .tile-content reportal-aggregated-table .vaadin-grid-sidebar.vaadin-grid{
+      :host[assisted].hasInfo #tile ::content  reportal-aggregated-table .vaadin-grid-sidebar.vaadin-grid{
         right: 80px;
       }
       :host ::content div.highcharts-container,:host ::content div.highcharts-container>svg, :host ::content div[data-highcharts-chart]{
@@ -336,9 +329,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host .extraHeaderContainer ::content reportal-list{
         margin:-16px 0;
       }
+      :host.hasInfo #tile ::content #content{@apply(--layout-flex-12);}
     </style>
     <paper-material animated$="[[animatedShadow]]" elevation="[[elevation]]"></paper-material>
-    <neon-animated-pages-autosize selected="0" preserve-initial-height$="[[preserveInitialHeight]]" id="revealPage">
+    <neon-animated-pages-autosize selected="0" calculate-height$="[[calculateHeight]]" id="revealPage">
       <kpi-content id="tile" >
         <div class="header-wrapper">
           <div class="header">
@@ -348,24 +342,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <template is="dom-if" if$="{{speechEnabled}}">
               <r-speech-input-button hidden$="[[!assisted]]" context$={{context}} action-data="{{actionData}}"></r-speech-input-button>
             </template>
-            <div hidden$="[[!info]]" class="button" on-click="_displayInfo">
-              <iron-icon  icon="info-outline" id="infoIcon"></iron-icon>
-              <paper-tooltip for="infoIcon" position="bottom" offset="0">[[tooltip]]</paper-tooltip>
-            </div>
-          </div></div>
-        <content id="helloWorld"></content>
+            <template is="dom-if" if="[[hasInfo]]">
+              <div class="button" on-click="_displayInfo">
+                <iron-icon  icon="info-outline" id="infoIcon"></iron-icon>
+                <paper-tooltip for="infoIcon" position="bottom" offset="0">[[tooltip]]</paper-tooltip>
+              </div>
+            </template>
+          </div>
+        </div>
+        <div class="tile-content">
+          <content></content>
+        </div>
       </kpi-content>
 
-      <reveal-content id="rc" hidden$="[[!info]]">
-        <div class="header">
-          <div class="button" on-click="_hideInfo">
-            <iron-icon icon="arrow-back" id="backIcon"></iron-icon>
-            <paper-tooltip for="backIcon" position="bottom" offset="0">Return</paper-tooltip>
+      <template is="dom-if" if="[[revealStampRequested]]" id="revealTemplate">
+        <reveal-content id="rc" >
+          <div class="header">
+            <div class="button" on-click="_hideInfo">
+              <iron-icon icon="arrow-back" id="backIcon"></iron-icon>
+              <paper-tooltip for="backIcon" position="bottom" offset="0">Return</paper-tooltip>
+            </div>
+            <div hidden$="[[!heading]]" id="revealHeading" class="title-text">[[heading]]</div>
           </div>
-          <div hidden$="[[!heading]]" id="revealHeading" class="title-text">[[heading]]</div>
-        </div>
-        <div class="tile-content" id="revealContent"></div>
-      </reveal-content>
+          <div class="tile-content" id="revealContent">
+            <content></content>
+          </div>
+        </reveal-content>
+      </template>
     </neon-animated-pages-autosize>
 
   </template>
@@ -382,8 +385,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       ],
       listeners: {
         'iron-resize': '_onIronResize',
-        //'action-data-change':'propagateToChildren'
-
+        'revealTemplate.dom-change':'_onRevealStamped'
       },
       properties:{
         actionData:{
@@ -400,6 +402,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           value:false
         }
 
+
       },
       created:function(){
         //check if we have WebSpeech API wirking
@@ -410,7 +413,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
         var _this = this;
         this._computeHeadingClass();
-        this.async(this._computeInfo);
+        var supposedInfo = Polymer.dom(this).querySelector('#info');
+        if(supposedInfo){
+          this.hasInfo = this.calculateHeight = true;
+          this.classList.add('hasInfo');
+        }
+        //this.async(this._computeInfo);
       },
       attached:function(){
         this.async(function(){this._reflowHighcharts(this);},600);
@@ -421,15 +429,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           children[i].actionData=this.actionData;
         }
       },
-
+      _onRevealStamped:function(){
+        this.debounce('revealStamp',function(){
+          console.log('_onRevealStamped');
+          if(this.querySelector('reveal-content')){
+            console.log('rc defined')
+            this._computeInfo();
+          this.$.revealPage.style.height = this.$.revealPage.clientHeight + 'px';
+          this.$.tile.sharedElements = {
+            'ripple': event.target,
+            'reverse-ripple': event.target
+          };
+          this.$.revealPage.selected = 1;}
+        })
+      },
       _onIronResize:function(e){
         this.debounce('recomputeHeight', function(){
-          this.classList.remove('valign');
-          this.$.revealPage.classList.remove('layout','vertical','flex');
-          this.$.revealPage.style.minHeight='';
-          var oldHeight = this.$.revealPage.style.height;
-          this.style.minHeight='';
-          this._computeHeight(oldHeight);
+          if(this.calculateHeight){ //to reduce unnecessary calculations needed only for info element
+            this.classList.remove('valign');
+            this.$.revealPage.classList.remove('layout','vertical','flex');
+            this.$.revealPage.style.minHeight='';
+            var oldHeight = this.$.revealPage.style.height;
+            this.style.minHeight='';
+            this._computeHeight(oldHeight);
+          }
           if(this.$.revealPage.selected === 0){this._reflowHighcharts(e.target);} // only when highcharts is on the fron we reflow it
         }, 300);
       },
@@ -437,7 +460,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if(typeof Highcharts !== 'undefined'){
           var charts = el.querySelectorAll('div[data-highcharts-chart]');
           if(charts && charts.length>0){
-            for(var c=0;c<charts.length;c++){
+            for(var i=0;i<charts.length;i++){
               var chartId = charts[i].getAttribute('data-highcharts-chart');
               var chart = Highcharts.charts[parseInt(chartId)];
               chart.reflow();
@@ -446,12 +469,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       },
       _displayInfo: function(event) {
-        this.$.revealPage.style.height = this.$.revealPage.clientHeight + 'px';
-        this.$.tile.sharedElements = {
-          'ripple': event.target,
-          'reverse-ripple': event.target
-        };
-        this.$.revealPage.selected = 1;
+        if(!this.revealStampRequested){
+          this.revealStampRequested=true;
+        } else {
+          this._onRevealStamped();
+        }
+        //this.$.revealTemplate.render();
+        this.async(function(){
+        });
       },
       _hideInfo : function() {
         this.$.revealPage.selected = 0;
@@ -485,16 +510,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       },
       _computeInfo: function() {
-        if(!this.info){
+        if(!this.info && !this._infoStamped){
+          console.log('info not defined')
           var supposedInfo = Polymer.dom(this).querySelector('#info');
           if(supposedInfo){
-            this.info = supposedInfo.innerHTML;
+            this.querySelector('#revealContent').innerHTML = this.info = supposedInfo.innerHTML;
+            this._infoStamped=true;
             Polymer.dom(this).removeChild(supposedInfo);
           }
-        }
-        if(this.info && this.info.length>0){ // passed as attribute
-          this.$.revealContent.innerHTML = this.info;
-          this.classList.add('hasInfo');
+        } else if(this.info && this.info.length>0 && !this._infoStamped){ // passed as attribute
+          console.log('info defined')
+
+          //this.async(function(){
+          this.querySelector('#revealContent').innerHTML = this.info;
+          this._infoStamped=true;
+          //});
         }
       }
 

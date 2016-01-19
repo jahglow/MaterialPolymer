@@ -19,6 +19,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="..\kpi-tile/kpi-tile.html">
 <link rel="import" href="..\kpi-tile-behavior/kpi-tile-behavior.html">
+<link rel="import" href="..\kpi-tile-basic/kpi-tile-basic.html">
 
 
 <dom-module id="kpi-tabbed-chart">
@@ -63,24 +64,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        };
       --paper-tab-ink:{@apply(--light-primary-color);};
       }
-      .top-content{
-        background-color: var(--default-primary-color);
-        color: var(--text-primary-color);
-        padding: 0 16px;
-        @apply(--layout-horizontal);
-        @apply(--layout-wrap);
-      @apply(--layout-end);
-      }
-      .top-content .digit{
-        @apply(--layout-flex-3);
-
-        font-size: 3.5rem;
-        font-weight:400;
-      }
-      .top-content .dynamics {
-          @apply(--layout-flex-2);
-          @apply(--layout-end);
-      }
       .chart-area{
         overflow:hidden;
         height:100%;
@@ -92,13 +75,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         height:250px;
 
       }
-      .red{ color: var(--conditional-formatting-red, --paper-red-500);}
-      .amber{ color: var(--conditional-formatting-amber, --paper-amber-500);}
-      .grey{ color: var(--conditional-formatting-grey, --paper-grey-500);}
-      .green{ color: var(--conditional-formatting-green, --paper-green-500);}
+      kpi-tile-basic
     </style>
     <kpi-tile heading="{{heading}}" id="lol" info="{{info}}" height="{{height}}" >
       <div class="tile-content">
+        <kpi-tile-basic value$="[[value]]" color$="[[dynamics.color]]" dynamics-icon$="[[dynamics.icon]]" dynamics$="[[dynamics.value]]" dynamics-color$="[[dynamics.color]]"></kpi-tile-basic>
         <div class="top-content">
           <div class="digit">53</div>
           <div class="dynamics">
@@ -144,7 +125,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         dynamics:{
           type:Object,
-          value:{'icon':'expand-less','val':'13%','color':'grey'}
+          value:{'icon':'expand-less','value':'13%','color':'grey'}
         }
       },
       created:function(){

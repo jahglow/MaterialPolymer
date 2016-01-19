@@ -997,6 +997,7 @@
 
 <global-scope>
   <div id="menu">
+    <div></div>
   </div>
 
   <div id="filters">
@@ -1117,18 +1118,17 @@
 
     <div class="content">
 
-<render-to to="#filters>div>.dateRange" action="outerHTML">
-  <paper-radio-group selected="small">
-    <paper-radio-button name="small">Small</paper-radio-button>
-    <paper-radio-button name="medium">Medium</paper-radio-button>
-    <paper-radio-button name="large">Large</paper-radio-button>
-  </paper-radio-group>
-</render-to>
-      <reportal-hitlist long-text="7,8">
+      <render-to to="#filters .dateRange" action="outerHTML">
+        <paper-radio-group selected="small">
+          <paper-radio-button name="small">Small</paper-radio-button>
+          <paper-radio-button name="medium">Medium</paper-radio-button>
+          <paper-radio-button name="large">Large</paper-radio-button>
+        </paper-radio-group>
+      </render-to>
+      <!--<reportal-hitlist long-text="7,8">
         <div class="light-grey hitlist-container" id="yui_3_8_0_5_1450967691909_16">
           <div class="hitlist-export-button hitlist-btn" title="Export"><img src="/cf_clientutil/images/excel.png" height="14" width="14"></div>
           <div class="hitlist-dropdown-button"><span class="hitlist-dropdown-arrow"></span></div>
-          <!-- Filter badges start -->
           <div class="hitlist-active-filters reportal-clearfix">
             <div class="hitlist-filter-wrapper reportal-clearfix" id="yui_3_8_0_5_1450967691909_249"></div>
           </div>
@@ -1190,38 +1190,38 @@
             <div id="yui_3_8_0_5_1451286452968_711" class="yui3-widget yui3-panel yui3-widget-positioned yui3-widget-stacked yui3-widget-modal hitlist-column-panel" style="left: 86px; top: 956px; z-index: 0;">
               <div id="yui_3_8_0_5_1451286452968_713" class="yui3-panel-content yui3-widget-stdmod">
                 <div class="yui3-widget-bd">
-                <a href="#" class="hitlist-column-panel-reset">Show default columns</a>
-                <a href="#" class="hitlist-column-panel-checkall">Uncheck all</a>
-                <div class="hitlist-columns reportal-clearfix">
-                  <div class="hitlist-column">
-                    <div class="hitlist-column-row">
-                      <input checked="checked" type="checkbox" value="interview_end" id="col-6a73147c-aee8-4b79-b01f-2610895bea53-interview_end">
-                      <label for="col-6a73147c-aee8-4b79-b01f-2610895bea53-interview_end">Time of response</label>
-                    </div>
-                    <div class="hitlist-column-row">
-                      <input checked="checked" type="checkbox" value="ContactFullName" id="col-6a73147c-aee8-4b79-b01f-2610895bea53-ContactFullName">
-                      <label for="col-6a73147c-aee8-4b79-b01f-2610895bea53-ContactFullName">Contact Full Name</label>
-                    </div>
-                    <div class="hitlist-column-row">
-                      <input checked="checked" type="checkbox" value="email" id="col-6a73147c-aee8-4b79-b01f-2610895bea53-email">
-                      <label for="col-6a73147c-aee8-4b79-b01f-2610895bea53-email">E-mail</label>
-                    </div>
-                    <div class="hitlist-column-row">
-                      <input checked="checked" type="checkbox" value="Telephone1" id="col-6a73147c-aee8-4b79-b01f-2610895bea53-Telephone1">
-                      <label for="col-6a73147c-aee8-4b79-b01f-2610895bea53-Telephone1">Phone</label>
-                    </div>
-                    <div class="hitlist-column-row">
-                      <input checked="checked" type="checkbox" value="NPS" id="col-6a73147c-aee8-4b79-b01f-2610895bea53-NPS">
-                      <label for="col-6a73147c-aee8-4b79-b01f-2610895bea53-NPS">NPS®</label>
-                    </div>
-                    <div class="hitlist-column-row"><input checked="checked" type="checkbox" value="NES" id="col-6a73147c-aee8-4b79-b01f-2610895bea53-NES"><label for="col-6a73147c-aee8-4b79-b01f-2610895bea53-NES">NES</label></div>
-                    <div class="hitlist-column-row"><input checked="checked" type="checkbox" value="NPSWhy" id="col-6a73147c-aee8-4b79-b01f-2610895bea53-NPSWhy"><label for="col-6a73147c-aee8-4b79-b01f-2610895bea53-NPSWhy">NPS® Comments</label></div>
-                    <div class="hitlist-column-row"><input checked="checked" type="checkbox" value="NESWhy" id="col-6a73147c-aee8-4b79-b01f-2610895bea53-NESWhy">
-                      <label for="col-6a73147c-aee8-4b79-b01f-2610895bea53-NESWhy">NES Comments</label>
+                  <a href="#" class="hitlist-column-panel-reset">Show default columns</a>
+                  <a href="#" class="hitlist-column-panel-checkall">Uncheck all</a>
+                  <div class="hitlist-columns reportal-clearfix">
+                    <div class="hitlist-column">
+                      <div class="hitlist-column-row">
+                        <input checked="checked" type="checkbox" value="interview_end" id="col-6a73147c-aee8-4b79-b01f-2610895bea53-interview_end">
+                        <label for="col-6a73147c-aee8-4b79-b01f-2610895bea53-interview_end">Time of response</label>
+                      </div>
+                      <div class="hitlist-column-row">
+                        <input checked="checked" type="checkbox" value="ContactFullName" id="col-6a73147c-aee8-4b79-b01f-2610895bea53-ContactFullName">
+                        <label for="col-6a73147c-aee8-4b79-b01f-2610895bea53-ContactFullName">Contact Full Name</label>
+                      </div>
+                      <div class="hitlist-column-row">
+                        <input checked="checked" type="checkbox" value="email" id="col-6a73147c-aee8-4b79-b01f-2610895bea53-email">
+                        <label for="col-6a73147c-aee8-4b79-b01f-2610895bea53-email">E-mail</label>
+                      </div>
+                      <div class="hitlist-column-row">
+                        <input checked="checked" type="checkbox" value="Telephone1" id="col-6a73147c-aee8-4b79-b01f-2610895bea53-Telephone1">
+                        <label for="col-6a73147c-aee8-4b79-b01f-2610895bea53-Telephone1">Phone</label>
+                      </div>
+                      <div class="hitlist-column-row">
+                        <input checked="checked" type="checkbox" value="NPS" id="col-6a73147c-aee8-4b79-b01f-2610895bea53-NPS">
+                        <label for="col-6a73147c-aee8-4b79-b01f-2610895bea53-NPS">NPS®</label>
+                      </div>
+                      <div class="hitlist-column-row"><input checked="checked" type="checkbox" value="NES" id="col-6a73147c-aee8-4b79-b01f-2610895bea53-NES"><label for="col-6a73147c-aee8-4b79-b01f-2610895bea53-NES">NES</label></div>
+                      <div class="hitlist-column-row"><input checked="checked" type="checkbox" value="NPSWhy" id="col-6a73147c-aee8-4b79-b01f-2610895bea53-NPSWhy"><label for="col-6a73147c-aee8-4b79-b01f-2610895bea53-NPSWhy">NPS® Comments</label></div>
+                      <div class="hitlist-column-row"><input checked="checked" type="checkbox" value="NESWhy" id="col-6a73147c-aee8-4b79-b01f-2610895bea53-NESWhy">
+                        <label for="col-6a73147c-aee8-4b79-b01f-2610895bea53-NESWhy">NES Comments</label>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
               </div>
         <span class="hitlist-column-panel-nav">
           <button class="hitlist-column-panel-cancel">Cancel</button>
@@ -1236,23 +1236,59 @@
             <a class="hitlist-nav-next hitlist-nav-button" href="#">Next</a>
           </div>
         </div>
-      </reportal-hitlist>
+      </reportal-hitlist>-->
 
       <hc-sparkline reflow
                     width="400"
                     series='[{"data": [2,10,32,100,84,120,95,155]}]'>
       </hc-sparkline>
-
-      <kpi-tile heading="Big Aggregated Table">
-        <div class="tile-content">
-        </div>
-      </kpi-tile>
-
+<div class="layout horizontal wrap">
+  <kpi-tile heading="NPS" class="flex-2">
+    <div id="content">
+      <kpi-tile-basic value="56" color="red" details='[{"label":"Target:","value":"15","icon":"device:gps-fixed"},{"label":"Gap to target:","value":"50","color":"green","icon":"editor:space-bar"},{"label":"Last period:","value":"55","color":"amber","icon":"undo"},{"label":"Movement:","value":"10","color":"amber","icon":"trending-flat"},{"label":"Respondents:","value":"1024","icon":"social:group"}]' ></kpi-tile-basic>
+    </div>
+  </kpi-tile>
+  <kpi-tile heading="NES" class="flex">
+    <div id="content">
+      <kpi-tile-basic value="46" color="amber" dynamics-icon="expand-more" dynamics="1% since last month" dynamics-color="red" class="layout vertical center"></kpi-tile-basic>
+    </div>
+  </kpi-tile>
+  <kpi-tile heading="NES" class="flex">
+    <div id="content">
+      <kpi-tile-basic value="46" color="amber" dynamics-icon="expand-more" dynamics="1% since last month" dynamics-color="red"></kpi-tile-basic>
+    </div>
+  </kpi-tile>
+  <kpi-tile heading="Promoters" class="flex-2">
+    <div id="content">
+      <kpi-tile-basic value="65%" role="promoter" base="Base: 658" ></kpi-tile-basic>
+    </div>
+    <div class="tile-actions">
+      <div style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
+    </div>
+    <div id="info"> <div>some</div> extra <b>HTML</b></div>
+  </kpi-tile>
+  <kpi-tile heading="Passive" calculate-height class="flex">
+    <div id="content">
+      <kpi-tile-basic value="14%" role="passive" base="Base: 149" ></kpi-tile-basic>
+    </div>
+    <div class="tile-actions">
+      <div style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
+    </div>
+  </kpi-tile>
+  <kpi-tile heading="Detractors" class="flex">
+    <div id="content">
+      <kpi-tile-basic value="21%" role="detractor" base="Base: 216" ></kpi-tile-basic>
+    </div>
+    <div class="tile-actions">
+      <div style="vertical-align: baseline; line-height: 32px; text-align: center">Respondents: 1024</div>
+    </div>
+  </kpi-tile>
+</div>
       <div class="layout horizontal wrap">
       </div>
       <div class="layout horizontal wrap">
-        <kpi-tile heading="Promoters" class="flex-1" context="table" assisted>
-          <div class="tile-content">
+        <kpi-tile heading="Promoters" class="flex-1" context="table" assisted style="display:none">
+          <div id="content">
             <div class="layout horizontal flex-12">
               <reportal-aggregated-table indexed indexed-header="index" assisted colattr-legacy="sortable|headerContent:Sections|hidable|hidingToggleText:Sections;sortable|hidingToggleText:Marget|hidable;hidable;hidable;hidable|renderer:html|sortable;hidable|sortable">
                 <table id="confirmit_agg_table" class="t0_table bgred_txtwhite"><colgroup><col width="250"><col><col><col><col width="200px"><col></colgroup><thead>
@@ -1429,7 +1465,7 @@
           </div>
           <div id="info">Hello, this is some info about<br> NPS</div>
         </kpi-tile>
-</div>
+      </div>
     </div>
   </paper-scroll-header-panel>
 </global-scope>
@@ -1437,3 +1473,6 @@
 </body>
 
 </html>
+
+
+

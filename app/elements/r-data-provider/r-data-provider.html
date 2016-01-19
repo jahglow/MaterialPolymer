@@ -14,32 +14,49 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <template>
     <style>
       :host {
-        display: block /*none !important*/;
+        display: none !important;
       }
     </style>
     <content></content>
   </template>
   <script>
-  (function() {
-    'use strict';
-    /*
-    * this element takes a JSON array that is in the document and turns it to an interanl object and feeds it to other elements around it.
-    * this is a convenient way to use reportal data dynamically.
-    * */
-    Polymer({
-      is: 'r-data-provider',
+    (function() {
+      'use strict';
+      /*
+       * this element takes a JSON array that is in the document and turns it to an interanl object and feeds it to other elements around it.
+       * this is a convenient way to use reportal data dynamically.
+       * */
+      Polymer({
+        is: 'r-data-provider',
 
-      properties: {
-        data: {
-          type:Object,
-          notify: true
+        properties: {
+          data: {
+            type:Object,
+            notify: true
+          },
+          input:{
+            type:Object,
+            observer:'parseAttribute'
+          }
+        },
+        ready:function(){
+          var jStr = Polymer.dom(this).childNodes[0];
+          if(jStr){
+            jStr = jStr.textContent.trim();
+            console.log(jStr);
+            this.data = JSON.parse(jStr);
+            console.log(this.data);
+          }
+        },
+        parseAttribute:function(){
+          if(this.input){
+            console.log(this.input);
+            console.log(typeof this.input);
+            this.data = JSON.parse(this.input);
+            console.log(this.data)
+          }
         }
-      },
-      ready:function(){
-        var jStr = Polymer.dom(this).childNodes[0].textContent.trim();
-        this.data = JSON.parse(jStr);
-      }
-    });
-  })();
+      });
+    })();
   </script>
 </dom-module>
