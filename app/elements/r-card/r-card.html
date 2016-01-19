@@ -76,7 +76,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         @apply(--layout-vertical);
         @apply(--layout-flex);
       }
-      :host ::content .tile-actions {
+      :host ::content #actions {
         border-top: 1px solid #e8e8e8;
         padding: 5px 16px;
         position:relative;
@@ -330,7 +330,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <iron-icon hidden$="[[!icon]]" icon="[[icon]]"></iron-icon>
             <div hidden$="[[!heading]]" id="tileHeading" >[[heading]]</div>
             <div class="extraHeaderContainer"><content select="#controls"></content></div>
-            <template is="dom-if" if$="{{speechEnabled}}">
+            <template is="dom-if" if="{{speechEnabled}}">
               <r-speech-input-button hidden$="[[!assisted]]" context$={{context}} action-data="{{actionData}}"></r-speech-input-button>
             </template>
             <template is="dom-if" if="[[hasInfo]]">
@@ -422,9 +422,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       _onRevealStamped:function(){
         this.debounce('revealStamp',function(){
-          console.log('_onRevealStamped');
           if(this.querySelector('reveal-content')){
-            console.log('rc defined')
             this._computeInfo();
           this.$.revealPage.style.height = this.$.revealPage.clientHeight + 'px';
           this.$.tile.sharedElements = {
@@ -432,7 +430,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             'reverse-ripple': event.target
           };
           this.$.revealPage.selected = 1;}
-        })
+        },50);
       },
       _onIronResize:function(e){
         this.debounce('recomputeHeight', function(){
