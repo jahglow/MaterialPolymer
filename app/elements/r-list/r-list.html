@@ -15,7 +15,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="..\..\bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="..\..\bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="..\..\bower_components/paper-item/paper-icon-item.html">
-<link rel="import" href="..\..\bower_components/iron-list/iron-list.html">
 <link rel="import" href="..\..\bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="..\..\bower_components/iron-icons/iron-icons.html">
 
@@ -52,27 +51,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         font-size: 13px;
         line-height: 24px;
         text-transform: uppercase;
-        @apply(--reportal-sidebar-section-title);
-        @apply(--reportal-wrap-list-label);
-      }
-
-      /* multiselect list*/
-      :host div.selected{
-        background-color:var(--light-primary-color);
-        @apply(--r-list-multiselect-selected);
-      }
-      :host iron-list .item{
-        line-height: 36px;
-        vertical-align: middle;
-        padding: 0 16px ;
-        @apply(--r-list-multiselect-item);
-      }
-      :host iron-list{
-        height:200px;
-        margin: 8px;
-        border-bottom:1px solid;
-        border-bottom-color:  var(--dark-primary-color);
-        @apply(--r-list-multiselect);
+        @apply(--r-sidebar-section-title);
+        @apply(--r-list-label);
       }
       :host paper-listbox paper-icon-item{--paper-item-icon-width:0px}
       :host paper-listbox[multi] paper-icon-item iron-icon{visibility:hidden}
@@ -98,17 +78,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <paper-dropdown-menu label="[[label]]" id="dd" vertical-align$="{{verticalAlign}}" horizontal-align$="{{horizontalAlign}}" no-label-float$="[[forceCustomLabel]]">
         <paper-listbox class="dropdown-content" attr-for-selected="value" multi$="[[multi]]" selected="[[singleSelected]]" selected-values$="[[multiSelected]]" selected-attribute="selected" id="ddListbox">
           <template is="dom-repeat" items="[[ddData]]" as="item">
-            <paper-icon-item value$="[[item.value]]"><iron-icon icon="check" item-icon></iron-icon>[[item.textContent]]</paper-icon-item>
+            <paper-icon-item value$="[[item.value]]"><iron-icon icon="check" item-icon></iron-icon>{{_computeTextLabel(index,item.textContent)}}</paper-icon-item>
           </template>
         </paper-listbox>
       </paper-dropdown-menu>
     </template>
-
-    <!--<iron-list id="dropDownList" hidden$="{{!multi}}" items="{{ddData}}" selection-enabled multi-selection selected-items="{{selectedItems}}" as="item">
-        <template>
-            <div on-tap="_reflectToList" tabindex="0" aria-label$="[[_getAriaLabel(item, selected)]]" class$="[[_computedClass(item, selected)]]">{{item.textContent}}</div>
-        </template>
-       </iron-list>-->
   </template>
   <script>
     (function() {
@@ -160,7 +134,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           horizontalAlign:{
             type:String,
             value:'right'
-          }
+          },
+          emptyOptionText:String
         },
         ready:function(){
           var el;
@@ -190,8 +165,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
           }
         },
-        _computeList:function(){
-          this.ddData=Polymer.dom(this).querySelectorAll('option'); //option[i].value (String), option[i].textContent (String), option[i].selected (Bool)
+        _computeTextLabel:function(idx,text){
+          if(idx==0 && text.trim().length===0 && this.emptyOptionText){return this.emptyOptionText} else {return text}
         },
         _computeCheckboxRadio:function(){
           var rg;
@@ -228,18 +203,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             case 'dropdown': this._reflectToDropdown(e);break;
           }
         },
-        /*_reflectToList:function(e){
-         var hostInput = Polymer.dom(this).querySelector('select option[value="'+e.model.item.value+'"]');
-         if(!hostInput.selected){
-         hostInput.selected = true;
-         hostInput.setAttribute('selected','selected');
-         } else {
-         hostInput.selected = false;
-         hostInput.removeAttribute('selected');
-         }
-         },*/
         _reflectToDropdown:function(e){
-
           if(this.multi && this.keepOpen){
             this.$.dd.open();
           }
@@ -274,10 +238,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             hostInput.checked = true;
             this.selectedItems = [e.detail.item.value];
           }
-        },
-
-        _getAriaLabel: function(item, selected) {
-          return selected ? 'Deselect ' + item.textContent : 'Select ' + item.textContent;
         },
         _computedClass: function(item,selected) {
           if(item.attributes.selected && !selected){
