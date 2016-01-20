@@ -19,26 +19,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="..\..\bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="..\..\bower_components/iron-icons/iron-icons.html">
 
-<dom-module id="reportal-list">
-  <template>
+<dom-module id="r-list">
+  <template strip-whitespace>
     <style>
       :host {
         display: inline-block;
-        @apply(--reportal-list);
+        @apply(--r-list);
       }
       :host paper-checkbox{
         display: block;
         padding: 8px 8px;
-        @apply(--reportal-list-checkbox);
+        @apply(--r-list-checkbox);
       }
       :host paper-radio-group{
         display: block;
-        @apply(--reportal-list-radio-group);
+        @apply(--r-list-radio-group);
       }
       :host paper-radio-group paper-radio-button{
         display: block;
         padding: 8px 8px;
-        @apply(--reportal-list-radio-button);
+        @apply(--r-list-radio-button);
       }
       :host #listWrapper{
         display:none;
@@ -59,20 +59,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       /* multiselect list*/
       :host div.selected{
         background-color:var(--light-primary-color);
-        @apply(--reportal-list-multiselect-selected);
+        @apply(--r-list-multiselect-selected);
       }
       :host iron-list .item{
         line-height: 36px;
         vertical-align: middle;
         padding: 0 16px ;
-        @apply(--reportal-list-multiselect-item);
+        @apply(--r-list-multiselect-item);
       }
       :host iron-list{
         height:200px;
         margin: 8px;
         border-bottom:1px solid;
         border-bottom-color:  var(--dark-primary-color);
-        @apply(--reportal-list-multiselect);
+        @apply(--r-list-multiselect);
       }
       :host paper-listbox paper-icon-item{--paper-item-icon-width:0px}
       :host paper-listbox[multi] paper-icon-item iron-icon{visibility:hidden}
@@ -83,12 +83,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         margin:8px;
         width: calc(100% - 16px);
         display:block;
-        @apply(--reportal-list-dropdown);
+        @apply(--r-list-dropdown);
       }
       :host paper-checkbox:first-child, :host paper-radio-group:first-child{padding-top: 32px}
     </style>
     <span id="wrapperLabel">
-      <content select=".wrapper-label"></content>
+      <content select="#label"></content>
     </span>
     <span id="listWrapper">
       <content></content>
@@ -114,7 +114,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     (function() {
       'use strict';
       Polymer({
-        is: 'reportal-list',
+        is: 'r-list',
         listeners:{
           'change':'_reflectToCheckbox',
           'iron-select':'_reflectToOriginal',
@@ -164,8 +164,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         ready:function(){
           var el;
-          var inlineLabel = this.$.wrapperLabel.querySelector('.wrapper-label');
-          if(inlineLabel && !this.label){this.label=inlineLabel.textContent;}
+          var inlineLabel = this.$.wrapperLabel.textContent;
+          if(inlineLabel && !this.label){this.label=inlineLabel;}
           if(Polymer.dom(this).querySelector('input')){
             if(this.label){this._computeLabel(this.label);}
             el = Polymer.dom(this).querySelector('input');
