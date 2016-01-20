@@ -334,7 +334,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <r-speech-input-button hidden$="[[!assisted]]" context$={{context}} action-data="{{actionData}}"></r-speech-input-button>
             </template>
             <template is="dom-if" if="[[hasInfo]]">
-              <div class="button" on-click="_displayInfo">
+              <div class="button" id="infoTrigger" on-click="_displayInfo">
                 <iron-icon  icon="info-outline" id="infoIcon"></iron-icon>
                 <paper-tooltip for="infoIcon" position="bottom" offset="0">[[tooltip]]</paper-tooltip>
               </div>
@@ -407,6 +407,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var supposedInfo = Polymer.dom(this).querySelector('#info');
         if(supposedInfo){
           this.hasInfo = this.calculateHeight = true;
+          this.info = supposedInfo.innerHTML;
+          Polymer.dom(this).removeChild(supposedInfo);
           this.classList.add('hasInfo');
         }
         //this.async(this._computeInfo);
@@ -420,18 +422,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           children[i].actionData=this.actionData;
         }
       },
-      _onRevealStamped:function(){
-        this.debounce('revealStamp',function(){
-          if(this.querySelector('reveal-content')){
-            this._computeInfo();
-          this.$.revealPage.style.height = this.$.revealPage.clientHeight + 'px';
-          this.$.tile.sharedElements = {
-            'ripple': event.target,
-            'reverse-ripple': event.target
-          };
-          this.$.revealPage.selected = 1;}
-        },50);
-      },
+      _onRevealStamped:function(){if(this.$$('#rc')){this._computeInfo();}},
       _onIronResize:function(e){
         this.debounce('recomputeHeight', function(){
           if(this.calculateHeight){ //to reduce unnecessary calculations needed only for info element
@@ -461,10 +452,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if(!this.revealStampRequested){
           this.revealStampRequested=true;
         } else {
-          this._onRevealStamped();
+          this.$.revealPage.style.height = this.$.revealPage.clientHeight + 'px';
+          this.$.tile.sharedElements = {
+            'ripple': event.target,
+            'reverse-ripple': event.target
+          };
+          this.$.revealPage.selected = 1;
         }
-        this.async(function(){
-        });
       },
       _hideInfo : function() {
         this.$.revealPage.selected = 0;
@@ -497,15 +491,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       },
       _computeInfo: function() {
-        if(!this.info && !this._infoStamped){
-          var supposedInfo = Polymer.dom(this).querySelector('#info');
-          if(supposedInfo){
-            this.querySelector('#revealContent').innerHTML = this.info = supposedInfo.innerHTML;
-            this._infoStamped=true;
-            Polymer.dom(this).removeChild(supposedInfo);
-          }
-        } else if(this.info && this.info.length>0 && !this._infoStamped){ // passed as attribute
-          this.querySelector('#revealContent').innerHTML = this.info;
+        if(this.info && this.info.length>0 && !this._infoStamped){ // passed as attribute
+          this.async(function(){
+            this.$$('#revealContent').innerHTML = this.info;
+            this.$$('#infoTrigger').click();
+          },1);
           this._infoStamped=true;
         }
       }

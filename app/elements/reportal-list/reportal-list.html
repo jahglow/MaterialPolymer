@@ -183,7 +183,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               this.multiSelected = this.selectedItems =  selected.map(function(item){return item.value});
             } else {
               this.singleSelected = selected[0].value;
-              this.selectedItems = selected;
+              this.selectedItems = [selected[0].value];
             }
             if(this.forceCustomLabel){
               this._computeLabel(this.label);
