@@ -1003,22 +1003,26 @@
   <div id="filters">
     <div>
       <div class="dateRange">
-        <reportal-calendar label="Date from"  format="YYYY-MM-DD" >
+        <r-calendar label="Date from"  format="YYYY-MM-DD" >
           <div class="label">Date FROM</div>
           <div class="locale">en</div>
-        <span class="reportal_hide_print">
-          <input name="c763f34b5_5f31_425c_ba68_904b664ab2b9" type="text" class="inp" value="2015-11-13" size="10" id="c763f34b5_5f31_425c_ba68_904b664ab2b9">
-          <span id="c763f34b5_5f31_425c_ba68_904b664ab2b9_valid" style="color:Red;display:none;">Field contains invalid characters</span>
-        </span>
-        </reportal-calendar>
-        <reportal-calendar label="Date to" date="2015-11-19" format="YYYY-MM-DD" >
+          <span class="reportal_hide_print" id="yui_3_8_0_6_1453297746306_402">
+            <span id="cd971e601_20c6_483f_9765_eb25e40d6186" style="vertical-align:middle;">
+              <input name="cd971e601_20c6_483f_9765_eb25e40d6186$textbox" type="text" maxlength="10" id="cd971e601_20c6_483f_9765_eb25e40d6186_textbox" onfocus="DatePicker_Init(event, 'cd971e601_20c6_483f_9765_eb25e40d6186');" style="width:80px;">
+              <img src="https://reportal.euro.confirmit.com/cf_clientutil/images/calendar_16.png" id="cd971e601_20c6_483f_9765_eb25e40d6186_picker" style="cursor:pointer;vertical-align:top;margin:1px;" onclick="DatePicker_Init(event, 'cd971e601_20c6_483f_9765_eb25e40d6186', true);">
+              <span id="cd971e601_20c6_483f_9765_eb25e40d6186_validator" style="color:Red;display:none;">Not a valid date</span>
+              <span id="cd971e601_20c6_483f_9765_eb25e40d6186_rv" style="color:Red;display:none;">The date is not within a valid range for dates (1/1/1753 to 12/31/9999)</span>
+            </span>
+          </span>
+        </r-calendar>
+        <r-calendar label="Date to" date="2015-11-19" format="YYYY-MM-DD" >
           <div class="label">Date TO</div>
           <div class="locale">en</div>
         <span class="reportal_hide_print">
           <input name="c763f34b5_5f31_425c_ba68_904b664ab2b9" type="text" size="10" id="c763f34b5_5f31_425c_ba68_904b664ab2b9">
           <span id="c763f34b5_5f31_425c_ba68_904b664ab2b9_valid" style="color:Red;display:none;">Field contains invalid characters</span>
         </span>
-        </reportal-calendar>
+        </r-calendar>
       </div>
       <r-list label="Customer Group">
         <div id="label">Customer Group</div>
@@ -1118,7 +1122,7 @@
 
     <div class="content">
 
-      <render-to to="#filters .dateRange" action="outerHTML">
+      <render-to to="#filters">
         <paper-radio-group selected="small">
           <paper-radio-button name="small">Small</paper-radio-button>
           <paper-radio-button name="medium">Medium</paper-radio-button>
@@ -1465,6 +1469,15 @@
           </div>
           <div id="info">Hello, this is some info about<br> NPS</div>
         </r-card>
+        <r-calendar label="Date to" date="2015-11-19" format="YYYY-MM-DD" >
+          <div class="label">Date TO</div>
+          <div class="locale">en</div>
+        <span class="reportal_hide_print">
+          <input name="c763f34b5_5f31_425c_ba68_904b664ab2b9" type="text" size="10" id="c763f34b5_5f31_425c_ba68_904b664ab2b9">
+          <span id="c763f34b5_5f31_425c_ba68_904b664ab2b9_valid" style="color:Red;display:none;">Field contains invalid characters</span>
+        </span>
+        </r-calendar>
+
       </div>
     </div>
   </paper-scroll-header-panel>

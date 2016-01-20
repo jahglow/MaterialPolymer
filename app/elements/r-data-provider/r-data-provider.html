@@ -28,32 +28,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        * */
       Polymer({
         is: 'r-data-provider',
-
         properties: {
           data: {
             type:Object,
             notify: true
-          },
-          input:{
-            type:Object,
-            observer:'parseAttribute'
           }
         },
         ready:function(){
           var jStr = Polymer.dom(this).childNodes[0];
           if(jStr){
-            jStr = jStr.textContent.trim();
-            console.log(jStr);
-            this.data = JSON.parse(jStr);
-            console.log(this.data);
-          }
-        },
-        parseAttribute:function(){
-          if(this.input){
-            console.log(this.input);
-            console.log(typeof this.input);
-            this.data = JSON.parse(this.input);
-            console.log(this.data)
+            this.data = JSON.parse(jStr.textContent.trim());
           }
         }
       });

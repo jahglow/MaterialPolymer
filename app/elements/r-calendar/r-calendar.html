@@ -9,17 +9,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="..\..\bower_components/polymer/polymer.html">
-<link rel="import" href="..\..\bower_components/paper-date-picker/paper-date-picker.html">
 <link rel="import" href="..\..\bower_components/paper-styles/paper-styles.html">
 <link rel="import" href="..\..\bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="..\..\bower_components/paper-date-picker/paper-date-picker.html">
+<link rel="import" href="..\..\bower_components/paper-date-picker/paper-date-picker-dialog-style.html">
 <link rel="import" href="..\..\bower_components/paper-button/paper-button.html">
 
-<dom-module id="reportal-calendar">
+<dom-module id="r-calendar">
   <template>
+    <style include="paper-date-picker-dialog-style"></style>
     <style>
       :host {
         display: block;
-        --primary-background-color:#FFFFFF;
         padding:8px;
       }
       #cw>::content .reportal_hide_print,#cw>::content .locale, #cw>::content .label{display:none}
@@ -51,7 +52,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     (function() {
       'use strict';
       Polymer({
-        is: 'reportal-calendar',
+        is: 'r-calendar',
 
         properties: {
           label: {
@@ -135,33 +136,65 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         computeLocale:function(locale){
           // adjust calendar locale to current report language
-          var adjustLocale = Polymer.dom(this).querySelector('.locale');
+          var adjustLocale = Polymer.dom(this).querySelector('#locale');
           if(adjustLocale && adjustLocale.textContent.length>0){
             return adjustLocale.textContent;
           } else {
             return locale;}
         },
         ready:function(){
-          //legacy multilang label
-          var adjustLabel = Polymer.dom(this).querySelector('.label');
-          if(adjustLabel && adjustLabel.textContent.length>0){this.label=adjustLabel.textContent;}
-          var inputDate = Polymer.dom(this).querySelector('.reportal_hide_print input').value;
-          if(inputDate.length>0){
-            if(inputDate.split('-').length>0){
-              inputDate = inputDate.split('-');
+          var origInput = this.querySelector('input');
+          if(window.DatePicker_config && typeof window.DatePicker_config ==='object' && origInput.id.indexOf('_textbox')>-1){ //we have a reportal datepicker element,
+            var cfg = window.DatePicker_config;
+            this.querySelector('paper-button[dialog-dismiss]').textContent = cfg.cancelText;
+            this.querySelector('paper-button[dialog-confirm]').textContent = cfg.okText;
+            this.format=cfg.datePattern.toUpperCase();
+            if(origInput.length>0){
+              if(origInput.split(cfg.dateSeparator).length>0){
+                origInput = inputDate.split(cfg.dateSeparator);
+              }
+              var realFormat = this.format.split(cfg.dateSeparator);
+              if(realFormat){
+                if(realFormat[0].indexOf('M')>-1){
+                  this.date = new Date(parseInt(inputDate[2])-1,parseInt(inputDate[0]) -1,parseInt(inputDate[1]));
+                } else if(realFormat[0].indexOf('D')>-1){
+                  this.date = new Date(parseInt(inputDate[2])-1,parseInt(inputDate[1]) -1,parseInt(inputDate[0]));
+                } else {
+                  this.date = new Date(parseInt(inputDate[0])-1,parseInt(inputDate[1]) -1,parseInt(inputDate[2]));
+                }
+              }
             }
-            this.date = new Date(parseInt(inputDate[0])-1,parseInt(inputDate[1]) -1,parseInt(inputDate[2]));
+          } else {
+            if(origInput.length>0){
+              if(origInput.split('-').length>0){
+                origInput = inputDate.split('-');
+              }
+              this.date = new Date(parseInt(inputDate[0])-1,parseInt(inputDate[1]) -1,parseInt(inputDate[2]));
+            }
           }
+          //legacy multilang label
+          var adjustLabel = Polymer.dom(this).querySelector('#label');
+          if(adjustLabel && adjustLabel.textContent.length>0){this.label=adjustLabel.textContent;}
         },
-        dismissDialog: function(event) {
-          if (event.detail.confirmed) {
+        dismissDialog: function(e) {
+          if (e.detail.confirmed) {
             //TODO: add clear date functionality
             this.date = this.$.picker.date;
             Polymer.dom(this).querySelector('input').setAttribute('value', this.dateFormat(this.date, this.format));
           }
+          this._fixDrawer(e, 'main');
         },
-        showDialog: function() {
+        showDialog: function(e) {
           this.$.dialog.toggle();
+          this._fixDrawer(e, 'drawer');
+        },
+        _fixDrawer:function(e, toFix){
+          var drawer = e.path.filter(function(item){return item.localName==='paper-scroll-header-panel' && item.attributes.getNamedItem('drawer')})[0];
+          if(drawer){
+            var pdp = e.path.filter(function(item){return item.localName==='paper-drawer-panel'})[0];
+            pdp.defaultSelected=toFix;
+            if(toFix==='main'){pdp.disableSwipe = false;} else {pdp.disableSwipe = true;}
+          }
         }
       });
     })();

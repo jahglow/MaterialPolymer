@@ -208,15 +208,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             this.$.dd.open();
           }
           var select = Polymer.dom(this).querySelector('select');
-          console.log(select.selectedIndex);
           if(!this.multi && e.detail.item.value!==select.options[select.selectedIndex].value && e.type==='iron-select'){
             this.selectedItems = [e.detail.item.value];
             select.value=e.detail.item.value;
+            if(typeof select.onchange === 'function'){eval(select.getAttribute('onchange'));}
           } else if(this.multi){
             this.selectedItems = this.$$('#ddListbox').selectedItems.map(function(item){return item.value;});
             var el = this.querySelector('select option[value="'+e.detail.item.value+'"]');
-            if(e.detail.item.hasAttribute('selected')!==el.selected){el.selected=!el.selected;}
+            if(e.detail.item.hasAttribute('selected')!==el.selected){
+              el.selected=!el.selected;
+              if(typeof select.onchange === 'function'){eval(select.getAttribute('onchange'));}
+            }
           }
+
         },
         _reflectToCheckbox:function(e){
           if(this.listType==='checkbox'){
@@ -229,6 +233,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               hostInput.checked = true;
               this.selectedItems.push(e.target.value);
             }
+            if(typeof hostInput.onclick === 'function'){eval(hostInput.getAttribute('onclick'))}
           }
         },
         _reflectToRadio:function(e){
@@ -236,6 +241,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             this.$$('paper-radio-group').setAttribute('selected',e.detail.item.value);
             var hostInput = this.querySelector('input[value="'+e.detail.item.value+'"]');
             hostInput.checked = true;
+            if(typeof hostInput.onclick === 'function'){eval(hostInput.getAttribute('onclick'))}
             this.selectedItems = [e.detail.item.value];
           }
         },
