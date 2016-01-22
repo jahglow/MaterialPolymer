@@ -355,9 +355,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </div>
             <div hidden$="[[!heading]]" id="revealHeading" class="title-text">[[heading]]</div>
           </div>
-          <div class="tile-content" id="revealContent">
-            <content></content>
-          </div>
+          <div class="tile-content" id="revealContent"></div>
         </reveal-content>
       </template>
     </neon-animated-pages-autosize>
@@ -392,8 +390,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type:Boolean,
           value:false
         }
-
-
       },
       created:function(){
         //check if we have WebSpeech API wirking
@@ -404,17 +400,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
         var _this = this;
         this._computeHeadingClass();
-        var supposedInfo = Polymer.dom(this).querySelector('#info');
-        if(supposedInfo){
+        if(Polymer.dom(this).querySelector('#info')){
           this.hasInfo = this.calculateHeight = true;
-          this.info = supposedInfo.innerHTML;
-          Polymer.dom(this).removeChild(supposedInfo);
           this.classList.add('hasInfo');
         }
-        //this.async(this._computeInfo);
       },
       attached:function(){
-        this.async(function(){this._reflowHighcharts(this);},600);
+        this.async(function(){this._reflowHighcharts(this);},1000);
       },
       propagateToChildren:function(e){ //
         var children = this.querySelectorAll('[assisted]');
@@ -422,7 +414,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           children[i].actionData=this.actionData;
         }
       },
-      _onRevealStamped:function(){if(this.$$('#rc')){this._computeInfo();}},
+      _onRevealStamped:function(){
+        if(this.$$('#rc')){
+          this._computeInfo();
+        }
+      },
       _onIronResize:function(e){
         this.debounce('recomputeHeight', function(){
           if(this.calculateHeight){ //to reduce unnecessary calculations needed only for info element
@@ -497,6 +493,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             this.$$('#infoTrigger').click();
           },1);
           this._infoStamped=true;
+        } else if(Polymer.dom(this).querySelector('#info') && !this._infoStamped){
+          var supposedInfo = this.querySelector('#info');
+          if(supposedInfo){
+            this.info = supposedInfo.innerHTML;
+            this.async(function(){
+              this.$$('#revealContent').innerHTML = supposedInfo.innerHTML;
+              this.$$('#infoTrigger').click();
+            },1);
+            Polymer.dom(this).removeChild(supposedInfo);
+            this._infoStamped=true;
+          }
         }
       }
 
