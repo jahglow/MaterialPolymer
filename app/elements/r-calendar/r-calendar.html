@@ -149,7 +149,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           var origInput = this.querySelector('input');
           if(window.DatePicker_config && typeof window.DatePicker_config ==='object' && origInput.id.indexOf('_textbox')>-1){ //we have a reportal datepicker element,
             var cfg = window.DatePicker_config;
-            console.log(cfg)
             this.querySelector('paper-button[dialog-dismiss]').textContent = cfg.cancelText;
             this.querySelector('paper-button[dialog-confirm]').textContent = cfg.okText;
             this.format=cfg.datePattern.toUpperCase();
@@ -169,8 +168,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               }
             }
           } else {
-            console.log('no config');
-            console.log(window.DatePicker_config);
             if(origInput.length>0){
               if(origInput.split('-').length>0){
                 origInput = inputDate.split('-');

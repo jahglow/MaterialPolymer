@@ -21,11 +21,12 @@
         <hydrolysis-analyzer id="analyzer" src="[[_srcUrl]]" transitive="[[transitive]]" clean analyzer="{{_hydroDesc}}" loading="{{_hydroLoading}}"></hydrolysis-analyzer>
         <iron-ajax id="ajax" url="[[docSrc]]" handle-as="json" on-response="_handleAjaxResponse"></iron-ajax>
 
-        <paper-drawer-panel drawer-width="272px">
+        <paper-drawer-panel id="drawerPanel" drawer-width="272px">
             
             <paper-header-panel drawer id="headerPanel">
                 <paper-toolbar>
-                    <h2><span>{{active}}</span></h2><div></div>
+                    <!-- <h2><span>{{active}}</span></h2><div></div> -->
+                    <img id="brandLogo" alt="LinchPin.io" width="40" height="40" src="assets/linchpin_large_clear_light-bg_logo-200x200.png"> <span><img id="brandText" alt="LinchPin" width="" height="" src="assets/linchpin_text_sm_black.png"></span>
                 </paper-toolbar>
                 <div>
                     <article class="accordion">
@@ -53,26 +54,28 @@
                 <paper-toolbar>
                     <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
                     <div style="width:100%;">
-                        <h2>
-                            <span id="title">{{title}}</span>
-                            <template is="dom-if" if="{{githubLink}}">
-                                <a id="github" target="_blank" href="{{githubLink}}" style="visibility: visible;">
-                                    <paper-icon-button src="assets/github-logo.png"></paper-icon-button>
-                                </a>
-                            </template>
-                            <template is="dom-if" if="{{!githubLink}}">
-                                <a id="github" target="_blank" href="{{githubLink}}" style="visibility: hidden;">
-                                    <paper-icon-button src="assets/github-logo.png"></paper-icon-button>
-                                </a>
-                            </template>
+                        <h2 id="titleCon">
+                            <!-- <span id="title">{{title}}</span> -->
+                            <span id="title">{{active}}</span>
                         </h2>
+                        <template is="dom-if" if="{{githubLink}}">
+                            <a id="github" target="_blank" href="{{githubLink}}" style="visibility: visible;">
+                                <paper-icon-button src="assets/github-logo.png"></paper-icon-button>
+                            </a>
+                        </template>
+                        <template is="dom-if" if="{{!githubLink}}">
+                            <a id="github" target="_blank" href="{{githubLink}}" style="visibility: hidden;">
+                                <paper-icon-button src="assets/github-logo.png"></paper-icon-button>
+                            </a>
+                        </template>
+                        
                     </div>
                 </paper-toolbar>
                 <div>
                     <div id="docs-content">
                         <paper-tabs noink selected="[[_viewTypePage(view)]]" selectedindex="0">
-                            <paper-tab name="demo">Demo</paper-tab>
-                            <paper-tab name="docs">Api Docs</paper-tab>
+                            <paper-tab name="demo">[[demoTabText]]</paper-tab>
+                            <paper-tab name="docs">[[apiTabText]]</paper-tab>
                         </paper-tabs>
                         <iron-pages selected="[[_viewTypePage(view)]]" selectedindex="0">
                             <div id="demo-frame-con" name="demo"></div>
@@ -220,6 +223,22 @@
         type: Array,
         notify: true,
         readOnly: true
+      },
+      
+      /**
+       * Demo tab text
+       */
+      demoTabText: {
+        type: String,
+        value: 'Demo'
+      },
+      
+      /**
+       * Api docs tab text
+       */
+      apiTabText: {
+        type: String,
+        value: 'Api Docs'
       },
       
       /**
@@ -533,7 +552,7 @@
 
     _descriptorsChanged: function() {
       if (this._findDescriptor(this.active)) {
-        this._activeChanged();
+        // this._activeChanged();
         return;
       }
 
@@ -547,7 +566,7 @@
     },
 
     _findDescriptor: function(name) {
-      if (!this._analyzer) return null;
+      if (!this._analyzer || !name) return null;
 
       var descriptor = this._analyzer.elementsByTagName[name];
       
@@ -570,7 +589,10 @@
             if(!newStuff) { return; }
             if(newStuff.hasOwnProperty(name)) {
                 for (var i = 0; i < newStuff[name].length; i++) {
-                    orig.push(newStuff[name][i]);
+                    // Sometimes there are dups
+                    if( orig.every(function(el){return el.name!==newStuff[name][i].name}) ) {
+                        orig.push(newStuff[name][i]);
+                    }   
                 }
             }
         };
@@ -638,6 +660,7 @@
         }
         this._setDocDemos(this._activeDescriptor ? this._activeDescriptor.demos : []);
       }
+      this.$.drawerPanel.closeDrawer();
     },
 
     _loadingChanged: function() {

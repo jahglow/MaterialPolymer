@@ -1037,7 +1037,7 @@ function hasDomApi(node) {
 return Boolean(node.__domApi);
 }
 Polymer.dom = function (obj, patch) {
-if (obj instanceof Event) {
+if (obj instanceof Event || (obj && obj.__proto__ && obj.__proto__.hasOwnProperty('initCustomEvent'))) {
 return Polymer.EventApi.factory(obj);
 } else {
 return factory(obj, patch);

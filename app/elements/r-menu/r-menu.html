@@ -1,0 +1,256 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="..\..\bower_components/polymer/polymer.html">
+<link rel="import" href="..\..\bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="..\..\bower_components/paper-menu/paper-submenu.html">
+<link rel="import" href="..\..\bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="..\..\bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="..\..\bower_components/iron-icon/iron-icon.html">
+
+<dom-module id="r-menu">
+  <template strip-whitespace>
+    <style>
+      :host {
+        display: block;
+        margin-left:0px !important;
+      }
+      :host paper-icon-item>iron-icon[icon="expand-more"]{
+        margin-right:0 !important;
+        @apply(--r-menu-expand-icon);
+      }
+      :host .paper-submenu>paper-icon-item {
+        @apply(--layout-horizontal);
+      }
+      :host paper-icon-item {
+        font-size: 14px;
+        font-weight: normal;
+        line-height:32px;
+        vertical-align:middle;
+        cursor:pointer;
+        padding: 0 16px 0 16px;
+        @apply(--r-menu-item);
+      }
+      :host .selectable-content.paper-menu > *:focus:after {
+        background:transparent;
+        @apply(--r-menu-item-focused);
+      }
+      :host paper-icon-item {
+        --paper-item-icon-width:40px;
+      }
+      :host paper-icon-item[noicon] {
+        --paper-item-icon-width:0px;
+      }
+      :host paper-icon-item iron-icon{
+        --iron-icon-fill-color: var(--default-primary-color, #000);
+        opacity:0.6;
+      }
+      :host paper-menu paper-menu paper-icon-item {
+        --paper-item-icon-width:0;
+      }
+      :host .paper-submenu>paper-icon-item {
+        @apply(--layout-flex);
+      }
+      :host  paper-menu paper-menu paper-icon-item {
+        padding-left:24px;
+        @apply(--r-menu-nested);
+      }
+
+      :host paper-menu paper-menu paper-menu paper-icon-item {
+        padding-left:32px;
+        @apply(--r-menu-nested);
+      }
+
+      :host paper-submenu:not(:first-child) .menu-trigger, :host>paper-menu paper-icon-item:not(:first-child){
+        border-top:1px solid #ededed;
+        @apply(--r-menu-toplevel-border);
+      }
+      :host ::content .yui3-menu{display:none !important}
+
+    </style>
+    <content></content>
+    <template id="submenu">
+      <paper-submenu>
+        <paper-icon-item class="menu-trigger" noicon$="[[!data.icon]]" rel$="[[data.rel]]">
+          <iron-icon icon$="[[data.icon]]" item-icon></iron-icon>
+          <div class="flex">{{data.label}}</div>
+          <iron-icon icon="expand-more" class="expand-icon"></iron-icon>
+        </paper-icon-item>
+        <paper-menu class="menu-content" attr-for-selected="rel" >
+        </paper-menu>
+      </paper-submenu>
+    </template>
+    <template id="item">
+      <paper-icon-item onclick$="[[data.action]]" noicon$="[[!data.icon]]" rel$="[[data.rel]]"><iron-icon icon$="[[data.icon]]" item-icon></iron-icon>{{data.label}}</paper-icon-item>
+    </template>
+    <template id="tabs">
+      <template is="dom-repeat" items="[[data]]">
+        <paper-tab rel$="[[item.rel]]" onclick$="[[item.action]]">{{item.label}}</paper-tab>
+      </template>
+    </template>
+
+  </template>
+  <script>
+    (function() {
+      'use strict';
+      Polymer({
+        is: 'r-menu',
+        behaviors:[Polymer.Templatizer],
+        properties: {
+          iconsLegacy:{
+            type:String,
+            observer:'_iconsFromLegacy'
+          },
+          iconsSeparator:String,
+          icons:Array,
+          layout:{
+            type:String,
+            value:'vertical' // vertical/mixed/tabs
+          },
+          renderTabsTo:String, //css selector of place to render tabs
+          data: {
+            type: Array,
+            notify: true,
+            value: function(){
+              var mArray = [];
+              function _iteration(items, obj){
+                if(items){
+                  var liLength = items.children.length;
+
+                  while(liLength--){//li items iteration
+                    var item = {}, curLi = items.children[liLength], curLiLength = curLi.children.length;
+                    item.rel=curLi.id;
+                    if(curLi.classList.contains('css-menu-child-selected') || curLi.classList.contains('css-menu-selected')){item.selected = true;}
+                    while(curLiLength--){ // li children iteration (a|div)
+                      var currentChild = curLi.children[curLiLength];
+                      if(currentChild.localName === 'a'){
+                        item.label = currentChild.textContent.trim(); //set up label
+                        if(currentChild.href.indexOf('#')<0){item.action = currentChild.href;} // set up page link
+                      }
+                      if(currentChild.localName === 'div'){
+                        item.submenu=[]; _iteration(Polymer.dom(currentChild).querySelector('ul'), item.submenu); //iterate over submenu
+                      }
+                    }
+                    obj.unshift(item);
+                  }
+                }
+              }
+              _iteration(this.querySelector('div.yui3-menu ul'),mArray);
+              Polymer.dom(this).removeChild(Polymer.dom(this).querySelector('div.yui3-menu'));
+              return mArray;
+            }
+          },
+          dataProvider:{
+            type:Boolean,
+            value:false
+          }
+        },
+        ready:function(){
+          if(this.icons && this.data){ //merge icons with data
+            var di=this.data.length; while(di--){if(this.icons[di]){this.data[di].icon = this.icons[di]}}
+          }
+          if(!this.dataProvider && this.data){
+            switch(this.layout){
+              case 'vertical': this.vertical(); break;
+              case 'tabs': (this.renderTabsTo && document.querySelector(this.renderTabsTo)) ? this.tabs(this.data,document.querySelector(this.renderTabsTo)) : this.tabs(this.data) ; break;
+              case 'mixed': this.mixed(); break;
+            }
+          }
+        },
+        _iconsFromLegacy:function(icons){
+          if(icons && icons.length>0){this.icons = icons.split(' ');}
+        },
+        _openSubmenus:function(opened){
+          if(opened && opened[0].hasOwnProperty('submenu')){
+            Polymer.dom(this.$$('[rel="'+opened[0].rel+'"]')).parentNode.toggle();
+            this._openSubmenus(opened[0].submenu.filter(function(item){return item.selected===true}));
+          }
+        },
+        mixed:function(){
+          var menu = document.createElement('paper-menu');
+          menu.attrForSelected = 'rel';
+          menu.addEventListener('iron-select',this.renderTabs);
+          for(var i=0;i<this.data.length;i++){
+            this.templatize(this.$.item);
+            var instance = this.stamp({});
+            instance.data = this.data[i];
+            if(instance.data.hasOwnProperty('selected')){
+              menu.selected = instance.data.rel;
+            }
+            Polymer.dom(menu).appendChild(instance.root);
+          }
+          Polymer.dom(this.root).appendChild(menu);
+          Polymer.dom.flush();
+        },
+        tabs:function(data, renderTo){
+          var renderTo = renderTo || this.root;
+          var menu = document.createElement('paper-tabs');
+          menu.attrForSelected = 'rel';
+          menu.scrollable=true;
+          menu.classList.add('flex');
+          //this.classList.add('bottom','fit','bottom-container');
+          this.templatize(this.$.tabs);
+          var instance = this.stamp({});
+          instance.data = data || this.data;
+          var selectedTab = instance.data.filter(function(item){return item.selected===true});
+          if(selectedTab && selectedTab.length>0 && selectedTab[0].rel){menu.selected = selectedTab[0].rel;}
+          Polymer.dom(menu).appendChild(instance.root);
+          Polymer.dom(renderTo).appendChild(menu);
+        },
+        vertical:function(){
+          var that = this;
+          var menu = document.createElement('paper-menu');
+          menu.attrForSelected = 'rel';
+          var templatize = {
+            submenu: function(data,host){
+              that.templatize(that.$.submenu);
+              var instance = that.stamp({});
+              instance.data = data;
+              if(data.hasOwnProperty('selected')){host.selected = data.rel; }
+              Polymer.dom(host).appendChild(instance.root);
+              for(var i=0;i<data.submenu.length;i++){
+                templatize[data.submenu[i].hasOwnProperty('submenu')?'submenu':'topItem'](data.submenu[i], Polymer.dom(Polymer.dom(host).querySelector('[rel="'+data.rel+'"]')).parentNode.children.collapse.firstElementChild);
+              }
+            },
+            topItem:function(data,host){
+              that.templatize(that.$.item);
+              var instance = that.stamp({});
+              instance.data = data;
+              if(data.hasOwnProperty('selected')){host.selected = data.rel}
+              Polymer.dom(host).appendChild(instance.root);
+            },
+            get lastMenu(){
+              return Polymer.dom(menu).querySelectorAll('paper-menu').reverse()[0];
+            }
+          };
+          for(var i=0;i<this.data.length;i++){
+            templatize[this.data[i].hasOwnProperty('submenu')?'submenu':'topItem'](this.data[i],menu);
+          }
+          Polymer.dom(this.root).appendChild(menu);
+          this._openSubmenus(this.data.filter(function(item){return item.selected===true}));
+        },
+        renderTabs:function(e){
+          var rel = Polymer.dom(e).event.detail.item.attributes.getNamedItem('rel').value;
+          var host = Polymer.dom(e).localTarget.localName!=='r-menu'? Polymer.dom(e).path.filter(function(item){return item.localName==='r-menu'})[0] : Polymer.dom(e).localTarget;
+          if(rel && host){
+            if(host.data && host.data.length>0){
+              var currentLevel = host.data.filter(function(item){return item.rel===rel});
+              if(currentLevel && currentLevel.length>0 && currentLevel[0].hasOwnProperty('submenu') && host.renderTabsTo && document.querySelector(host.renderTabsTo)){
+                var target = document.querySelector(host.renderTabsTo);
+                target.innerHTML='';
+                host.tabs(currentLevel[0].submenu,target);
+              }
+            }
+          }
+        }
+      });
+    })();
+  </script>
+</dom-module>

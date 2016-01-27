@@ -23,9 +23,10 @@
             }
             
             #github {
-                float: right;
-                position: relative;
-                top: -8px;
+                float: none;
+                position: absolute;
+                top: -18px;
+                right: 0px;
             }            
             
             #github paper-icon-button {
@@ -36,6 +37,28 @@
                     padding: 1px;
                     margin: 1px;
                 };
+            }
+            
+            @media (max-width: 1024px) {
+                #titleCon {
+                    display: none;
+                }
+            }
+            
+            @media (max-width: 1024px) {
+                #github {
+                    top: 2px;
+                }
+            }
+            
+            #brandLogo {
+                position: relative;
+                top: 20px;
+            }
+            
+             #brandText {
+                position: relative;
+                top: 16px;
             }
 
             #title {
@@ -58,6 +81,7 @@
                 padding-left: 20px;
                 font-size: 16px;
                 border-bottom: 1px solid #ccc;
+                cursor: pointer;
             }
 
             .element-item.iron-selected {

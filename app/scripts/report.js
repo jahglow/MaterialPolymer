@@ -40,9 +40,7 @@ function importHref(element, params, onload, onerror) {
   document.head.appendChild(l);
   return l;
 }
-// end of do not change
-//change to the location of the script !IMPORTANT
-//importHref('script',{src:'/isa/BDJPFRDMEYBPBKLVADAYFQCDAVIOEQJR/polymer-elements/webcomponents.min.js'});
+//importHref('script',{src:'/isa/BDJPFRDMEYBPBKLVADAYFQCDAVIOEQJR/polymer-elements/webcomponents-lite.min.js'});
 
 //meta-creator, pass array of arrays [['paramName', 'paramValue']]
 function addMeta(params){
@@ -76,6 +74,16 @@ CustomEventIframe.style.display="none";
 document.body.appendChild(CustomEventIframe);
 var realCustomEvent = CustomEventIframe.contentWindow['CustomEvent'];
 window.CustomEvent = realCustomEvent;
+
+/* replace in Polymer-mini.html @ ~1039 if events do not work properly in Polymer
+ Polymer.dom = function (obj, patch) {
+ if (obj instanceof Event || (obj && obj.__proto__ && obj.__proto__.hasOwnProperty('initCustomEvent'))) {
+ return Polymer.EventApi.factory(obj);
+ } else {
+ return factory(obj, patch);
+ }
+ };
+ */
 
 /*null HighCharts width and height globally, adjust spacing*/
 (function() {

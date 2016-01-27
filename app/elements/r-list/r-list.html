@@ -153,12 +153,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             var select = Polymer.dom(this).querySelector('select');
             this.ddData=[].slice.call(select.children);
             var selected=this.ddData.filter(function(item){return item.selected;});
-            if(select.multiple){
-              this.multi = true;
-              this.multiSelected = this.selectedItems =  selected.map(function(item){return item.value});
-            } else {
-              this.singleSelected = selected[0].value;
-              this.selectedItems = [selected[0].value];
+            if(selected && selected.length>0){
+              if(select.multiple){
+                this.multi = true;
+                this.multiSelected = this.selectedItems =  selected.map(function(item){return item.value});
+              } else {
+                this.singleSelected = selected[0].value;
+                this.selectedItems = [selected[0].value];
+              }
             }
             if(this.forceCustomLabel){
               this._computeLabel(this.label);
@@ -208,7 +210,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             this.$.dd.open();
           }
           var select = Polymer.dom(this).querySelector('select');
-          if(!this.multi && e.detail.item.value!==select.options[select.selectedIndex].value && e.type==='iron-select'){
+          if(!this.multi && (select.selectedIndex>-1 && e.detail.item.value!==select.options[select.selectedIndex].value) && e.type==='iron-select'){
             this.selectedItems = [e.detail.item.value];
             select.value=e.detail.item.value;
             if(typeof select.onchange === 'function'){eval(select.getAttribute('onchange'));}

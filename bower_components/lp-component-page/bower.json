@@ -2,7 +2,7 @@
   "name": "lp-component-page",
   "version": "0.0.1",
   "description": "An alternative web component for polymer element documentation",
-  "homepage": "https://github.com/<USERNAME>/lp-component-page/",
+  "homepage": "https://github.com/linchpinio/lp-component-page/",
   "keywords": [
     "linchpin",
     "linchpinio",
@@ -27,7 +27,7 @@
     "paper-toolbar": "PolymerElements/paper-toolbar",
     "paper-drawer-panel": "PolymerElements/paper-drawer-panel",
     "iron-ajax": "PolymerElements/iron-ajax",
-    "hydrolysis": "Polymer/hydrolysis#^1.17.0",
+    "hydrolysis": "Polymer/hydrolysis#^1.21.4",
     "paper-header-panel": "PolymerElements/paper-header-panel",
     "iron-icons": "PolymerElements/iron-icons",
     "iron-pages": "PolymerElements/iron-pages",
@@ -38,5 +38,8 @@
   },
   "devDependencies": {
     "web-component-tester": "*"
+  },
+  "resolutions": {
+    "polymer": "v1.1.5"
   }
 }

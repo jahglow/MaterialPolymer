@@ -396,15 +396,9 @@ context. You should place this element as a child of `<body>` whenever possible.
     },
 
     _onCaptureClick: function(event) {
-      var ev = Polymer.dom(event);
-      if (!this.noCancelOnOutsideClick &&
-        this._manager.currentOverlay() === this &&
-        (
-        (ev.path && ev.path.indexOf(this) === -1)
-        ||(ev.node
-          && ev.node.path
-          && ev.node.path.indexOf(this) === -1)
-        )) {
+      if (this._manager.currentOverlay() === this &&
+        !this.noCancelOnOutsideClick &&
+        Polymer.dom(event).path.indexOf(this) === -1) {
         this.cancel();
       }
     },

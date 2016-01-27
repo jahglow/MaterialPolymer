@@ -11,7 +11,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="..\..\bower_components/polymer/polymer.html">
 
 <dom-module id="r-data-provider">
-  <template>
+  <template strip-whitespace>
     <style>
       :host {
         display: none !important;
@@ -31,15 +31,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         properties: {
           data: {
             type:Object,
-            notify: true
-          }
-        },
-        ready:function(){
-          var jStr = Polymer.dom(this).childNodes[0];
-          if(jStr){
-            this.data = JSON.parse(jStr.textContent.trim());
-          }
-        }
+            notify: true,
+            value:function(){var o=JSON.parse(Polymer.dom(this).childNodes[0].textContent.trim()); Polymer.dom(this).textContent=''; return o;}
+          },
+          debug:{type:Boolean,value:false,observer:'_debugger'}
+        }, _debugger:function(){console.info(this.data)}
       });
     })();
   </script>

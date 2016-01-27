@@ -4,7 +4,6 @@
     "Vaadin Ltd"
   ],
   "keywords": [
-    "web-components",
     "vaadin",
     "vaadin elements"
   ],
@@ -13,15 +12,15 @@
     "bower_components"
   ],
   "dependencies": {
-    "code-example": "~0.0.13",
+    "code-example": "master",
     "table-of-contents": "~0.0.2"
   },
   "homepage": "https://github.com/vaadin/components-demo-resources",
-  "_release": "45219c2fe4",
+  "_release": "91783d39a9",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "45219c2fe47eee5da6518db97da9b502a51bea68"
+    "commit": "91783d39a995205ce0e609886f26eae3ee58c66a"
   },
   "_source": "git://github.com/vaadin/components-demo-resources.git",
   "_target": "master",
