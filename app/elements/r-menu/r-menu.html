@@ -14,6 +14,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="..\..\bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="..\..\bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="..\..\bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="..\..\bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="..\..\bower_components/paper-tabs/paper-tab.html">
 
 <dom-module id="r-menu">
   <template strip-whitespace>
@@ -104,29 +106,37 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         is: 'r-menu',
         behaviors:[Polymer.Templatizer],
         properties: {
-          iconsLegacy:{
-            type:String,
-            observer:'_iconsFromLegacy'
+          iconsLegacy:String,
+          icons:{
+            type:Array,
+            value:function(o){
+              return (o.iconsLegacy && o.iconsLegacy.length>0)? o.iconsLegacy.split(' ') :  [];
+            }
           },
-          iconsSeparator:String,
-          icons:Array,
+          renderTabsTo:{
+            type:String,
+            value:''
+          }, //css selector of place to render tabs
           layout:{
             type:String,
             value:'vertical' // vertical/mixed/tabs
           },
-          renderTabsTo:String, //css selector of place to render tabs
+          _extRenderLookup:{
+            type:Number,
+            value:5
+          },
           data: {
             type: Array,
             notify: true,
+            observer: 'generateMenu',
             value: function(){
               var mArray = [];
               function _iteration(items, obj){
                 if(items){
                   var liLength = items.children.length;
-
                   while(liLength--){//li items iteration
                     var item = {}, curLi = items.children[liLength], curLiLength = curLi.children.length;
-                    item.rel=curLi.id;
+                    item.rel = window._UUID() || curLi.id; //assign a unique id to each element
                     if(curLi.classList.contains('css-menu-child-selected') || curLi.classList.contains('css-menu-selected')){item.selected = true;}
                     while(curLiLength--){ // li children iteration (a|div)
                       var currentChild = curLi.children[curLiLength];
@@ -142,8 +152,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   }
                 }
               }
-              _iteration(this.querySelector('div.yui3-menu ul'),mArray);
-              Polymer.dom(this).removeChild(Polymer.dom(this).querySelector('div.yui3-menu'));
+              var datasource = this.querySelector('div.yui3-menu ul');
+              if(datasource){
+                _iteration(datasource,mArray);
+                Polymer.dom(this).removeChild(Polymer.dom(this).querySelector('div.yui3-menu'));
+              }
               return mArray;
             }
           },
@@ -152,20 +165,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             value:false
           }
         },
-        ready:function(){
+        generateMenu:function(){
           if(this.icons && this.data){ //merge icons with data
             var di=this.data.length; while(di--){if(this.icons[di]){this.data[di].icon = this.icons[di]}}
           }
-          if(!this.dataProvider && this.data){
-            switch(this.layout){
+          if(!this.dataProvider && this.data) {
+            switch (this.layout) {
               case 'vertical': this.vertical(); break;
-              case 'tabs': (this.renderTabsTo && document.querySelector(this.renderTabsTo)) ? this.tabs(this.data,document.querySelector(this.renderTabsTo)) : this.tabs(this.data) ; break;
+              case 'tabs': this.tabs(this.data, this.renderTabsTo);  break;
               case 'mixed': this.mixed(); break;
             }
           }
-        },
-        _iconsFromLegacy:function(icons){
-          if(icons && icons.length>0){this.icons = icons.split(' ');}
         },
         _openSubmenus:function(opened){
           if(opened && opened[0].hasOwnProperty('submenu')){
@@ -187,22 +197,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             Polymer.dom(menu).appendChild(instance.root);
           }
           Polymer.dom(this.root).appendChild(menu);
-          Polymer.dom.flush();
         },
         tabs:function(data, renderTo){
-          var renderTo = renderTo || this.root;
-          var menu = document.createElement('paper-tabs');
-          menu.attrForSelected = 'rel';
-          menu.scrollable=true;
-          menu.classList.add('flex');
-          //this.classList.add('bottom','fit','bottom-container');
-          this.templatize(this.$.tabs);
-          var instance = this.stamp({});
-          instance.data = data || this.data;
-          var selectedTab = instance.data.filter(function(item){return item.selected===true});
-          if(selectedTab && selectedTab.length>0 && selectedTab[0].rel){menu.selected = selectedTab[0].rel;}
-          Polymer.dom(menu).appendChild(instance.root);
-          Polymer.dom(renderTo).appendChild(menu);
+          /* if we're asked to render to a node that isn't initialized yet
+          * we'll log for it 5*0.5 sec, else render to root*/
+          if(renderTo && !document.querySelector(renderTo)){
+            if(this._extRenderLookup>0){
+              this.async(function(){this._extRenderLookup--; this.tabs(data, renderTo);}, 500);
+            } else {
+              this._warn(this._logf('tabs','expired looking for '+renderTo+', will render tabs in-place')); this.tabs(data);
+            }
+          } else { // renderTo exists as an element => us it, if not specified => use this.root
+            var target; if(renderTo && renderTo.length>0){target = document.querySelector(renderTo); target.innerHTML = ''} else {target = this.root}
+            var menu = document.createElement('paper-tabs');
+            menu.attrForSelected = 'rel'; menu.scrollable = true; menu.classList.add('flex');
+            this.templatize(this.$.tabs); var instance = this.stamp({}); instance.data = data || this.data;
+            var selectedTab = instance.data.filter(function (item) {return item.selected === true;});
+            if (selectedTab && selectedTab.length > 0 && selectedTab[0].rel) {menu.selected = selectedTab[0].rel;}
+            Polymer.dom(menu).appendChild(instance.root); Polymer.dom(target).appendChild(menu);
+          }
         },
         vertical:function(){
           var that = this;
@@ -242,10 +255,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if(rel && host){
             if(host.data && host.data.length>0){
               var currentLevel = host.data.filter(function(item){return item.rel===rel});
-              if(currentLevel && currentLevel.length>0 && currentLevel[0].hasOwnProperty('submenu') && host.renderTabsTo && document.querySelector(host.renderTabsTo)){
-                var target = document.querySelector(host.renderTabsTo);
-                target.innerHTML='';
-                host.tabs(currentLevel[0].submenu,target);
+              if(currentLevel && currentLevel.length>0 && currentLevel[0].hasOwnProperty('submenu') && host.renderTabsTo){
+                host.tabs(currentLevel[0].submenu, host.renderTabsTo);
               }
             }
           }

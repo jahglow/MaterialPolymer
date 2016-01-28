@@ -85,6 +85,7 @@ window.CustomEvent = realCustomEvent;
  };
  */
 
+
 /*null HighCharts width and height globally, adjust spacing*/
 (function() {
   if (typeof YUI !== 'undefined') {
@@ -98,7 +99,7 @@ window.CustomEvent = realCustomEvent;
   }
 })();
 
-  window._poll = window._poll || function(fn, callback,timeout, interval, errback){
+window._poll = window._poll || function(fn, callback,timeout, interval, errback){
     var endTime = Number(new Date()) + (timeout || 2000);
     interval = interval || 100;
     (function p() {
@@ -107,5 +108,18 @@ window.CustomEvent = realCustomEvent;
       else { if(typeof errback ==='function'){errback(new Error('timed out for ' + fn + ': ' + arguments))}}
     })();
   };
+
+window._UUID = function(){
+  var d = new Date().getTime();
+  if(window.performance && typeof window.performance.now === "function"){
+    d += performance.now(); //use high-precision timer if available
+  }
+  var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = (d + Math.random()*16)%16 | 0;
+    d = Math.floor(d/16);
+    return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+  });
+  return uuid;
+};
 
 
