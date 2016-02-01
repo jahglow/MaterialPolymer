@@ -53,18 +53,16 @@ Configuration:
       var transformFrom = config.transformFrom || 'none';
       var transformTo = config.transformTo || 'none';
 
-      if (config.transformOrigin) {
-        this.setPrefixedProperty(nodes, 'transformOrigin', config.transformOrigin);
-      }
       var effects = [];
       for(var i=0;i<nodes.length;i++){
+        if (config.transformOrigin) {
+        this.setPrefixedProperty(nodes[i], 'transformOrigin', config.transformOrigin);
+      }
         effects[i] = new KeyframeEffect(nodes[i], [
           {'transform': transformFrom},
           {'transform': transformTo}
         ], this.timingFromConfig(config));
       }
-
-
       return new GroupEffect(effects);
     }
 

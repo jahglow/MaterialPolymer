@@ -13,397 +13,282 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="..\..\bower_components/paper-styles/color.html">
 <link rel="import" href="..\..\bower_components/neon-animation/neon-animation.html">
 <link rel="import" href="..\..\bower_components/neon-animation/neon-animations.html">
-<link rel="import" href="../transform-animation-multiple/transform-animation-multiple.html">
+<link rel="import" href="..\transform-animation-multiple/transform-animation-multiple.html">
 
 <dom-module id="radial-gauge">
-  <template>
+  <template strip-whitespace>
     <style>
       :host {
         display: block;
+        --radial-gauge-secondary-width:calc(var(--radial-gauge-width) - var(--radial-gauge-rail-width) * 2 - var(--radial-gauge-secondary-offset) * 2);
+        --radial-gauge-offset: calc(var(--radial-gauge-rail-width) * -1);
+        --radial-gauge-half-width: calc(var(--radial-gauge-width) / 2 );
+        --radial-gauge-secondary-half-width: calc((var(--radial-gauge-width) - var(--radial-gauge-rail-width) * 2 - var(--radial-gauge-secondary-offset) * 2) / 2 );
       }
-      :root{
-        --iron-icon-width:14px;
-        --iron-icon-height:14px;
-      }
-      .radial-progress {
+
+      :host #radialProgress {
         margin: 0 auto;
-        width: 116px;
-        height: 116px;
-        background-color: #EEEEEE;
-        border-radius: 50%; }
-      .radial-progress.bottom {
-        margin-bottom: 20px;
-        margin-top: 0; }
-      .radial-progress.bottom > .primary, .radial-progress.bottom > .secondary {
-        position: relative;
-        top: 100%;
-        -webkit-transform: rotate(180deg);
-        -moz-transform: rotate(180deg);
-        -ms-transform: rotate(180deg);
-        -o-transform: rotate(180deg);
-        transform: rotate(180deg); }
-      .radial-progress.top {
-        margin-bottom: 10px;
-        margin-top: 10px; }
-      .mask {
+        width: var(--radial-gauge-width);
+        height: var(--radial-gauge-width);
+        border-radius: 50%;
+        position:relative;
+        box-sizing:border-box;
+        border-style: solid;
+        border-color:#EEEEEE;
+        border-width: var(--radial-gauge-rail-width);
+        @apply(--radial-gauge-rail);
+      }
+      :host .mask {
+        clip: rect(0px, var(--radial-gauge-width), var(--radial-gauge-width), var(--radial-gauge-half-width));
         z-index: 0;
         display: block !important;
-        top: auto;
-        left: auto;
-        right: auto;
-        bottom: auto;
-        clip: rect(0px, 116px, 116px, 58px); }
-      .mask .fill, .mask .fill {
-        clip: rect(0px, 58px, 116px, 0px);
-        background-color: #D32F2F; }
-      .mask,.mask .fill {
-        -webkit-transform: rotate(0deg);
-        -moz-transform: rotate(0deg);
-        -ms-transform: rotate(0deg);
-        -o-transform: rotate(0deg);
-        transform: rotate(0deg); }
+        border:0;
+      }
+      :host .fill{
+        clip: rect(0px, var(--radial-gauge-half-width), var(--radial-gauge-width), 0px);
+        border-width: var(--radial-gauge-rail-width);
+      }
 
-      .mask,.fill,.shadow {
-        width: 116px;
-        height: 116px;
+      :host .mask, :host .fill {
+        width: var(--radial-gauge-width);
+        height: var(--radial-gauge-width);
+        will-change: transform;
         position: absolute;
-        border-radius: 50%; }
-      .shadow {
-        box-shadow: 2px 2px 2px transparent inset; }
-      .mask, .fill {
-        -webkit-backface-visibility: hidden;
-        -webkit-transition: 1s;
-        -moz-transition: 1s;
-        -o-transition: 1s;
-        -ms-transition: 1s;
-        transition: 1s; }
-      .secondary > .mask {
-        margin-left: 8px;
-        margin-top: 8px;
-        clip: rect(0px, 100px, 100px, 50px); }
-      .secondary > .mask .fill {
-        clip: rect(0px, 50px, 100px, 0px);
-         }
-      .secondary > .mask, .secondary .fill {
-        width: 100px;
-        height: 100px; }
-      .radial-progress .label {
+        border-radius: 50%;
+        box-sizing: border-box;
+        border-style: solid;
+      }
+      :host .secondary .mask {
+        clip: rect(0px, var(--radial-gauge-secondary-width), var(--radial-gauge-secondary-width),  var(--radial-gauge-secondary-half-width));
+      }
+
+      :host .secondary .fill{
+        clip: rect(0px, var(--radial-gauge-secondary-half-width), var(--radial-gauge-secondary-width), 0px);
+        border-width: var(--radial-gauge-secondary-rail-width);
+      }
+
+      :host .secondary .mask, :host .secondary .fill {
+        width: var(--radial-gauge-secondary-width);
+        height: var(--radial-gauge-secondary-width);
+      }
+      :host .primary, :host .secondary{
+        position: absolute;
+        box-sizing: content-box;
+      }
+      :host #radialProgress.top .primary{
+        top: var(--radial-gauge-offset);
+        left: var(--radial-gauge-offset);
+      }
+      :host #radialProgress.bottom .primary{
+        bottom: var(--radial-gauge-offset);
+        right: var(--radial-gauge-offset);
+      }
+      :host #radialProgress.top .secondary{
+        top: var(--radial-gauge-secondary-offset);
+        left:  var(--radial-gauge-secondary-offset);
+      }
+      :host #radialProgress.bottom .secondary{
+        bottom:  var(--radial-gauge-secondary-offset);
+        right:  var(--radial-gauge-secondary-offset);
+      }
+      :host #radialProgress.bottom > .primary, :host #radialProgress.bottom > .secondary {
+        transform: rotate(180deg);
+      }
+      :host #radialProgress.bottom {
+        margin-bottom: 20px;
+        margin-top: 0;
+      }
+      :host #radialProgress.top {
+        margin-bottom: 10px;
+        margin-top: 10px;
+      }
+
+      :host .inset{
+        position: absolute;
+        top: 0; bottom: 0; right: 0; left: 0;
+      }
+
+      :host .inset>#mainDigit {
+        font-size: 33px;
+        text-align: center;
+        @apply(--radial-gauge-value);
+      }
+
+      :host #topInfo,:host #bottomInfo {
+        font-size: 13px;
+        text-align: center;
+        vertical-align: baseline;
+        padding:0 10%;
+      }
+      :host #topInfo{
+        padding-top:var(--radial-gauge-info-edge-offset, 5px);
+        @apply(--radial-gauge-top-info);
+      }
+      :host[secondary-value]:not([hide-secondary-gauge]) #topInfo{
+        padding-top:var(--radial-gauge-info-edge-offset, 10px);
+      }
+      :host #bottomInfo{
+        padding-bottom:var(--radial-gauge-info-edge-offset, 5px);
+        @apply(--radial-gauge-bottom-info);
+      }
+      :host[secondary-value]:not([hide-secondary-gauge]) #bottomInfo{
+        padding-bottom:var(--radial-gauge-info-edge-offset, 10px);
+      }
+      :host .inset iron-icon{
+        --iron-icon-width:0;
+        --iron-icon-height:0;
+      }
+      :host .inset iron-icon[icon]{
+        --iron-icon-width:14px;
+        --iron-icon-height:14px;
+        @apply(--radial-gauge-info-icon);
+      }
+
+      :host #range>span {padding:0 10px}
+      :host #range.top{
+        @apply(--layout-horizontal-reverse);
+        top: calc((var(--radial-gauge-rail-width) + 10px) * -1 );
+      }
+      :host #range.bottom {
+        top: calc(var(--radial-gauge-width) - var(--radial-gauge-rail-width));
+      }
+      :host #range.bottom>.min, :host #range.top>.max{
+        border-right:1px solid var(--primary-text-color,#000); text-align: right;
+      }
+      :host #range {
+        @apply(--layout-horizontal);
         font-size: 10px;
         line-height: 10px;
-        position: relative;
-        text-align: center;
-        display: block;
-        color: #212121; }
-      .radial-progress.top .label {
-        top: -18px; }
-      .radial-progress.hasSecondary.top .label {
-        top: -23px; }
-      .radial-progress.bottom .label {
-        top: 108px; }
-      .radial-progress.hasSecondary.bottom .label {
-        top: 103px; }
-      .inset {
-        width: 100px;
-        height: 100px;
         position: absolute;
-        margin-left: 8px;
-        margin-top: 8px;
-        background-color: #F44336;
-        border-radius: 50%;
-        box-shadow: 2px 2px 2px transparent; }
-      .percentage {
-        width: 100px;
-        position: absolute;
-        top: 33px;
-        display: block;
-        line-height: 33px;
-        text-align: center;
-        color: #000000;
-        font-size: 33px; }
-      .diff,.secondaryGaugeLabel {
-        position: absolute;
-        width: 100px;
-        top: 72px;
-        line-height: 21px;
-        font-size: 15px;
-        text-align: center;
-        vertical-align: top; }
-      .hasSecondary > .inset {
-        width: 90px;
-        height: 90px;
-        margin-left: 13px;
-        margin-top: 13px; }
-      .hasSecondary .percentage {
-        width: 90px;
-        top: 30px;
-        line-height: 30px;
-        font-size: 30px; }
-      .hasSecondary .diff, .hasSecondary .secondaryGaugeLabel {
-        width: 90px;
-        top: 65px;
-        line-height: 19px;
-        font-size: 13px; }
-      .secondaryGaugeLabel{top:5px !important;}
-      .secondary.red > .mask .fill {
-        background-color: #C62828 !important; }
-      .secondary.amber > .mask .fill {
-        background-color: #FF8F00 !important; }
-      .secondary.green > .mask .fill {
-        background-color: #2E7D32 !important; }
-      .secondary.grey > .mask .fill {
-        background-color: #757575 !important; }
+        color: var(--primary-text-color,#000);
+        width: calc(var(--radial-gauge-width) - var(--radial-gauge-rail-width) * 2);
+        @apply(--radial-gauge-range);
+      }
 
-      .radial-progress {
-        background-color: #EEEEEE; }
-      .red .fill {
-        background-color: #F44336; }
-      .inset {background-color: #FFFFFF;}
-      .red .percentage {
-        color: #F44336; }
+      :host .red .fill { border-color: var(--conditional-formatting-red, --paper-red-500); }
+      :host .red { color: var(--paper-red-500); }
 
-      .amber .fill {
-        background-color: #FFC107; }
+      :host .amber .fill { border-color: var(--conditional-formatting-amber, --paper-amber-500); }
+      :host .amber { color: var(--paper-amber-500); }
 
-      .amber .percentage {
-        color: #FFC107; }
+      :host .green .fill { border-color: var(--conditional-formatting-green, --paper-green-500); }
+      :host .green {color: var(--paper-green-500);}
 
-      .green .fill {
-        background-color: #4CAF50; }
+      :host .grey .fill {border-color: var(--conditional-formatting-grey, --paper-grey-500); }
+      :host .grey {color: var(--paper-grey-500);}
 
-      .green .percentage {
-        color: #4CAF50; }
-
-      .grey .fill {
-        background-color: #9E9E9E; }
-
-      .grey .percentage {
-        color: #9E9E9E; }
-
-      .diff.red,.secondaryGaugeLabel.red{color:var(--paper-red-500)}
-      .diff.amber,.secondaryGaugeLabel.amber{color:var(--paper-amber-500)}
-      .diff.green,.secondaryGaugeLabel.green{color:var(--paper-green-500)}
-      .diff.grey,.secondaryGaugeLabel.grey{color:var(--paper-grey-500)}
     </style>
 
-    <div class="radial-progress">
-      <div class="primary">
+    <div id="radialProgress" class$="[[rangePosition]]">
+      <div class$="primary {{color}}">
         <div class="mask full">
-          <div class="fill"></div>
+          <div class="fill" style$="border-color: {{customPrimaryColor}}"></div>
         </div>
         <div class="mask half">
-          <div class="fill"></div>
-          <div class="fill fix"></div>
-        </div>
-        <div class="shadow"></div>
-      </div>
-      <div class="secondary">
-        <div class="mask full">
-          <div class="fill"></div>
-        </div>
-        <div class="mask half">
-          <div class="fill"></div>
-          <div class="fill fix"></div>
+          <div class="fill" style$="border-color: {{customPrimaryColor}}"></div>
         </div>
       </div>
-      <div class="inset">
-        <div class="label">{{computeGaugeLabel(min, max, labelposition)}}</div>
-        <div class="percentage" id="mainDigit"></div>
-        <div class="diff"></div>
+        <div class$="secondary {{secondaryColor}}" hidden$="[[hideSecondaryGauge]]">
+          <div class="mask full">
+            <div class="fill" style$="border-color: {{customSecondaryColor}}"></div>
+          </div>
+          <div class="mask half">
+            <div class="fill" style$="border-color: {{customSecondaryColor}}"></div>
+          </div>
+        </div>
+      <div class="inset layout vertical">
+        <div class$="[[rangePosition]]" id="range"><span class="flex min">{{min}}</span><span class="flex max">{{max}}</span></div>
+        <div class="flex layout horizontal" id="topInfo" ><span class$="self-center flex {{topInfoColor}}" style$="color: {{customTopInfoColor}}"><iron-icon icon$="[[topInfoIcon]]"></iron-icon> {{topInfo}}</span></div>
+        <div class="flex layout horizontal" id="mainDigit"><span class$="self-center flex {{color}}" style$="color: {{customPrimaryColor}}">{{value}}</span></div>
+        <div class="flex layout horizontal" id="bottomInfo"><span class$="self-center flex {{bottomInfoColor}}" style$="color: {{customBottomInfoColor}}"><iron-icon icon$="[[bottomInfoIcon]]"></iron-icon> {{bottomInfo}}</span></div>
         <div class="secondaryGaugeLabel"></div>
       </div>
     </div>
 
   </template>
   <script>
-    addEventListener('HTMLImportsLoaded', function() {
-      (function() {
-        'use strict';
-
-        new Polymer({
-          is: 'radial-gauge',
-          behaviors: [
-            Polymer.NeonAnimatableBehavior,
-            Polymer.NeonAnimationRunnerBehavior
-          ],
-          properties: {
-            // declare properties for the element's public API
-            labels: {
-              type:Boolean,
-              value: false
-            },
-            min: {
-              type:Number,
-              value:0
-            },
-            max:  {
-              type:Number,
-              value:0
-            },
-            labelposition:{
-              type: String,
-              value:'top' //default
-            },
-            primary:{
-              type: Object,
-              value: {'val':'0','decimal':'0','color':'grey','animated':'','prefix':'','suffix':''}
-            },
-            secondary:{
-              type: Object,
-              value:{'val':'0','color':'grey','label':'','icon':''}
-            },
-            dynamics:{
-              type:Object,
-              value:{'icon':'','val':'','color':'grey'}
-            },
-            animationConfig: {
-              type: Object,
-              value: function() {
-                //var squareNode = Polymer.dom(this.root).querySelector('.square');
-                return {
-                  primary: {
-                  },
-                  secondary: {
-                  }
-                };
-              }
-            }
-
+    (function() {
+      'use strict';
+      new Polymer({
+        is: 'radial-gauge',
+        behaviors: [
+          Polymer.NeonAnimatableBehavior,
+          Polymer.NeonAnimationRunnerBehavior
+        ],
+        properties: {
+          // declare properties for the element's public API
+          range: {
+            type: Boolean,
+            value: false
           },
-
-          ready: function(){
-            if(this.labels===true){// define label position class
-              this.querySelector('.radial-progress').classList.add(this.labelposition);
-            }
-
-            this.computePrimaryGauge(this.primary);
-            if(this.secondary){
-              this.computeSecondaryGauge(this.secondary);
-            } // define label position class
-            this.computeMainDigit(this.primary); // evaluate main number
-            if(this.dynamics){
-              this.computeDynamics(this.dynamics);
-            }
+          min: {
+            type: Number,
+            value: 0
           },
-          computePrimaryGauge:function(primary){
-            if(primary.color)this.querySelector('.radial-progress').classList.add(primary.color);
-            var rotation = 180 / (this.max - this.min) * ((parseFloat(primary.val)).toFixed(1) - this.min);
-            var fill_rotation = rotation!='NaN'?rotation:0;
-            var fix_rotation = rotation * 2;
-            var transitionDuration = 3000 / (this.max - this.min) * ((parseFloat(primary.val)).toFixed(1)-this.min);
-            var primaryFill=this.querySelectorAll('.primary .fill:not(.fix), .primary .mask.full');
-            var primaryFix=this.querySelector('.primary .fill.fix');
-            this.animationConfig.primary = {
-              name: 'transform-animation-multiple',
-              transformFrom: 'rotate(0deg)',
-              transformTo: 'rotate('+ parseInt(fill_rotation) +'deg)',
-              nodes: Array.prototype.slice.call(primaryFill),
-              timing: {"duration":transitionDuration}
-            };
-            this.playAnimation('primary');
-            for(var i=0;i<primaryFill.length;i++){
-              primaryFill[i].setAttribute('style', 'transform:rotate('+ fill_rotation+'deg) !important');
-            }
-            //primaryFix.setAttribute('style', 'transform: rotate('+ fix_rotation+'deg)');
+          max: {
+            type: Number,
+            value: 0
           },
-
-          computeSecondaryGauge:function(secondary) {
-            this.querySelector('.radial-progress').classList.add('hasSecondary');
-            this.querySelector('.secondary').classList.add(secondary.color);
-            var rotation = 180 / (this.max - this.min) * ((parseFloat(secondary.val)).toFixed(1) - this.min);
-            var fill_rotation = rotation!='NaN'?rotation:0;
-            var fix_rotation = rotation * 2;
-            var transitionDuration = 3000 / (this.max - this.min) * ((parseFloat(secondary.val)).toFixed(1)-this.min);
-            var secondaryFill = this.querySelectorAll('.secondary .fill, .secondary .mask.full');
-            var secondaryFix = this.querySelector('.secondary .fill:not(.fix).fix');
-            this.animationConfig.secondary = {
-              name: 'transform-animation-multiple',
-              transformFrom: 'rotate(0deg)',
-              transformTo: 'rotate('+ parseInt(fill_rotation) +'deg)',
-              nodes: Array.prototype.slice.call(secondaryFill),
-              timing: {"duration":transitionDuration}
-            };
-            this.playAnimation('secondary');
-            for (var i = 0; i < secondaryFill.length; i++) {
-              secondaryFill[i].setAttribute('style', 'transform:rotate(' + fill_rotation + 'deg) !important');
-            }
-            //secondaryFix.setAttribute('style', 'transform: rotate(' + fix_rotation + 'deg)');
-
-            // attach secondary label on top of gauge
-            if (secondary.label == "true") {
-              var val, parent = this.querySelector('.secondaryGaugeLabel'),
-                  icon = this._dynamicIcon(secondary.icon);
-              Polymer.dom(parent).appendChild(icon);
-              val = document.createElement('span');
-              val.textContent = secondary.val;
-              Polymer.dom(parent).appendChild(val);
-              parent.classList.add(secondary.color);
-            }
-
+          rangePosition: {
+            type: String,
+            value: 'top' //default
           },
-
-          computeMainDigit: function(primary){
-            this.$.mainDigit.textContent=(primary.prefix?primary.prefix:'')+(parseFloat(primary.val)).toFixed(parseInt(primary.decimal))+(primary.suffix?primary.suffix:'');
-            var strLen = ((parseFloat(primary.val)).toFixed(parseInt(primary.decimal))).toString().length + primary.suffix.length + primary.prefix.length;
-            if (strLen > 0) {
-              var percentage = this.querySelector('.percentage');
-              var computedWidth=parseFloat(getComputedStyle(this.querySelector('.percentage')).width);
-              var cssFontSize = strLen > 5 ? computedWidth / strLen * 1.7 + 'px' : getComputedStyle(percentage).fontSize;
-              var cssOffset = strLen > 5 ? ( computedWidth / 3 + (computedWidth / 3 - parseFloat(cssFontSize)) / 2 ) + 'px' : getComputedStyle(percentage).top;
-              var cssString = 'font-size:'+cssFontSize+';top:'+cssOffset+';line-height:'+cssFontSize+';';
-              this.querySelector('.percentage').style.cssText = cssString;
-            }
+          value: {
+            type: Number,
+            value: 0
           },
-
-          computeDynamics:function(dynamics){
-            var val, parent = this.querySelector('.diff'),
-                icon = this._dynamicIcon(dynamics.icon);
-            Polymer.dom(parent).appendChild(icon);
-            val = document.createElement('span');
-            val.textContent = dynamics.val;
-            Polymer.dom(parent).appendChild(val);
-            parent.classList.add(dynamics.color);
-
+          color:{
+            type:String,
+            value:'grey'
           },
-
-          computeGaugeLabel: function(min, max, labelposition){
-            //position labels
-            if(this.labels === true ){
-              var maxLength,minLength,mi;
-
-              // add padding to smallest label to align the bar '|' against the start of gauge
-              maxLength = max.toString().length;
-              minLength = min.toString().length;
-              if(maxLength>minLength){
-                mi = maxLength - minLength;
-                switch(labelposition){
-                  case 'top': this.querySelector('.label').setAttribute('style','padding-right:'+ mi * .5 +'em'); break;
-                  case 'bottom': this.querySelector('.label').setAttribute('style','padding-left:'+ mi * .5 +'em'); break;
-                }
-              } else if(maxLength<minLength){
-                mi = minLength- maxLength;
-                switch(labelposition){
-                  case 'bottom': this.querySelector('.label').setAttribute('style','padding-right:'+ mi * .5 +'em'); break;
-                  case 'top': this.querySelector('.label').setAttribute('style','padding-left:'+ mi * .5 +'em'); break;
-                }
-              }
-              return (labelposition == "bottom"? min +'  |  '+ max : max +'  |  '+ min);
-            }
+          hideSecondaryGauge:{
+            type:Boolean,
+            value:false
           },
-          _dynamicIcon: function(icon){
-//            var isplit= icon.split(":");
-//            if(isplit[1]){
-//              this.importHref('../../bower-components/iron-icons/'+isplit[0]+'-icons.html', function(e) {
-                var iconhtml = document.createElement('iron-icon');
-                iconhtml.setAttribute('icon',icon);
-                return iconhtml;
-//            });} else {return
-//              var iconhtml = document.createElement('iron-icon');
-//              iconhtml.setAttribute('icon',icon);
-//            }
+          secondaryColor:{
+            type:String,
+            value:'grey'
+          },
+          secondaryValue: Number,
+          topInfo:String,
+          topInfoColor:String,
+          topInfoIcon:String,
+          bottomInfo:String,
+          bottomInfoColor:String,
+          bottomInfoIcon:String,
+          animationConfig: {
+            type: Object,
+            value: function () {return {primary: {},secondary: {}};}
           }
+        },
 
-        });
-      })();
-    })
+        ready: function () {
+          this._computeRotation({ value: this.value, animation: 'primary'});
+          if (this.secondaryValue) { this._computeRotation({ value: this.secondaryValue, animation: 'secondary'}); } else { this.hideSecondaryGauge=true} // define label position class
+        },
+
+        _computeRotation: function(o){
+          var rotation = 180 / (this.max - this.min) * ((parseFloat(o.value)).toFixed(1) - this.min);
+          var fill_rotation = rotation!= 'NaN'? rotation:0;
+          var fix_rotation = rotation * 2;
+          var transitionDuration = 3000 / (this.max - this.min) * ((parseFloat(o.value)). toFixed(1)-this.min);
+          var nodes = this.querySelectorAll('.'+ o.animation+' .fill, .'+ o.animation+' .mask.full');
+          this.animationConfig[o.animation] = {
+            name: 'transform-animation-multiple',
+            transformFrom: 'rotate(0deg)',
+            transformTo: 'rotate('+ parseInt(fill_rotation) +'deg)',
+            nodes: Array.prototype.slice.call(nodes),
+            timing: {"duration":transitionDuration}
+          };
+          this.playAnimation(o.animation);//somehow it plays only the second time
+          this.playAnimation(o.animation);
+          for(var i=0;i<nodes.length;i++){
+            nodes[i].style.transform = 'rotate('+ fill_rotation+'deg)';
+          }
+        }
+
+      });
+    })();
+
   </script>
 </dom-module>

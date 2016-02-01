@@ -1788,7 +1788,11 @@
     </paper-toolbar>
 
     <div class="content">
-
+      <r-card heading="NPS" class="flex-2">
+        <div id="content">
+          <radial-gauge min="-100" max="100" value="25" range range-position="bottom" color="amber" secondary-value="15" secondary-color="red" top-info="16% " top-info-icon="arrow-upward" top-info-color="green" bottom-info="20%" custom-bottom-info-color="#6aefd4"></radial-gauge>
+        </div>
+      </r-card>
       <render-to to="#filters">
         <paper-radio-group selected="small">
           <paper-radio-button name="small">Small</paper-radio-button>
