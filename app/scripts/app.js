@@ -1,14 +1,76 @@
-/*
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/
-/*
 (function(document) {
   'use strict';
+
+  if (!window.webComponentsSupported) {
+    importHref('script',{src:'//reportal.euro.confirmit.com/isa/BDJPFRDMEYBPBKLVADAYFQCDAVIOEQJR/Polymer/webcomponents-lite.min.js',onload:finishLazyLoading});
+    /*var script = document.createElement('script');
+     script.async = true;
+     script.src = '//reportal.euro.confirmit.com/isa/BDJPFRDMEYBPBKLVADAYFQCDAVIOEQJR/Polymer/webcomponents-lite.min.js';
+     script.onload = finishLazyLoading;
+     document.head.appendChild(script);*/
+  } else {
+    finishLazyLoading();
+  }
+
+// everything necessary to make your app run seamless, define here
+  function appInit(){
+    Polymer.Base.fire('reportalAppReady',{finished:true},{node:window});
+  }
+  function _replaceLoadingAnimation() {
+    var progress = document.createElement('paper-progress');
+    progress.setAttribute('indeterminate','');
+    Polymer.Base.async(function(){
+      try{
+        window._poll(function(){return document.querySelector('#wait_c');},
+          function(){
+            var container = document.querySelector('#wait_c');
+            if(container){
+              container.setAttribute('style','');
+              container.innerHTML='';
+              container.appendChild(progress);
+              var toolbar=document.querySelector('div[main] #headerContainer');
+              if(toolbar){toolbar.appendChild(container);}
+            }
+          },
+          5000, //5 seconds total
+          1000, //check every second
+          function(){console.log('failed to find & restyle loading progress for <report-master>');}
+        );
+      } catch(e){
+        alert( e.name + ':' + e.message + '\n' + e.stack);
+      }
+    },3000);
+  }
+
+
+  function finishLazyLoading() {
+    // (Optional) Use native Shadow DOM if it's available in the browser.
+    window.Polymer = window.Polymer || {dom: 'shadow'};
+console.log('finish lazy loading')
+    // 6. Fade splash screen, then remove.
+    var onImportLoaded = function() {
+
+      console.log('onImportLoaded');
+      var loadEl = document.getElementById('splash');
+      loadEl.addEventListener('transitionend', loadEl.remove);
+      document.body.classList.remove('loading');
+      validatorFix();
+      appInit();
+      _replaceLoadingAnimation();
+      // App is visible and ready to load some data!
+    };
+
+    var link = document.querySelector('#bundle');
+
+    // 5. Go if the async Import loaded quickly. Otherwise wait for it.
+    // crbug.com/504944 - readyState never goes to complete until Chrome 46.
+    // crbug.com/505279 - Resource Timing API is not available until Chrome 46.
+    if (link.import && link.import.readyState === 'complete') {
+      onImportLoaded();
+    } else {
+      link.addEventListener('load', onImportLoaded);
+    }
+  }
 
 
   // Grab a reference to our auto-binding template
@@ -16,21 +78,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   // Learn more about auto-binding templates at http://goo.gl/Dx1u2g
   var app = document.querySelector('#app');
 
-  app.displayInstalledToast = function() {
-    document.querySelector('#caching-complete').show();
-  };
+  //load local storage data into app
 
-  // Listen for template bound event to know when bindings
-  // have resolved and content has been stamped to the page
-  app.addEventListener('dom-change', function() {
-    console.log('Our app is ready to rock!');
-  });
 
-  // See https://github.com/Polymer/polymer/issues/1381
-  window.addEventListener('WebComponentsReady', function() {
-    // imports are loaded and elements have been registered
-  });
-
+  addEventListener('iron-select',function(e){
+    if(e.target.localName==='paper-tabs' && e.target.attributes.hasOwnProperty('lsns')){
+      document.querySelector('#app').set(e.target.attributes.getNamedItem('lsns').value,e.target.selected);
+    }
+  })
   // Main area's paper-scroll-header-panel custom condensing transformation of
   // the appName in the middle-container and the bottom title in the bottom-container.
   // The appName is moved to top and shrunk on condensing. The bottom sub title
@@ -49,9 +104,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     // Move/translate middleContainer
     Polymer.Base.transform('translate3d(0,' + yRatio * 100 + '%,0)', middleContainer);
 
-    // Scale bottomContainer and bottom sub title to nothing and back
-    Polymer.Base.transform('scale(' + scaleBottom + ') translateZ(0)', bottomContainer);
-
+    // Scale bottomContainer and bottom sub title to nothing and back if not a paper-tabs
+    if(bottomContainer.localName==='paper-tabs' || bottomContainer.firstChild.localName==='paper-tabs'){
+      Polymer.Base.transform('translate3d(0,' + yRatio * 100 + '%,0)', bottomContainer);
+    } else {
+      Polymer.Base.transform('scale(' + scaleBottom + ') translateZ(0)', bottomContainer);
+    }
     // Scale middleContainer appName
     Polymer.Base.transform('scale(' + scaleMiddle + ') translateZ(0)', appName);
   });
@@ -64,64 +122,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
   };
 
-})(document);*/
-
-// 4. Conditionally load the webcomponents polyfill if needed by the browser.
-// This feature detect will need to change over time as browsers implement
-// different features.
-var webComponentsSupported = ('registerElement' in document && 'import' in document.createElement('link') && 'content' in document.createElement('template'));
-
-if (!webComponentsSupported) {
-  console.log('webComponents not supported');
-  var script = document.createElement('script');
-  script.async = true;
-  script.src = '/isa/BDJPFRDMEYBPBKLVADAYFQCDAVIOEQJR/Polymer/webcomponents-lite.min.js';
-  script.onload = finishLazyLoading;
-  document.head.appendChild(script);
-} else {
-  console.log('webComponents supported');
-  finishLazyLoading();
-}
-
-function finishLazyLoading() {
-  // (Optional) Use native Shadow DOM if it's available in the browser.
-  window.Polymer = window.Polymer || {dom: 'shadow'};
-  // 6. Fade splash screen, then remove.
-  var onImportLoaded = function() {
-    console.log('on import loaded');
-    var loadEl = document.getElementById('splash');
-    loadEl.addEventListener('transitionend', function(){
-      loadEl.style.display='none';
-      loadEl.parentNode.removeChild(loadEl);
-    });
-
-    document.body.classList.remove('loading');
-
-    // App is visible and ready to load some data!
-  };
-
-  var link = document.querySelector('#bundle');
-
-  // 5. Go if the async Import loaded quickly. Otherwise wait for it.
-  // crbug.com/504944 - readyState never goes to complete until Chrome 46.
-  // crbug.com/505279 - Resource Timing API is not available until Chrome 46.
-  if (link.import && link.import.readyState === 'complete') {
-    console.log('link import complete');
-    if(!webComponentsSupported){
-      console.log('will listen for WebComponentsReady polyfill');
-      window.addEventListener('WebComponentsReady', onImportLoaded)
-    } else {
-      onImportLoaded();
-    }
-
-  } else {
-    console.log('listen to link.import.complete');
-    if(!webComponentsSupported){
-      console.log('will listen for WebComponentsReady polyfill');
-      window.addEventListener('WebComponentsReady', onImportLoaded)
-    } else {
-      link.addEventListener('load', onImportLoaded);
-    }
-
+  // fix Page_Validators null because of elements upgrade bug
+  function validatorFix(){
+    Polymer.Base.async(function(){
+      var validator = document.querySelectorAll('span[id*="_validator"]');
+      var rv = document.querySelectorAll('span[id*="_rv"]');
+      var valid = document.querySelectorAll('span[id*="_valid"]');
+      if(typeof(Page_Validators)!=='undefined' && Page_Validators.length>0){
+        if(Page_Validators.indexOf(null)>0){Page_Validators = [];}
+        if(validator && validator.length>0){
+          for(var v=0;v<validator.length;v++){
+            window[validator[v].id] = validator[v];
+            window[rv[v].id] = rv[v];
+            if(Page_Validators.length===0 || Page_Validators.indexOf(validator[v])===-1){
+              Page_Validators.push(validator[v]);
+              Page_Validators.push(rv[v]);
+            }
+          }
+        }
+        if(valid && valid.length>0){
+          for(var va=0;va<valid.length;va++){
+            window[valid[va].id] = valid[va];
+            if(Page_Validators.length===0 || Page_Validators.indexOf(valid[va])===-1){
+              Page_Validators.push(valid[va]);
+            }
+          }
+        }
+      }
+    },3000);
   }
-}
+})(document);

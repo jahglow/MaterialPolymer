@@ -6,6 +6,8 @@
  Code distributed by Google as part of the polymer project is also
  subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
  */
+//check for native WebComponents support
+window.webComponentsSupported = ('registerElement' in document && 'import' in document.createElement('link') && 'content' in document.createElement('template'));
 
 //do not change! take care or body classes;
 var body = document.querySelector('body');

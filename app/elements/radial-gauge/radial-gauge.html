@@ -11,8 +11,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="..\..\bower_components/polymer/polymer.html">
 <link rel="import" href="..\..\bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="..\..\bower_components/paper-styles/color.html">
-<link rel="import" href="..\..\bower_components/neon-animation/neon-animation.html">
-<link rel="import" href="..\..\bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="..\..\bower_components/neon-animation/neon-animatable-behavior.html">
+<link rel="import" href="..\..\bower_components/neon-animation/neon-animation-runner-behavior.html">
 <link rel="import" href="..\transform-animation-multiple/transform-animation-multiple.html">
 
 <dom-module id="radial-gauge">
@@ -34,7 +34,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         position:relative;
         box-sizing:border-box;
         border-style: solid;
-        border-color:#EEEEEE;
+        border-color: var(--radial-gauge-rail-background-color, #EEEEEE);
         border-width: var(--radial-gauge-rail-width);
         @apply(--radial-gauge-rail);
       }
@@ -74,6 +74,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host .primary, :host .secondary{
         position: absolute;
         box-sizing: content-box;
+        z-index:1;
       }
       :host #radialProgress.top .primary{
         top: var(--radial-gauge-offset);
@@ -106,6 +107,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host .inset{
         position: absolute;
         top: 0; bottom: 0; right: 0; left: 0;
+        z-index:0;
+        border-radius: 50%;
+        @apply(--radial-gauge-info-circle);
       }
 
       :host .inset>#mainDigit {
@@ -166,16 +170,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       :host .red .fill { border-color: var(--conditional-formatting-red, --paper-red-500); }
-      :host .red { color: var(--paper-red-500); }
+      :host .red { color: var(--conditional-formatting-red,--paper-red-500); }
 
       :host .amber .fill { border-color: var(--conditional-formatting-amber, --paper-amber-500); }
-      :host .amber { color: var(--paper-amber-500); }
+      :host .amber { color: var(--conditional-formatting-amber,--paper-amber-500); }
 
       :host .green .fill { border-color: var(--conditional-formatting-green, --paper-green-500); }
-      :host .green {color: var(--paper-green-500);}
+      :host .green {color: var(--conditional-formatting-green, --paper-green-500);}
 
       :host .grey .fill {border-color: var(--conditional-formatting-grey, --paper-grey-500); }
-      :host .grey {color: var(--paper-grey-500);}
+      :host .grey {color: var(--conditional-formatting-grey,--paper-grey-500);}
 
     </style>
 
@@ -188,20 +192,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div class="fill" style$="border-color: {{customPrimaryColor}}"></div>
         </div>
       </div>
-        <div class$="secondary {{secondaryColor}}" hidden$="[[hideSecondaryGauge]]">
-          <div class="mask full">
-            <div class="fill" style$="border-color: {{customSecondaryColor}}"></div>
-          </div>
-          <div class="mask half">
-            <div class="fill" style$="border-color: {{customSecondaryColor}}"></div>
-          </div>
+      <div class$="secondary {{secondaryColor}}" hidden$="[[hideSecondaryGauge]]">
+        <div class="mask full">
+          <div class="fill" style$="border-color: {{customSecondaryColor}}"></div>
         </div>
+        <div class="mask half">
+          <div class="fill" style$="border-color: {{customSecondaryColor}}"></div>
+        </div>
+      </div>
       <div class="inset layout vertical">
         <div class$="[[rangePosition]]" id="range"><span class="flex min">{{min}}</span><span class="flex max">{{max}}</span></div>
         <div class="flex layout horizontal" id="topInfo" ><span class$="self-center flex {{topInfoColor}}" style$="color: {{customTopInfoColor}}"><iron-icon icon$="[[topInfoIcon]]"></iron-icon> {{topInfo}}</span></div>
-        <div class="flex layout horizontal" id="mainDigit"><span class$="self-center flex {{color}}" style$="color: {{customPrimaryColor}}">{{value}}</span></div>
+        <div class="flex layout horizontal" id="mainDigit"><span class$="self-center flex {{color}}" style$="color: {{customPrimaryColor}}">{{prefix}}{{value}}</span></div>
         <div class="flex layout horizontal" id="bottomInfo"><span class$="self-center flex {{bottomInfoColor}}" style$="color: {{customBottomInfoColor}}"><iron-icon icon$="[[bottomInfoIcon]]"></iron-icon> {{bottomInfo}}</span></div>
-        <div class="secondaryGaugeLabel"></div>
       </div>
     </div>
 
@@ -209,84 +212,101 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
     (function() {
       'use strict';
-      new Polymer({
-        is: 'radial-gauge',
-        behaviors: [
-          Polymer.NeonAnimatableBehavior,
-          Polymer.NeonAnimationRunnerBehavior
-        ],
-        properties: {
-          // declare properties for the element's public API
-          range: {
-            type: Boolean,
-            value: false
+      addEventListener(('reportalAppReady'),function(){
+        new Polymer({
+          is: 'radial-gauge',
+          behaviors: [
+            Polymer.NeonAnimationRunnerBehavior
+          ],
+          properties: {
+            // declare properties for the element's public API
+            range: {
+              type: Boolean,
+              value: false
+            },
+            min: {
+              type: Number,
+              value: 0
+            },
+            max: {
+              type: Number,
+              value: 0
+            },
+            rangePosition: {
+              type: String,
+              value: 'top' //default
+            },
+            value: {
+              type: String
+            },
+            prefix:String,
+            color:{
+              type:String,
+              value:'grey'
+            },
+            hideSecondaryGauge:{
+              type:Boolean,
+              value:false
+            },
+            secondaryColor:{
+              type:String,
+              value:'grey'
+            },
+            secondaryValue: String,
+            topInfo:String,
+            topInfoColor:String,
+            topInfoIcon:String,
+            bottomInfo:String,
+            bottomInfoColor:String,
+            bottomInfoIcon:String,
+            animationConfig: {
+              type: Object,
+              value: function () {return {primary: {},secondary: {}};}
+            }
           },
-          min: {
-            type: Number,
-            value: 0
+
+          ready: function () {
+            this._computeRotation({ value: this.value, animation: 'primary'});
+            if (this.secondaryValue && !this.hideSecondaryGauge){ this._computeRotation({ value: this.secondaryValue, animation: 'secondary'}); } else { this.hideSecondaryGauge=true} // define label position class
+            this._adjustMainDigitWidth();
           },
-          max: {
-            type: Number,
-            value: 0
+          attached:function (){
           },
-          rangePosition: {
-            type: String,
-            value: 'top' //default
+          _computeRotation: function(o){
+            if(!isNaN(parseFloat(o.value))){
+              var rotation = 180 / (this.max - this.min) * ((parseFloat(o.value)).toFixed(1) - this.min);
+              var fill_rotation = rotation!== 'NaN'? rotation:0;
+              var fix_rotation = rotation * 2;
+              var transitionDuration = 3000 / (this.max - this.min) * ((parseFloat(o.value)). toFixed(1)-this.min);
+              var nodes = Polymer.dom(this.root).querySelectorAll('.'+ o.animation+' .fill, .'+ o.animation+' .mask.full');
+              this.animationConfig[o.animation] = {
+                name: 'transform-animation-multiple',
+                transformFrom: 'rotate(0deg)',
+                transformTo: 'rotate('+ parseInt(fill_rotation) +'deg)',
+                nodes: Array.prototype.slice.call(nodes),
+                timing: {"duration":transitionDuration}
+              };
+              this.playAnimation(o.animation);//somehow it plays only the second time
+              this.playAnimation(o.animation);
+              for(var i=0;i<nodes.length;i++){
+                nodes[i].style.transform = 'rotate('+ fill_rotation+'deg)';
+              }
+            }
           },
-          value: {
-            type: Number,
-            value: 0
-          },
-          color:{
-            type:String,
-            value:'grey'
-          },
-          hideSecondaryGauge:{
-            type:Boolean,
-            value:false
-          },
-          secondaryColor:{
-            type:String,
-            value:'grey'
-          },
-          secondaryValue: Number,
-          topInfo:String,
-          topInfoColor:String,
-          topInfoIcon:String,
-          bottomInfo:String,
-          bottomInfoColor:String,
-          bottomInfoIcon:String,
-          animationConfig: {
-            type: Object,
-            value: function () {return {primary: {},secondary: {}};}
+          _adjustMainDigitWidth: function(){
+            var strLen = this.value.trim().length + (this.prefix?this.prefix.length:0);
+              if (strLen > 4) {
+                this.customStyle['--radial-gauge-width'] = '120px';
+                this.customStyle['--radial-gauge-half-width'] = '60px';
+                /*this.async(function(){
+                  var mainDigit = this.$.mainDigit;
+                  console.log(window.getComputedStyle(mainDigit.firstChild).getPropertyValue('width'))
+                  var computedWidth=parseInt(window.getComputedStyle(mainDigit).getPropertyValue('width'));
+                  mainDigit.style.fontSize = (computedWidth - 12) / strLen * 1.7 + 'px';
+                })*/
+              }
           }
-        },
-
-        ready: function () {
-          this._computeRotation({ value: this.value, animation: 'primary'});
-          if (this.secondaryValue) { this._computeRotation({ value: this.secondaryValue, animation: 'secondary'}); } else { this.hideSecondaryGauge=true} // define label position class
-        },
-
-        _computeRotation: function(o){
-          var rotation = 180 / (this.max - this.min) * ((parseFloat(o.value)).toFixed(1) - this.min);
-          var fill_rotation = rotation!= 'NaN'? rotation:0;
-          var fix_rotation = rotation * 2;
-          var transitionDuration = 3000 / (this.max - this.min) * ((parseFloat(o.value)). toFixed(1)-this.min);
-          var nodes = this.querySelectorAll('.'+ o.animation+' .fill, .'+ o.animation+' .mask.full');
-          this.animationConfig[o.animation] = {
-            name: 'transform-animation-multiple',
-            transformFrom: 'rotate(0deg)',
-            transformTo: 'rotate('+ parseInt(fill_rotation) +'deg)',
-            nodes: Array.prototype.slice.call(nodes),
-            timing: {"duration":transitionDuration}
-          };
-          this.playAnimation(o.animation);//somehow it plays only the second time
-          this.playAnimation(o.animation);
-          for(var i=0;i<nodes.length;i++){
-            nodes[i].style.transform = 'rotate('+ fill_rotation+'deg)';
-          }
-        }
-
+        });
       });
     })();
 

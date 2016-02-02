@@ -22,22 +22,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   /* Application theme */
 
   :root {
-    --dark-primary-color:       #7B1FA2;
-    --default-primary-color:    #9C27B0;
-    --light-primary-color:      #E1BEE7;
+    --dark-primary-color:       #E64A19;
+    --default-primary-color:    #FF5722;
+    --light-primary-color:      #FFCCBC;
     --text-primary-color:       #FFFFFF;
-    --accent-color:             #FF4081;
+    --accent-color:             #03A9F4;
     --primary-background-color: #FFFFFF;
     --primary-text-color:       #212121;
     --secondary-text-color:     #727272;
     --disabled-text-color:      #BDBDBD;
     --divider-color:            #B6B6B6;
 
-    /* Conditional formatting colors */
-    --conditional-formatting-red:#F44336;
-    --conditional-formatting-amber:#FFC107;
-    --conditional-formatting-green:#4CAF50;
-    --conditional-formatting-grey:#9E9E9E;
+
 
     /* Components */
 
@@ -49,14 +45,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     --radial-gauge-info-edge-offset: 5px;
 
 
+
     /* paper-drawer-panel */
-    --drawer-menu-color: #ffffff;
-    --drawer-border-color: 1px solid #ccc;
+    --drawer-menu-color:           #ffffff;
+    --drawer-border-color:         1px solid #ccc;
     --drawer-toolbar-border-color: 1px solid rgba(0, 0, 0, 0.22);
 
     /* paper-menu */
     --paper-menu-background-color: #fff;
-    --menu-link-color: #111111;
+    --menu-link-color:             #111111;
 
     /* color of page loading progress bar in header*/
     --report-master-loading-progress-color: var(--accent-color);
@@ -65,17 +62,77 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       padding-left:8px;
       margin-bottom: 8px;
     };
-
-
+    /* defining styles for paper-tabs globally*/
+    --paper-tabs-selection-bar-color:var(--accent-color);
+    --paper-tab-ink: var(--light-primary-color);
   }
 
+
   /* General styles */
+  r-card {
+    width: calc(100% - 16px);
+    margin: 0 8px;
+    margin-bottom: 16px;
+    min-width:250px;
+  }
+  /* Sidebar */
+
+  paper-scroll-header-panel[drawer] .logo img{
+    width:auto;
+    padding: 16px;
+    padding-bottom:0;
+    max-width: calc(100% - 32px);
+    height:auto;
+  }
+  paper-scroll-header-panel[drawer] .logo{
+    position:relative;
+    width:100%;
+    text-align: center;
+    height:auto;
+  }
+  #filterPanel {padding:16px 8px;}
+  #filterPanel r-list {display:block;}
+  #filterPanel .section-title{
+    margin: 8px 8px 0 8px;
+    display: block;
+    position: relative;
+    font-weight: 500;
+    color: var(--secondary-text-color);
+    font-size: 13px;
+    line-height: 32px;
+    text-transform: uppercase;
+  }
+
+  /* paper-tabs in condensing header of the page*/
+  paper-toolbar paper-tabs{
+    background: var(--default-primary-color);
+  }
+
 
   #drawerToolbar {
     color: var(--secondary-text-color);
     background-color: var(--drawer-menu-color);
     border-bottom: var(--drawer-toolbar-border-color);
   }
+
+  /* loading progress*/
+  #wait_c .underlay{
+    display:none !important;
+  }
+  #wait_c{
+    left:0 !important;
+    top:0 !important;
+    position:relative !important;
+    width:100%;
+    margin: 0 !important;
+    visibility:hidden;
+    padding:0 !important;
+  }
+  #wait_c>paper-progress{
+    width:100%;
+    --paper-progress-active-color: var(--accent-color);
+  }
+
 
   paper-scroll-header-panel {
     height: 100%;
@@ -89,7 +146,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     margin: 16px auto;
     background: white;
   }
-
 
   paper-menu iron-icon {
     margin-right: 33px;
