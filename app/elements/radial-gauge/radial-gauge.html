@@ -201,7 +201,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
       </div>
       <div class="inset layout vertical">
-        <div class$="[[rangePosition]]" id="range"><span class="flex min">{{min}}</span><span class="flex max">{{max}}</span></div>
+        <div class$="[[rangePosition]]" id="range" hidden$="[[!range]]"><span class="flex min">{{prefix}}{{min}}</span><span class="flex max">{{prefix}}{{max}}</span></div>
         <div class="flex layout horizontal" id="topInfo" ><span class$="self-center flex {{topInfoColor}}" style$="color: {{customTopInfoColor}}"><iron-icon icon$="[[topInfoIcon]]"></iron-icon> {{topInfo}}</span></div>
         <div class="flex layout horizontal" id="mainDigit"><span class$="self-center flex {{color}}" style$="color: {{customPrimaryColor}}">{{prefix}}{{value}}</span></div>
         <div class="flex layout horizontal" id="bottomInfo"><span class$="self-center flex {{bottomInfoColor}}" style$="color: {{customBottomInfoColor}}"><iron-icon icon$="[[bottomInfoIcon]]"></iron-icon> {{bottomInfo}}</span></div>
@@ -224,14 +224,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               type: Boolean,
               value: false
             },
-            min: {
-              type: Number,
-              value: 0
-            },
-            max: {
-              type: Number,
-              value: 0
-            },
+            min: String,
+            max: String,
             rangePosition: {
               type: String,
               value: 'top' //default
@@ -273,10 +267,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
           _computeRotation: function(o){
             if(!isNaN(parseFloat(o.value))){
-              var rotation = 180 / (this.max - this.min) * ((parseFloat(o.value)).toFixed(1) - this.min);
+              var rotation = 180 / (parseFloat(this.max) - parseFloat(this.min)) * ((parseFloat(o.value)).toFixed(1) - parseFloat(this.min));
               var fill_rotation = rotation!== 'NaN'? rotation:0;
               var fix_rotation = rotation * 2;
-              var transitionDuration = 3000 / (this.max - this.min) * ((parseFloat(o.value)). toFixed(1)-this.min);
+              var transitionDuration = 3000 / (parseFloat(this.max) - parseFloat(this.min)) * ((parseFloat(o.value)).toFixed(1)-parseFloat(this.min));
               var nodes = Polymer.dom(this.root).querySelectorAll('.'+ o.animation+' .fill, .'+ o.animation+' .mask.full');
               this.animationConfig[o.animation] = {
                 name: 'transform-animation-multiple',
