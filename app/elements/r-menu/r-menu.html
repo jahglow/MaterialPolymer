@@ -125,6 +125,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type:Number,
             value:5
           },
+          dataProvider:{
+            type:Boolean,
+            value:false
+          },
           data: {
             type: Array,
             notify: true,
@@ -159,10 +163,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               }
               return mArray;
             }
-          },
-          dataProvider:{
-            type:Boolean,
-            value:false
           }
         },
         generateMenu:function(){

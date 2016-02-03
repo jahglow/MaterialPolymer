@@ -20,7 +20,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <style>
       :host {
         display: block;
-        --radial-gauge-secondary-width:calc(var(--radial-gauge-width) - var(--radial-gauge-rail-width) * 2 - var(--radial-gauge-secondary-offset) * 2);
+        --radial-gauge-secondary-width: calc(var(--radial-gauge-width) - var(--radial-gauge-rail-width) * 2 - var(--radial-gauge-secondary-offset) * 2);
         --radial-gauge-offset: calc(var(--radial-gauge-rail-width) * -1);
         --radial-gauge-half-width: calc(var(--radial-gauge-width) / 2 );
         --radial-gauge-secondary-half-width: calc((var(--radial-gauge-width) - var(--radial-gauge-rail-width) * 2 - var(--radial-gauge-secondary-offset) * 2) / 2 );
@@ -74,7 +74,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host .primary, :host .secondary{
         position: absolute;
         box-sizing: content-box;
-        z-index:1;
+        z-index:0;
       }
       :host #radialProgress.top .primary{
         top: var(--radial-gauge-offset);
@@ -264,13 +264,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               value: function () {return {primary: {},secondary: {}};}
             }
           },
-
           ready: function () {
             this._computeRotation({ value: this.value, animation: 'primary'});
             if (this.secondaryValue && !this.hideSecondaryGauge){ this._computeRotation({ value: this.secondaryValue, animation: 'secondary'}); } else { this.hideSecondaryGauge=true} // define label position class
-            this._adjustMainDigitWidth();
           },
           attached:function (){
+            this._adjustStyles();
           },
           _computeRotation: function(o){
             if(!isNaN(parseFloat(o.value))){
@@ -293,18 +292,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               }
             }
           },
-          _adjustMainDigitWidth: function(){
+          _adjustStyles: function(){
             var strLen = this.value.trim().length + (this.prefix?this.prefix.length:0);
-              if (strLen > 4) {
-                this.customStyle['--radial-gauge-width'] = '120px';
-                this.customStyle['--radial-gauge-half-width'] = '60px';
-                /*this.async(function(){
-                  var mainDigit = this.$.mainDigit;
-                  console.log(window.getComputedStyle(mainDigit.firstChild).getPropertyValue('width'))
-                  var computedWidth=parseInt(window.getComputedStyle(mainDigit).getPropertyValue('width'));
-                  mainDigit.style.fontSize = (computedWidth - 12) / strLen * 1.7 + 'px';
-                })*/
-              }
+            /* IE CSS has no support for calc() in clip, we must explicitly provide a value */
+            var customStyle=this._styleProperties.__proto__;
+            this.customStyle['--radial-gauge-secondary-width']= parseInt(customStyle['--radial-gauge-width']) - parseInt(customStyle['--radial-gauge-rail-width']) * 2 - parseInt(customStyle['--radial-gauge-secondary-offset']) * 2 + 'px';
+            this.customStyle['--radial-gauge-offset']= '-'+customStyle['--radial-gauge-rail-width'];
+            this.customStyle['--radial-gauge-half-width']= parseInt(customStyle['--radial-gauge-width']) / 2 +'px';
+            this.customStyle['--radial-gauge-secondary-half-width']= (parseInt(customStyle['--radial-gauge-width']) - parseInt(customStyle['--radial-gauge-rail-width']) * 2 - parseInt(customStyle['--radial-gauge-secondary-offset']) * 2) / 2 +'px';
+            this.updateStyles();
+            if (strLen > 4) {
+              var mainDigit = this.$.mainDigit;
+              mainDigit.style.fontSize = (parseInt(this.customStyle['--radial-gauge-secondary-width']) - ((this.secondaryValue && !this.hideSecondaryGauge)? parseInt(customStyle['--radial-gauge-secondary-rail-width']) : 0 )*2 - 10) / strLen * 1.9 + 'px';
+            }
           }
         });
       });

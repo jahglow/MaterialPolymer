@@ -18,28 +18,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
     (function() {
       'use strict';
-      Polymer({
-        /*
-         * <render-to action="prepend" to="#someElement"> text and <div>HTML</div> </render-to>
-         * is used when you want to move some code into another location without using JavaScript
-         * action:
-         * append = append child, where "to" is a host element,
-         * prepend = insert before first-child, where "to" is a host element,
-         * innerHTML = replace innerHTML of "to"
-         * outerHTML = replace "to" with <render-to> contents
-         * before = place <render-to> contents before "to" element
-         * after = place <render-to> contents after "to" element
-         */
-        is: 'render-to',
-        properties: {
-          action: {
-            type: String,
-            value: 'append'// append|prepend|innerHTML|outerHTML|before|after
+      window.addEventListener('reportalAppReady',function(){
+        Polymer({
+          /*
+           * <render-to action="prepend" to="#someElement"> text and <div>HTML</div> </render-to>
+           * is used when you want to move some code into another location without using JavaScript
+           * action:
+           * append = append child, where "to" is a host element,
+           * prepend = insert before first-child, where "to" is a host element,
+           * innerHTML = replace innerHTML of "to"
+           * outerHTML = replace "to" with <render-to> contents
+           * before = place <render-to> contents before "to" element
+           * after = place <render-to> contents after "to" element
+           */
+          is: 'render-to',
+          properties: {
+            action: {
+              type: String,
+              value: 'append'// append|prepend|innerHTML|outerHTML|before|after
+            },
+            to:String
           },
-          to:String
-        },
-        ready:function(){
-          this.async(function(){
+          attached:function(){
             if(this.to && document.querySelector(this.to)){
               var to = document.querySelector(this.to);
               var content = Polymer.dom(this).getEffectiveChildNodes();
@@ -47,7 +47,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 if(this.action==='innerHTML'){to.innerHTML='';}
                 for(var i=0;i<content.length;i++){
                   switch(this.action){
-                    case 'append': case 'innerHTML': to.appendChild(content[i]); break;
+                    case 'append': case 'innerHTML': Polymer.dom(to).appendChild(content[i]); break;
                     case 'prepend': to.insertBefore(content[i],to.firstChild); break;
                     case 'before': to.parentNode.insertBefore(content[i],to); break;
                     case 'after':case 'outerHTML': to.parentNode.insertBefore(content[i],to.nextSibling); break;
@@ -58,8 +58,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             } else if(!this.to){
               this.outerHTML = this.textContent;
             }
-          });
-        }
+          }
+        });
       });
     })();
   </script>

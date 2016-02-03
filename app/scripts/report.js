@@ -25,7 +25,6 @@ function setUIdefaults(namespace, config){
     // LS is the name of variable specified in binding on iron-localstorage value attribute, must match!
     this[namespace] = config;
   };
-
 }
 
 function importHref(element, params, onload, onerror) {

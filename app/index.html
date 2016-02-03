@@ -18,6 +18,7 @@
 
   <style>    body.loading #splash {
     opacity: 1;
+    z-index:99;
   }
   body.loading{overflow:hidden}
   #splash {
@@ -29,7 +30,7 @@
     transition: opacity 300ms cubic-bezier(0,0,0.2,1);
     opacity: 0;
     will-change: opacity;
-    z-index: 1;
+    z-index: -1;
     background-image: url('https://reportal.euro.confirmit.com/isa/BDJPFRDMEYBPBKLVADAYFQCDAVIOEQJR/MaterialDreamDemo/confirmitLogo.png');
     background-color: #FFFFFF;
     background-repeat: no-repeat;
@@ -53,8 +54,8 @@
   addMeta({name:'apple-mobile-web-app-title', content:'Polymer AGA Demo'});
 </script>
 
-<link rel="import" id="bundle" href="elements/elements.html">
-<link rel="import" href="styles/app-theme.html">
+<link rel="import" id="bundle" href="elements/elements.html" >
+<link rel="import" href="styles/app-theme.html" >
 <link rel="stylesheet" href="styles/main.css">
 
 <template is="dom-bind" id="app">
@@ -74,7 +75,8 @@
         <paper-tab class="filters">Filters</paper-tab>
       </paper-tabs>
       <iron-pages id="drawerTabsContent" selected="{{LS.drawerTabsSelected::change}}">
-        <r-menu icons-legacy="speaker-notes maps:directions-walk device:devices communication:comment av:equalizer history communication:contact-phone settings" layout="mixed" render-tabs-to="#tabsPlaceHolder">
+        <div class="menu">
+          <r-menu data-provider data="{{menuData}}" >
           <div id="ctl02_ctl00" class="yui3-menu yui3-menu-horizontal css-menu gray-tabs" role="menu">
             <div class="yui3-menu-content" role="presentation" id="yui_3_8_0_3_1453711006035_167">
               <ul class="first-of-type reportal-clearfix" role="presentation" id="yui_3_8_0_3_1453711006035_166">
@@ -730,7 +732,7 @@
             </div>
           </div>
         </r-menu>
-
+        </div>
         <div class="filters" id="filterPanel">Filters placeholder</div>
       </iron-pages>
     </paper-scroll-header-panel>
@@ -754,7 +756,10 @@
           </div>
 
           <!-- Application sub title -->
-          <div id="tabsPlaceHolder" class="bottom fit bottom-container" style="margin-left:0 !important"></div>
+          <div id="tabsPlaceHolder" class="bottom fit bottom-container" style="margin-left:0 !important">
+            <r-menu data="{{menuData}}" layout="tabs" icons-legacy="speaker-notes maps:directions-walk device:devices communication:comment av:equalizer history communication:contact-phone settings"></r-menu>
+
+          </div>
 
         </paper-toolbar>
 
@@ -948,8 +953,6 @@
                         series='[{"data": [2,10,32,100,84,120,95,155]}]'>
           </hc-sparkline>
           <div class="layout horizontal wrap">
-
-
             <r-card heading="NPS radial gauge" class="flex">
               <div id="content">
                 <radial-gauge min="-100" max="100" value="10.1021" range prefix="$" range-position="bottom" color="amber" secondary-value="15" secondary-color="red" top-info="16% " top-info-icon="arrow-upward" top-info-color="green" bottom-info="20%" custom-bottom-info-color="#6aefd4" class="flex"></radial-gauge>
@@ -1195,11 +1198,6 @@
       </paper-scroll-header-panel>
     </div>
   </paper-drawer-panel>
-
-
-
-  </paper-scroll-header-panel>
-
 </template>
 <script src="scripts/app.js"></script>
 </body>

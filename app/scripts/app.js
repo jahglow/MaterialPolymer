@@ -46,13 +46,13 @@
   function finishLazyLoading() {
     // (Optional) Use native Shadow DOM if it's available in the browser.
     window.Polymer = window.Polymer || {dom: 'shadow'};
-console.log('finish lazy loading')
+    console.log('finish lazy loading')
     // 6. Fade splash screen, then remove.
     var onImportLoaded = function() {
 
       console.log('onImportLoaded');
       var loadEl = document.getElementById('splash');
-      loadEl.addEventListener('transitionend', loadEl.remove);
+      loadEl.addEventListener('webkitTransitionEnd transitionend msTransitionEnd oTransitionEnd', function(){loadEl.parentNode.removeChild(loadEl);});
       document.body.classList.remove('loading');
       validatorFix();
       appInit();
@@ -85,7 +85,7 @@ console.log('finish lazy loading')
     if(e.target.localName==='paper-tabs' && e.target.attributes.hasOwnProperty('lsns')){
       document.querySelector('#app').set(e.target.attributes.getNamedItem('lsns').value,e.target.selected);
     }
-  })
+  });
   // Main area's paper-scroll-header-panel custom condensing transformation of
   // the appName in the middle-container and the bottom title in the bottom-container.
   // The appName is moved to top and shrunk on condensing. The bottom sub title
