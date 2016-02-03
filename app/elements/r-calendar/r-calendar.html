@@ -149,8 +149,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           var origInput = this.querySelector('input');
           if(window.DatePicker_config && typeof window.DatePicker_config ==='object' && origInput.id.indexOf('_textbox')>-1){ //we have a reportal datepicker element,
             var cfg = window.DatePicker_config;
-            this.querySelector('paper-button[dialog-dismiss]').textContent = cfg.cancelText;
-            this.querySelector('paper-button[dialog-confirm]').textContent = cfg.okText;
+            Polymer.dom(this.root).querySelector('paper-button[dialog-dismiss]').textContent = cfg.cancelText;
+            Polymer.dom(this.root).querySelector('paper-button[dialog-confirm]').textContent = cfg.okText;
             this.format=cfg.datePattern.toUpperCase();
             if(origInput.value && origInput.value.length>0){
               if(origInput.value.split(cfg.dateSeparator).length>0){
@@ -191,12 +191,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.$.dialog.toggle();
           this._fixDrawer(e, 'drawer');
         },
-        _fixDrawer:function(e, toFix){
+        _fixDrawer:function(e, toFix, select){
           var drawer = e.path.filter(function(item){return item.localName==='paper-scroll-header-panel' && item.attributes.getNamedItem('drawer')})[0];
           if(drawer){
             var pdp = e.path.filter(function(item){return item.localName==='paper-drawer-panel'})[0];
-            pdp.defaultSelected=toFix;
-            toFix==='main'?pdp.disableSwipe = false : pdp.disableSwipe = true;
+            if(toFix==='main'){pdp.disableSwipe = false } else {pdp.disableSwipe = true; pdp.defaultSelected=toFix;}
           }
         }
       });
