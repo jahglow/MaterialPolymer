@@ -13,7 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <script>
   'use strict';
-  Polymer.ReportalTableBehavior = {
+  Polymer.RTableBehavior = {
     hostAttributes: {
       'column-header-override': true
     },
@@ -26,13 +26,49 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         type:Number,
         value:0
       },
-      colattrLegacy:{
-        type:String,
-        value:''
-      },
       colattr:{
         type:Array,
-        value:[]
+        value:[],
+        notify:true
+      },
+      renderer:{
+        type: Object,
+        value: function(){
+          return {
+            html:function(cell){
+              cell.element.innerHTML = cell.data;
+            },
+            striphtml:function(cell){
+              var tempEl = document.createElement('span'); tempEl.innerHTML = cell.data;
+              cell.element.innerHTML=tempEl.textContent.trim();
+            }
+          }
+        }
+      },
+      colattrLegacy:{
+        type:String,
+        value:function(el){
+          if(el.colattrLegacy && el.colattrLegacy.length>0){
+            var attributes = [];
+            var aColAttrs=el.colattrLegacy.split('|'),
+              aL = aColAttrs.length,attrPairs,attrPair;
+            while(aL--){
+              var tempColProp ={};
+              attrPairs=aColAttrs[aL].split(';');
+              var apL = attrPairs.length;
+              while(apL--){
+                if(attrPairs[apL].length>0){
+                  attrPair=attrPairs[apL].split(':');
+                  tempColProp[attrPair[0]] = attrPair.length>1 ? attrPair[1] : true;
+
+                }
+              }
+              attributes.unshift(tempColProp);
+            }
+            if(attributes.length>0){this.colattr=attributes;}
+          }
+          return el.colattrLegacy;
+        }
       },
       columnHeaderOverride:{
         type:Boolean,
@@ -48,20 +84,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         observer:'voiceControl'
       },
       visibleRows:Number,
-      renderer:{
-        type: Object,
-        value: function(){
-          return {
-            html:function(cell){
-              cell.element.innerHTML = cell.data;
-            },
-            striphtml:function(cell){
-              var tempEl = document.createElement('span'); tempEl.innerHTML = cell.data;
-              cell.element.innerHTML=tempEl.textContent.trim();
-            }
-          }
-        }
-      },
       assisted:{
         type:Boolean,
         value:false
@@ -101,22 +123,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      */
     _isInt:function(val){
       return (!isNaN(parseInt(val)) && parseInt(val).toString().length===val.length);
-    },
-    _processLegacyAttributes:function(data){
-      var aColAttrs=data.split(';'),attrPairs,attrPair;
-      for(var i=0;i<aColAttrs.length;i++){
-        var tempColAttr=[];
-        if(aColAttrs[i].length>0){
-          attrPairs=aColAttrs[i].split('|');
-          for(var ap=0;ap<attrPairs.length;ap++){
-            if(attrPairs[ap].length>0){
-              attrPair=attrPairs[ap].split(':');
-              tempColAttr.push(attrPair);
-            }
-          }
-        }
-        this.colattr.push(tempColAttr);
-      }
     },
     _getImmediateChildrenByName:function(source, tagname){
       return Polymer.dom(source).children.filter(function(item){return item.localName===tagname});

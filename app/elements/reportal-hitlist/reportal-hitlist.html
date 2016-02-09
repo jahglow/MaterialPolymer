@@ -19,8 +19,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="..\..\bower_components/paper-progress/paper-progress.html">
 <link rel="import" href="..\..\bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="..\..\bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="..\r-table-behavior/r-table-behavior.html">
+<link rel="import" href="..\..\bower_components/iron-page-url/iron-page-url.html">
+<link rel="import" href="..\..\bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="..\..\bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="..\..\bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="..\..\bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="..\..\bower_components/paper-input/paper-input.html">
+<link rel="import" href="..\..\bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="..\..\bower_components/paper-icon-button/paper-icon-button.html">
+
 <dom-module id="reportal-hitlist">
-  <template>
+  <template strip-whitespace>
     <style>
       :host{
         display:block;
@@ -28,6 +38,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host >paper-card {
         display:block;
       }
+      :host paper-card#setup{
+        --paper-card-background-color: var(--default-primary-color);
+        --paper-card-header-color: var(--text-primary-color);
+        width: calc(100% - 16px);
+        margin: 0 auto;
+        margin-bottom:16px;
+      }
+      :host #settings>paper-card{
+        --paper-card-header-color: var(--primary-text-color) !important;
+        padding-bottom: 24px;
+      }
+      :host #setup>paper-tabs paper-tab{
+        --paper-tab-content: {
+          color:var(--text-primary-color);
+        }
+      }
+      :host #settings paper-card div.layout.vertical>*{margin-bottom:16px; min-width:200px;}
+      :host #settings paper-card div.layout.vertical{padding: 0 16px 16px 16px}
+      :host #setup iron-pages >*{background-color:white; padding:16px;}
+
+      :host div#pagingInfo{padding:0 24px}
+      :host #pagingRow{height:56px; color:rgba(0,0,0,0.54); font-size:12px; font-weight:500; }
+      :host #pagingRow>*{@apply(--layout-self-center);}
+      :host #pagingRow #pagingForward{margin-right:6px; margin-left:4px}
+      :host #pagingRow #pagingBackward{margin-right:8px;}
+
+
       input[type="checkbox"] + label:after {
         content: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTZweCIgaGVpZ2h0PSIxNnB4IiB2aWV3Qm94PSIwIDAgMTYgMTYiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMi4zMDEyODMyOCw4LjY2MzI1NTM5IEw1Ljk2ODk0OTUyLDEyLjI0NTM5ODcgQzYuMzYwNzYxNiwxMi42MjgwNzQ0IDYuOTg3NTAyMTUsMTIuNjI0Mzc3OSA3LjM3NDc3MzAyLDEyLjIzNzEwNyBMMTMuOTA0NzczMiw1LjcwNzEwNjc4IEMxNC4yOTUyOTc1LDUuMzE2NTgyNDkgMTQuMjk1Mjk3NSw0LjY4MzQxNzUxIDEzLjkwNDc3MzIsNC4yOTI4OTMyMiBDMTMuNTE0MjQ4OSwzLjkwMjM2ODkzIDEyLjg4MTA4NCwzLjkwMjM2ODkzIDEyLjQ5MDU1OTcsNC4yOTI4OTMyMiBMNS45NjA1NTk0NiwxMC44MjI4OTM0IEw3LjM2NjM4Mjk2LDEwLjgxNDYwMTggTDMuNjk4NzE2NzIsNy4yMzI0NTg1IEMzLjMwMzYxMzA3LDYuODQ2NTY3OTEgMi42NzA0OTIxNCw2Ljg1NDAzNjU3IDIuMjg0NjAxNTUsNy4yNDkxNDAyMiBDMS44OTg3MTA5Niw3LjY0NDI0Mzg4IDEuOTA2MTc5NjIsOC4yNzczNjQ4IDIuMzAxMjgzMjgsOC42NjMyNTUzOSBMMi4zMDEyODMyOCw4LjY2MzI1NTM5IFoiIGZpbGw9IiNmZmZmZmYiPjwvcGF0aD48L3N2Zz4=) !important;
       }
@@ -363,77 +400,190 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host #columnList paper-icon-item[checked] iron-icon{display:block}
       :host #hWrapper{display:none}
     </style>
-    <!--<iron-ajax id="ajax"
-               url=""
-               handle-as="json"
-               last-response="{{magic}}"
+    <iron-ajax id="ajax" url="" handle-as="json" last-response="{{lastResponse}}"
                debounce-duration="300"
-               verbose></iron-ajax>-->
-    <paper-card heading="hitlist">
-      <div id="gridControls" class="horizontal end-justified layout"></div>
-      <!--<paper-menu-button  horizontal-align="right" vertical-offset="52" ignore-select>
-          <paper-icon-button id="columnToggle" icon="view-column" class="dropdown-trigger"></paper-icon-button>
-          <paper-tooltip id="columnToggleTooltip" for="columnToggle" position="bottom"></paper-tooltip>
-          <paper-meterial class="dropdown-content">
-            <paper-item on-tap="columnReset" id="columnReset"></paper-item>
-            <paper-item on-tap="columnCheckall" id="columnCheckall"></paper-item>
-            <paper-listbox id="columnList" selected-attribute="checked" attr-for-selected="value" multi>
-              <template is="dom-repeat" items="[[columns]]" as="column">
-                <paper-icon-item value$="[[column.value]]"><iron-icon icon="check" item-icon></iron-icon>{{column.name}}</paper-icon-item>
-              </template>
+               verbose loading="{{loading}}"></iron-ajax>
+    <iron-page-url query="{{query}}">
+    </iron-page-url>
 
-            </paper-listbox>
-            <paper-button id="columnCancel"></paper-button>
-            <paper-button raised id="columnApply"></paper-button>
-          </paper-meterial>
-        </paper-menu-button>-->
+    <template is="dom-if" if="[[setup]]" id="setupTemplate">
+      <iron-localstorage name="_genericHLconfig" value="{{LS}}" on-iron-localstorage-load-empty="initializeDefaultSetup"></iron-localstorage>
+      <paper-card heading="Configure your hitlist" class="flex" id="setup">
+        <div hidden="[[!errorNoConfig]]" style="padding:0 16px 16px 16px; color: #ffffff ">
+          My minions couldn't detect a HitList on the page. They suppose it doesn't exist or it's hidden.
+          In the latter case, please, go to its properties and uncheck the "Hidden" checkbox and save. Then come back and we'll configure it together!
+        </div>
+        <paper-tabs selected="{{LS.topTab}}" hidden="[[errorNoConfig]]">
+          <paper-tab>Your config</paper-tab>
+          <paper-tab>Advanced setup</paper-tab>
+        </paper-tabs>
+        <iron-pages hidden="[[errorNoConfig]]" selected="{{LS.topTab}}">
+          <div id="output">
+            <paper-textarea label="Your freshly-configured hitlist"></paper-textarea>
+            <div><em>Feel free to copy this config and paste it in the page designer in place of the existing tag, then save the page. Afterwards you may check "Hidden" for the original Reportal HitList in its general properties. And, yes, you are welcome. </em></div>
+          </div>
+          <div id="settings" class="layout vertical">
+            <paper-card heading="General Settings" elevation="0" class="flex" >
+                  <div class="layout vertical start" width="300px">
+                    <paper-input type="number" on-change="reflectToProperties" label="Frozen columns" value="{{frozenColumns}}" prop="frozenColumns" min="-1" max="{{columnProperties.length}}"></paper-input>
+                    <paper-input type="number" on-change="reflectToProperties" label="Visible rows" value="{{visibleRows}}" prop="visibleRows" min="1"></paper-input>
+                    <paper-toggle-button on-change="reflectToProperties" checked="{{assisted}}" prop="assisted">Assisted</paper-toggle-button>
+                  </div>
+            </paper-card>
+            <paper-card heading="Columns" elevation="0" class="flex">
+              <paper-tabs scrollable selected="{{LS.columnTab}}" class="flex" style="margin: auto -32px;">
+                <template is="dom-repeat" items="[[columnProperties]]" as="tabColumn">
+                  <paper-tab>{{tabColumn.hidingToggleText}}</paper-tab>
+                </template>
+              </paper-tabs>
+              <iron-pages selected="{{LS.columnTab}}">
+                <template is="dom-repeat" items="{{columnProperties}}" as="tabContent" index-as="columnIndex">
+                  <div class="layout vertical start">
+                    <paper-input type="text" on-change="reflectToOriginal" label="Column title" value="{{tabContent.hidingToggleText}}" prop="hidingToggleText" idx="{{columnIndex}}"></paper-input>
+                    Column data prerocessor (renderer):
+                    <paper-radio-group on-iron-select="reflectToOriginal" selected="{{tabContent.renderer}}" prop="renderer" idx="{{columnIndex}}">
+                      <template is="dom-repeat" items="{{renderers}}" as="renderer">
+                        <paper-radio-button name="{{renderer.name}}">{{renderer.descr}}</paper-radio-button>
+                      </template>
+                    </paper-radio-group>
+                    <paper-toggle-button on-change="reflectToOriginal" checked="{{tabContent.hidable}}" prop="hidable" idx="{{columnIndex}}">Hidable</paper-toggle-button>
+                    <paper-toggle-button on-change="reflectToOriginal" checked="{{tabContent.hidden}}" prop="hidden" idx="{{columnIndex}}">Hidden</paper-toggle-button>
+                    <paper-toggle-button on-change="reflectToOriginal" checked="{{tabContent.sortable}}" prop="sortable" idx="{{columnIndex}}"> Sortable </paper-toggle-button>
+                  </div>
+                </template>
+              </iron-pages>
 
+            </paper-card>
+          </div>
+        </iron-pages>
+      </paper-card>
+    </template>
 
-      <paper-progress hidden$="[[loaded]]" indeterminate style="width:100%"></paper-progress>
-      <vaadin-grid id="hitlist"></vaadin-grid>
-    </paper-card>
-    <div id="hWrapper"><content></content></div>
+    <!--<template is="dom-if" if="[[!setup]]">-->
+      <paper-card heading="hitlist" >
+        <div id="gridControls" class="horizontal end-justified layout"></div>
+        <!--<paper-menu-button  horizontal-align="right" vertical-offset="52" ignore-select>
+            <paper-icon-button id="columnToggle" icon="view-column" class="dropdown-trigger"></paper-icon-button>
+            <paper-tooltip id="columnToggleTooltip" for="columnToggle" position="bottom"></paper-tooltip>
+            <paper-meterial class="dropdown-content">
+              <paper-item on-tap="columnReset" id="columnReset"></paper-item>
+              <paper-item on-tap="columnCheckall" id="columnCheckall"></paper-item>
+              <paper-listbox id="columnList" selected-attribute="checked" attr-for-selected="value" multi>
+                <template is="dom-repeat" items="[[columns]]" as="column">
+                  <paper-icon-item value$="[[column.value]]"><iron-icon icon="check" item-icon></iron-icon>{{column.name}}</paper-icon-item>
+                </template>
+
+              </paper-listbox>
+              <paper-button id="columnCancel"></paper-button>
+              <paper-button raised id="columnApply"></paper-button>
+            </paper-meterial>
+          </paper-menu-button>-->
+
+        <!--table>
+          <colgroup>
+            <template is="dom-repeat" items="{{colattr}}" as="col">
+              <col flex="[[col.flex]]" hidable="[[col.hidable]]" hidden="[[col.hidden]]" hiding-toggle-text="[[col.hidingToggleText]]" max-width="[[col.maxWidth]]" min-width="[[col.minWidth]]" name="[[col.name]]" sortable="[[col.sortable]]" sort-direction="[[col.sortDirection]]" width="[[col.width]]">
+            </template>
+          </colgroup>
+        </table-->
+        <paper-progress hidden$="[[!loading]]" indeterminate style="width:100%"></paper-progress>
+        <vaadin-grid id="hitlist" visible-rows="{{visibleRows}}" ></vaadin-grid>
+        <div class=" horizontal end-justified layout" id="pagingRow">
+          <div id="pagingInfo"></div>
+          <paper-icon-button icon="chevron-left" id="pagingBackward"></paper-icon-button>
+          <paper-icon-button icon="chevron-right" id="pagingForward"></paper-icon-button>
+        </div>
+      </paper-card>
+      <div id="hWrapper"><content></content></div>
+    <!--</template>-->
   </template>
   <script>
     (function() {
       'use strict';
-      /*var GlobalHitlistConfig = {};
+      var GlobalHitlistConfig = {};
       document.addEventListener("DOMContentLoaded", function() {
-        var scripts = document.querySelectorAll('script');
-        if(scripts){
-          for(var i=scripts.length;i>0;i--){
-            if(scripts[i] && scripts[i].text && scripts[i].text.indexOf('Y.Reportal.HitList,')>-1){
-              var hitlistScript = scripts[i].text;
-              var re = /(Y\.Reportal\.HitList,)\s(.*?)\);/gi;
-              GlobalHitlistConfig = JSON.parse(re.exec(hitlistScript)[2]);
-              break;
-            }
-
-          }
-        }*/
       Polymer({
         is: 'reportal-hitlist',
-        /*listeners:{
-         //'columnList.iron-select':'_selectOriginal',
-         //'columnList.iron-deselect':'_deselectOriginal'
-         },*/
+        listeners:{
+          'setupTemplate.dom-change':'setupHitlist',
+          /*'pagingBackward.tap':'_skipPage',
+          'pagingForward.tap':'_skipPage(true)',*/
+          //'columnList.iron-select':'_selectOriginal',
+          //'columnList.iron-deselect':'_deselectOriginal'
+        },
 
         behaviors: [
           Polymer.IronResizableBehavior,
-          Polymer.ReportalTableBehavior
+          Polymer.RTableBehavior
         ],
 
         properties: {
-          longText:{
-            type:String
+          /* if setup is passed, a hitlist configurator is going to be launched*/
+          setup:{
+            type:Boolean,
+            value:false
           },
+          LS:{
+            type:Object
+          },
+          renderers:{
+            type:Array,
+            value:[{name:'html',descr:'Renders content as HTML'},{name:'striphtml',descr:'Strips any HTML, leaving only text'}]
+          },
+          hitlistOriginalConfig:{
+            type:Object,
+            notify:true,
+            //observer:'setupHitlist',
+            value:function(){
+             // this.async(function(){
+                var scripts = document.querySelectorAll('script');
+                if(scripts){
+                  var i=scripts.length;
+                  while(i--){
+                    if(scripts[i] && scripts[i].text && scripts[i].text.indexOf('Y.Reportal.HitList,')>-1){
+                      var hitlistScript = scripts[i].text;
+                      var re = /(Y\.Reportal\.HitList,)\s(.*?)\);/gi;
+                      var cfg = JSON.parse(re.exec(hitlistScript)[2]);
+                      return cfg;
+                    }
+                  }
+                } else {return {}}
+              //});
+            }
+          },
+          columnProperties:{
+            type:Array,
+            value:[],
+            notify:true
+          },
+          /*setting-up connection to server*/
+          dbType:{
+            type:String,
+            value:'Production' // Production/TestData
+          },
+          language:{
+            type:Number,
+            value:'9'
+          },
+          hitlist:String,
+          queryNormalized:{
+            type:Object,
+            value:{}
+          },
+          query:{
+            type:String,
+            observer:'_parseQuery'
+          },
+
+          longText:String,
           longTextWidth:{
             type:Number,
             value:250
           },
-          loaded:{
+          loading:{
             type:Boolean,
-            value:false
+            value:false,
+            notify:true
           },
           previousSort:{
             type:Object
@@ -446,102 +596,253 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type:Array,
             value:[]
           },
-          magic:{type:Object,observer:'parseResponse'},
+          lastResponse:{type:Object,observer:'parseResponse'},
           hitlistData:{type:Object,observer:'parseData'}
         },
-        requestResponse:function(options){
-
-          var o = this.hitlistData.serviceUrl.split('?');
-          var _basePath = o[0];
-          var params = {PageId:this.hitlistData.pageId, Preview:this.hitlistData.preview};
-          if(o[1]){
-            var pairs = o[1].split('&');
-            if(pairs && pairs.length>0){
-              for(var oi=0;oi<pairs.length;oi++){
-                var a = pairs[oi].split('=');
-                params[a[0]]=a[1];
+        setupHitlist:function(){
+          if(this.setup){
+            var cfg=this.hitlistOriginalConfig;
+            console.log(cfg);
+            if(cfg){
+              this.errorNoConfig = false;
+              var columns=[];
+              for(var c=0;c<cfg.allColumns.length;c++){
+                var col=cfg.allColumns[c];
+                var cObj={hidable:true, name:col.key, hidingToggleText:col.label};
+                if(col.allowHTML)cObj.renderer='html';
+                if(col.hiddenByDefault)cObj.hidden=true;
+                if(col.sortable)cObj.sortable=true;
+                columns.push(cObj)
               }
+              this.columnProperties = columns;
+              this.generateCode();
+            } else {
+              this.errorNoConfig = true;
             }
           }
-          if(options && typeof options === Object){
-            for (var attrname in options) { params[attrname] = options[attrname]; }
+
+        },
+        generateCode:function(){
+          var str= '<' + this.localName +' hitlist="'+this.hitlistOriginalConfig.componentId+'"' + ' language="'+this.hitlistOriginalConfig.language+'"' + ' colattr-legacy="'+ this.serializeColumns(this.columnProperties) +'"' + ' frozen-columns="'+ this.frozenColumns + '"';
+            if(this.visibleRows){str += ' visible-rows="'+ this.visibleRows + '"';}
+            if(this.assisted){str += ' assisted';}
+            str+= '></'+ this.localName + '>';
+          this.$$('#setup #output paper-textarea').value = str;
+        },
+        serializeColumns:function(columns){
+          if(columns){
+            var c=[];
+            for(var i=0;i<columns.length;i++){
+              var a=[];
+              for(var k in columns[i]){
+                switch(typeof columns[i][k]){
+                  case 'boolean': a.push(k);break;
+                  case 'string':case 'number':a.push(k+':'+columns[i][k]);break;
+                }
+              }
+              c.push(a.join(';'));
+            }
+            return c.join('|');
+          }
+        },
+        reflectToOriginal:function(e){
+          var el=Polymer.dom(e).path[0];
+          console.log(Polymer.dom(e));
+          if(el.localName==='paper-input'){
+            this.set('columnProperties.'+el.getAttribute('idx')+'.'+el.getAttribute('prop'), el.value);
+          }
+          if(el.localName==='paper-toggle-button'){
+            this.set('columnProperties.'+el.getAttribute('idx')+'.'+el.getAttribute('prop'), el.checked);
+          }
+          if(el.localName==='paper-radio-group'){
+            this.set('columnProperties.'+el.getAttribute('idx')+'.'+el.getAttribute('prop'), Polymer.dom(e).event.detail.item.name);
+          }
+          this.generateCode();
+        },
+        reflectToProperties:function(e){
+          var el=Polymer.dom(e).path[0];
+          if(el.localName==='paper-input'){
+            this[el.getAttribute('prop')]=el.value;
+          }
+          if(el.localName==='paper-toggle-button'){
+            this[el.getAttribute('prop')]=el.checked;
+          }
+          this.generateCode();
+        },
+        initializeDefaultSetup:function(){
+          this.LS = {topTab:0,columnTab:0}
+        },
+        _parseQuery:function(query){
+          if(query && query.length>0){
+            var q=query.split('&'), ql= q.length, qn={};
+            while(ql--){
+              var qp = q[ql].split('=');
+              qn[qp[0].toLowerCase()]=qp[1];
+            }
+          }
+          this.queryNormalized = qn;
+        },
+        requestResponse:function(options){
+          if (this.queryNormalized && !this.queryNormalized.pageid && document.querySelector('#CurrentPageID')) {
+            this.queryNormalized.pageid=document.querySelector('#CurrentPageID').value;
+          }
+          var o= this.queryNormalized;
+          var _basePath = 'https://reportal.euro.confirmit.com/reportal/Report/'+ o.reportid + '/HitList/' + this.hitlist;
+          /*set common params*/
+          var params = {PageId: o.pageid, Preview: o.preview, Language:this.language, DbType:this.dbType};
+          /*if options are passed, add options*/
+          if(options && typeof options === Object){ console.log(options);
+            for (var attrname in options) {
+              params[attrname] = typeof options[attrname]==='boolean'?(options[attrname]?'1':'0'):options[attrname];
+            }
           }
           if (document.querySelector('#PageStateId')) {
             params.pageStateId=document.querySelector('#PageStateId').value;
           }
-
+          var sortingPagingValues = this.sortingPagingValues;
+          if (sortingPagingValues && sortingPagingValues.pagingValues && !isNaN(sortingPagingValues.pagingValues.pageNumber)) {
+            if (options && options.initialLoad === true) {
+              sortingPagingValues.pagingValues = null
+            } else {
+              sortingPagingValues.pagingValues.pageNumber += sortingPagingValues.pagingValues.pagingForward ? 1 : -1;
+            }
+            params.sortingPagingValues=JSON.stringify(sortingPagingValues);
+          }
           this.$.ajax.url = _basePath;
-          //this.$.ajax.body = JSON.stringify({ q: text, lang: this.findSupportedLang(this.accent), contexts: contexts, v:"20151222"});
           this.$.ajax.params = params;
-
-          console.log(this.$.ajax.params);
-          console.log(this.$.ajax.url);
-          //this.$.ajax.headers = {"Authorization":"Bearer " + this.accessToken, "ocp-apim-subscription-key": this.subscriptionKey};
-          //this.$.ajax.contentType = 'application/json; charset=utf-8';
           this.$.ajax.method="GET";
           this.$.ajax.generateRequest();
         },
-parseData:function(){
-  console.log(this.hitlistData);
-  this.requestResponse({initialLoad:1});
-},
-parseResponse:function(){
-  console.log(this.magic);
-},
-        ready:function(){
-          var that=this;
-          //turn on generating hitlist from config
-          //this.hitlistData = GlobalHitlistConfig;
-          //this.requestResponse();
-          this.grid = this.$.hitlist;
-          this.grid.addEventListener('sort-order-changed',function(e){return that._sortChange(e)});
-          //return that.debounce('getHitlist',function(){that._retrieveHitList()},50);
-          if (typeof YUI !== 'undefined') {
-            YUI().use('event-custom', function (Y) {
-              Y.Global.on('hitlistloaded', function () {
-                return that.debounce('getHitlist',function(){that._retrieveHitList()},100);
-              });
-            });
+        parseData:function(){
+          console.log(this.hitlistData);
+          this.requestResponse({initialLoad:1});
+        },
+        parseResponse:function(response){
+          var grid = this.$.hitlist;
+          console.log(response);
+          grid.items = response.data;
+          grid.size=response.data.length;
+          if(!this.visibleRows || (this.visibleRows && this.visibleRows>response.data.length)){grid.visibleRows=response.data.length} else if(this.visibleRows){grid.visibleRows=this.visibleRows;}
+          grid.scrollToStart();
+          //grid.size= response.sortingPagingValues.totalHits;
+          response.sortingPagingValues.pagingValues.firstStartValue = this._fixJsonDate(response.sortingPagingValues.pagingValues.firstStartValue);
+          response.sortingPagingValues.pagingValues.lastStartValue = this._fixJsonDate(response.sortingPagingValues.pagingValues.lastStartValue);
+          this.sortingPagingValues=response.sortingPagingValues;
+          /*set|update buttons and page info*/
+          this.$.pagingForward.disabled=response.sortingPagingValues.disableNextButton?true:false;
+          this.$.pagingBackward.disabled=response.sortingPagingValues.disablePrevButton?true:false;
+          this.$.pagingInfo.textContent = response.pageInfo +' of '+ response.sortingPagingValues.totalHits;
+          /*sorting applied*/
+          var sorting = [];
+          var sortBy = response.sortingPagingValues.sortingValues.sortBy;
+          for(var s in sortBy){
+            var column = this.colattr.map(function(item,index){ if(item.name===s){return index} })[0];
+            var direction = sortBy[s]===-1?'desc':'asc';
+            sorting.push({column:column,direction:direction})
           }
+          grid.sortOrder = sorting;
 
-          /* trim text on long fields and display it in a card on row-click*/
-          if(this.longText){
-            var detailsOpenIndex = -1;
-            // Show details for the selected row
-            var grid = this.grid;
-            grid.addEventListener('selected-items-changed', function() {
-              grid.setRowDetailsVisible(detailsOpenIndex, false);
-              var selected = grid.selection.selected();
-              if (selected.length == 1) {
-                grid.setRowDetailsVisible(selected[0], true);
-                detailsOpenIndex = selected[0];
+        },
+        ready:function(){
+          if(this.setup){// bypass all for setup
+            //this.setupHitlist(this.hitlistOriginalConfig);
+          } else {
+
+            var grid = this.$.hitlist;
+            /*get first data*/
+            this.requestResponse({initialLoad:true});
+            /*generate columns*/
+            var longText=this.longText && this.longText.length>0?this.longText.toString().split(',').map(function(i){return parseInt(i)}):[];
+            console.log(longText)
+            this.colattr.forEach(function(item,index){
+              if(item.renderer){
+                item.renderer=this.renderer[item.renderer];
               }
-            });
-            grid.rowDetailsGenerator = function(rowIndex) {
-              var elem = document.createElement('paper-material');
-              elem.setAttribute('elevation', 4);
-              elem.classList.add('detailsPaper');
-              var columns = that.longText.split(',');
-              grid.getItem(rowIndex, function(error, item) {
-                if (!error) {
-                  var questionRow = document.createElement('div');
-                  for(var i=0;i<columns.length;i++){
-                    var questionTitle = document.createElement('div');
-                    questionTitle.classList.add('details_qTitle');
-                    questionTitle.textContent = grid.columns[parseInt(columns[i])-1].name;
-                    var questionText = document.createElement('div');
-                    questionText.classList.add('details_qText');
-                    questionText.textContent = item[parseInt(columns[i])-1];
-                    questionRow.appendChild(questionTitle);
-                    questionRow.appendChild(questionText);
-                  }
-                  elem.innerHTML = questionRow.innerHTML;
+              if(longText.indexOf(index+1)!=-1){item.maxWidth = parseInt(this.longTextWidth);}
+              grid.addColumn(item);
+              grid.header.getCell(0,index).content = item.hidingToggleText; //replace header content with proper title
+            }.bind(this));
+            grid.frozenColumns = this.frozenColumns;
+            /* setup actions on paging Buttons*/
+            this.$.pagingForward.addEventListener('tap',function(){this._skipPage(true)}.bind(this));
+            this.$.pagingBackward.addEventListener('tap',function(){this._skipPage(false)}.bind(this));
+
+            /*grid.items = function(params,callback){
+              console.log(params);
+              if(!this.$.ajax.loading){
+                if(!this.lastResponse){this.requestResponse({initialLoad:1})} else if(!this.lastResponse.sortingPagingValues.disableNextButton){
+                  this._skipPage(true);
+                }
+              }
+              this.$.ajax.removeEventListener('last-response-changed');
+              this.$.ajax.addEventListener('last-response-changed',function() {
+                console.log('response received');
+                console.log(this.lastResponse);
+                callback(this.lastResponse.data);
+              }.bind(this))
+
+              //console.log(params);
+
+            }.bind(this);*/
+
+            //this.requestResponse();
+            /*this.grid.addEventListener('sort-order-changed',function(e){return that._sortChange(e)});
+            //return that.debounce('getHitlist',function(){that._retrieveHitList()},50);
+            if (typeof YUI !== 'undefined') {
+              YUI().use('event-custom', function (Y) {
+                Y.Global.on('hitlistloaded', function () {
+                  return that.debounce('getHitlist',function(){that._retrieveHitList()},100);
+                });
+              });
+            }*/
+
+            /* trim text on long fields and display it in a card on row-click*/
+            /*if(this.longText){
+              var detailsOpenIndex = -1;
+              // Show details for the selected row
+              var grid = this.grid;
+              grid.addEventListener('selected-items-changed', function() {
+                grid.setRowDetailsVisible(detailsOpenIndex, false);
+                var selected = grid.selection.selected();
+                if (selected.length == 1) {
+                  grid.setRowDetailsVisible(selected[0], true);
+                  detailsOpenIndex = selected[0];
                 }
               });
-              return elem;
-            }
+              grid.rowDetailsGenerator = function(rowIndex) {
+                var elem = document.createElement('paper-material');
+                elem.setAttribute('elevation', 4);
+                elem.classList.add('detailsPaper');
+                var columns = that.longText.split(',');
+                grid.getItem(rowIndex, function(error, item) {
+                  if (!error) {
+                    var questionRow = document.createElement('div');
+                    for(var i=0;i<columns.length;i++){
+                      var questionTitle = document.createElement('div');
+                      questionTitle.classList.add('details_qTitle');
+                      questionTitle.textContent = grid.columns[parseInt(columns[i])-1].name;
+                      var questionText = document.createElement('div');
+                      questionText.classList.add('details_qText');
+                      questionText.textContent = item[parseInt(columns[i])-1];
+                      questionRow.appendChild(questionTitle);
+                      questionRow.appendChild(questionText);
+                    }
+                    elem.innerHTML = questionRow.innerHTML;
+                  }
+                });
+                return elem;
+              }
+            }*/
+
           }
 
+        },
+        _skipPage: function(pagingForward, callback){
+          var spv = this.sortingPagingValues.pagingValues;
+          spv.pagingForward = pagingForward; /*if forward is needed then pass true, else null - backward*/
+          spv.startId = pagingForward ? spv.lastStartId : spv.firstStartId;
+          spv.startValue = pagingForward ? spv.lastStartValue : spv.firstStartValue;
+          this.requestResponse({isPaging: true}, callback);
         },
         _retrieveHitList:function(){
           if(this.grid.columns.length===0){this._getHitListHeading();}
@@ -730,10 +1031,21 @@ parseResponse:function(){
               this.previousSort = e.detail.value[0];
             }
           }
+        },
+         _fixJsonDate: function(jsonDate) {
+          if (!(jsonDate && Y.Lang.isFunction(jsonDate.replace))) {
+            return jsonDate;
+          }
+          var constructor = jsonDate.replace(new RegExp("^/Date\\(([-+]?\\d+)\\)/$"), "new Date($1)");
+          if (constructor == jsonDate) {
+            return jsonDate;
+          }
+          return eval(constructor);
         }
 
+
       });
-      //});
+      });
 
     })();
   </script>

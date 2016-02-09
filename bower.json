@@ -11,7 +11,8 @@
     "moment": "~2.10.6",
     "vaadin-components": "vaadin-elements#~0.3.0-beta9",
     "paper-listbox": "polymerelements/paper-listbox#~1.1.0",
-    "voice-elements": "~1.0.0"
+    "voice-elements": "~1.0.0",
+    "iron-page-url": "PolymerElements/iron-page-url#^0.7.1"
   },
   "devDependencies": {
     "web-component-tester": "*",

@@ -95,6 +95,7 @@
     var middleContainer = document.querySelector('.middle-container');
     var bottomContainer = document.querySelector('.bottom-container');
     var detail = e.detail;
+
     var heightDiff = detail.height - detail.condensedHeight;
     var yRatio = Math.min(1, detail.y / heightDiff);
     var maxMiddleScale = 0.50;  // appName max size when condensed. The smaller the number the smaller the condensed size.
@@ -104,8 +105,8 @@
     // Move/translate middleContainer
     Polymer.Base.transform('translate3d(0,' + yRatio * 100 + '%,0)', middleContainer);
 
-    // Scale bottomContainer and bottom sub title to nothing and back if not a paper-tabs
-    if(bottomContainer.localName==='paper-tabs' || bottomContainer.firstChild.localName==='paper-tabs'){
+    // Scale bottomContainer and bottom sub title to nothing and back if not a paper-tabs or r-menu that uses paper-tabs
+    if(bottomContainer.localName==='paper-tabs' || bottomContainer.firstElementChild.localName==='paper-tabs' || bottomContainer.firstElementChild.localName==='r-menu' || bottomContainer.localName==='r-menu'){
       Polymer.Base.transform('translate3d(0,' + yRatio * 100 + '%,0)', bottomContainer);
     } else {
       Polymer.Base.transform('scale(' + scaleBottom + ') translateZ(0)', bottomContainer);

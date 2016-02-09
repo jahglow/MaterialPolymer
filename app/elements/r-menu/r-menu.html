@@ -166,10 +166,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         },
         generateMenu:function(){
-          if(this.icons && this.data){ //merge icons with data
+          if(this.icons && this.data && this.data.length>0){ //merge icons with data
             var di=this.data.length; while(di--){if(this.icons[di]){this.data[di].icon = this.icons[di]}}
           }
-          if(!this.dataProvider && this.data) {
+          if(!this.dataProvider && this.data && this.data.length>0) {
             switch (this.layout) {
               case 'vertical': this.vertical(); break;
               case 'tabs': this.tabs(this.data, this.renderTabsTo);  break;

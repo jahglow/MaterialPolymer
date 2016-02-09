@@ -11,10 +11,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="..\..\bower_components/polymer/polymer.html">
 <link rel="import" href="..\..\bower_components/vaadin-grid/vaadin-grid.html">
 <link rel="import" href="..\..\bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
-<link rel="import" href="..\reportal-table-behavior/reportal-table-behavior.html">
+<link rel="import" href="..\r-table-behavior/r-table-behavior.html">
 
 
-<dom-module id="reportal-aggregated-table">
+<dom-module id="r-aggregated-table">
   <template>
     <style>
       :host {
@@ -25,15 +25,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       #source{display:none}
       #grid>vaadin-grid .numeric{text-align: right}
     </style>
-    <div id="source"><content></content></div>
-    <div id="grid"></div>
+    <div id="source"><content select="table"></content></div>
+    <div id="grid"><vaadin-grid></vaadin-grid></div>
   </template>
   <script>
     (function(){
       'use strict';
 
       Polymer({
-        is: 'reportal-aggregated-table',
+        is: 'r-aggregated-table',
         listeners:{
           //'tap':'_sortChange',
           //'vgrid.sort-order-changed':'_sorttry'
@@ -41,7 +41,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         behaviors: [
           Polymer.IronResizableBehavior,
-          Polymer.ReportalTableBehavior
+          Polymer.RTableBehavior
         ],
 
         /*many properties and methods are inherited from ReportalTableBehavior */
@@ -65,11 +65,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         },
         ready:function(){
-          if(this.colattrLegacy && this.colattrLegacy.length>0){
-            this._processLegacyAttributes(this.colattrLegacy);
-          }
-          var grid = document.createElement('vaadin-grid');
-          var table = this.$.source.querySelector('table');
+          //var grid = document.createElement('vaadin-grid');
+          var grid = this.$.grid.firstChild;
+          var table = Polymer.dom(this).querySelector('table');
+          console.log(table);
+
           if(table){
             this.grid = grid;
             this._defineData(table);
@@ -81,7 +81,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               grid.frozenColumns=this.frozenColumns;
             }
             Polymer.dom(grid).setAttribute('id','vgrid');
-            Polymer.dom(this.$.grid).appendChild(grid);
+            //Polymer.dom(this.$.grid).appendChild(grid);
             var that=this;
             this.grid.addEventListener('sort-order-changed',function(e){return that._sortChange(e)})
           }
@@ -140,112 +140,67 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           //first define column quantity of the table
           var columns = this._getImmediateChildrenByName(source,'tbody')[0].lastElementChild.children;
-          var columnsCount = columns.length;
+          var columnsCount = columns?columns.length:0;
 
           if(this.indexed){
-            host.addColumn({headerContent:this.indexedHeader, maxWidth:'100px', sortable:true}); //append index
+            host.addColumn({headerContent:this.indexedHeader, maxWidth:'100px', sortable:true}); //append index column
             columnsCount++;
           }
-          //console.log('total columns: '+columnsCount);
           var thead = this._getImmediateChildrenByName(source,'thead')[0];
-          var rowcount = thead.children.length;
-          //console.log('rowcount '+rowcount);
-          var abstraction = {};
-          for(var a=0;a<rowcount;a++){
-            var realRow = thead.children[a]; //real row
-            //console.log(realRow);
-            //console.log('row '+a +'exists? '+abstraction.hasOwnProperty(a.toString()));
-            var aRow = abstraction[a] = abstraction[a] || {}; //abstraction row (might exist)
-            //console.log('row '+a +'exists? '+abstraction.hasOwnProperty(a.toString()));
-
-            var aRowLength = 0;
-            for(var rowTD = 0; rowTD<realRow.children.length;rowTD++){
-              var curTD = realRow.children[rowTD]; //current cell
-              var realIndex;
-              //console.log(curTD);
-              var colspan = curTD.colSpan;
-              var rowspan = curTD.rowSpan;
-              var label = curTD.textContent;
-              //console.log('colSpan '+ colspan)
-              //console.log('rowspan '+rowspan)
-              //console.log('label '+label)
-
-              if(colspan||rowspan||label){
-                var finalTDcellIndex=rowTD;
-                /* if entry exists (there was a rowspan in previous row and it transferred label to next possible row), we need to find a new home for curTD
-                 * all cells are filled sequentially, so we need to find a break in indexing sequence*/
-                //console.log(aRow.hasOwnProperty(rowTD))// create cell for this abstract row
-                if(aRow.hasOwnProperty(rowTD)) { //this entry exists (it can exist if was filled by previous row where a cell had a rowspan)
-                  //console.log(rowTD+' cell exists, will search for new place');
-                  var realTDindex = 0;
-                  var cellIsFound = false;
-                  for (key in aRow) {
-                    if (parseInt(key) === realTDindex) {
-                      //console.log(key+' cell is also used');
-                      realTDindex++
-                    } else {
-                      cellIsFound = true;
-                      //console.log(realTDindex+' cell is just perfect');
-                      finalTDcellIndex = realTDindex;
-                      break;
+          if(thead){
+            var rowcount = thead.children.length;
+            var abstraction = {};
+            for(var a=0;a<rowcount;a++){
+              var realRow = thead.children[a]; //real row
+              var aRow = abstraction[a] = abstraction[a] || {}; //abstraction row (might exist)
+              var aRowLength = 0;
+              for(var rowTD = 0; rowTD<realRow.children.length;rowTD++){
+                var curTD = realRow.children[rowTD]; //current cell
+                var colspan = curTD.colSpan, rowspan = curTD.rowSpan,label = curTD.textContent;
+                if(colspan||rowspan||label){
+                  var finalTDcellIndex=rowTD;
+                  /* if entry exists (there was a rowspan in previous row and it transferred label to next possible row), we need to find a new home for curTD
+                   * all cells are filled sequentially, so we need to find a break in indexing sequence*/
+                  if(aRow.hasOwnProperty(rowTD)) { //this entry exists (it can exist if was filled by previous row where a cell had a rowspan)
+                    var realTDindex = 0, cellIsFound = false;
+                    for (key in aRow) {
+                      if (parseInt(key) === realTDindex) { realTDindex++ } else { cellIsFound = true; finalTDcellIndex = realTDindex; break;}
+                    }
+                    if(!cellIsFound){ //we've ran out of options with  realTDindex  cell, let's make it a realTDindex+1 ?
+                      finalTDcellIndex = realTDindex++;
                     }
                   }
-                  if(!cellIsFound){
-                    //console.log('we\'ve ran out of options with'+ realTDindex+' cell, let\'s make it a '+ realTDindex+1 +' ?');
-                    finalTDcellIndex = realTDindex++;
+                  var key = a; //is this current row or it has rowspan and we append label to the bottommost row?
+                  if(!rowspan){rowspan=1}
+                  for(var ri=0;ri<rowspan;ri++){
+                    if(rowspan){key=a+ri;}
+                    if(!abstraction.hasOwnProperty(key)){abstraction[key]={}}// is there such a row in abstraction?
+                    if(!abstraction[key].hasOwnProperty(finalTDcellIndex)){
+                      abstraction[key][finalTDcellIndex]={};
+                      if(ri===rowspan-1){ // if it's the last row
+                        abstraction[key][finalTDcellIndex].label = label.trim().length>0?label.trim():''; // use label if more than empty else empty string
+                      } else {abstraction[key][finalTDcellIndex].label = ''}
+                    }
+                    if(colspan>1){abstraction[key][finalTDcellIndex].colspan = colspan;}
                   }
-                }
-                var key = a; //is this current row or it has rowspan and we append label to the bottommost row?
-                //console.log('has rowspan, current row is' + a+' cell is '+finalTDcellIndex);
-                if(!rowspan){rowspan=1}
-                for(var ri=0;ri<rowspan;ri++){
-                  if(rowspan){key=a+ri;}
-                  //console.log('row is '+key);
-                  //console.log('from rowspan row '+key+' exists? '+abstraction.hasOwnProperty(key))
-                  if(!abstraction.hasOwnProperty(key)){abstraction[key]={}}// is there such a row in abstraction?
-                  //console.log('from rowspan cell '+finalTDcellIndex+' exists? '+abstraction[key].hasOwnProperty(finalTDcellIndex))
-                  if(!abstraction[key].hasOwnProperty(finalTDcellIndex)){
-                    abstraction[key][finalTDcellIndex]={};
-                    if(ri===rowspan-1){ // if it's the last row
-                      abstraction[key][finalTDcellIndex].label = label.trim().length>0?label.trim():''; // use label if more than empty else empty string
-                    } else {abstraction[key][finalTDcellIndex].label = ''}
-                  } else {
-
-                  }
-                  if(colspan>1){abstraction[key][finalTDcellIndex].colspan = colspan;}
-                }
-                if(abstraction[key]!==abstraction[a]){aRow[finalTDcellIndex].label = ''} // if there was rowspan, this cell is empty and needs empty label
-              } else {aRow[rowTD].label=''}
-              //console.log(JSON.stringify(abstraction));
-              aRowLength++;
+                  if(abstraction[key]!==abstraction[a]){aRow[finalTDcellIndex].label = ''} // if there was rowspan, this cell is empty and needs empty label
+                } else {aRow[rowTD].label=''}
+                aRowLength++;
+              }
             }
           }
 
-          if(columns && columns.length>0){
-            var colattr = this.colattr;
-            for(var i=0;i<columns.length;i++){
-              var colProp = {};
-              if(colattr[i]){
-                for(var ci=0;ci<colattr[i].length;ci++){ // populate column properties
-                  if(colattr[i][ci].length>0){
-                    this._a2o(colProp,colattr[i][ci][0],colattr[i][ci][1]);
-                  }
-                }
-              }
-              host.addColumn(colProp);
+          if(columnsCount>0){
+            while(columnsCount--){
+              host.addColumn(this.colattr[columnsCount]?this.colattr[columnsCount]:{})
             }
           }
 
           for(var idx in abstraction){
             if(idx>0){
-              //console.log('will add a row');
               host.header.addRow();
             }
-            //console.log(typeof parseInt(idx));
-            if(parseInt(idx)===(parseInt(rowcount)-1)){
-              host.header.defaultRow = parseInt(rowcount)-1;
-              //console.log('defaultRow '+host.header.defaultRow);
-            }
+            if(parseInt(idx)===(parseInt(rowcount)-1)){host.header.defaultRow = parseInt(rowcount)-1;}
             this._fillHeaderRow(idx,parseInt(rowcount),abstraction[idx],host);
           }
         },
@@ -273,9 +228,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         _sortChange:function(e){
             var idx = this.grid.sortOrder[0].column;
-            /*if this column was sorted before just flip it*/
             if(this._sortedColumn === idx){
-              this.data.reverse();
+              this.data.reverse(); /*if this column was sorted before just flip it*/
             } else { //not sorted
               this.sorter();
             }
@@ -295,14 +249,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               var tempEl2 = document.createElement('span'); tempEl2.innerHTML = y;
               y=tempEl2.textContent.trim();
             }
-            //console.log( document.createElement('span').innerHTML=)
             if(!isNaN(parseFloat(x)) && !isNaN(parseFloat(y))){
               return parseFloat(x) <  parseFloat(y) ? lesser :  parseFloat(x) >  parseFloat(y) ? -lesser : 0;
             } else {
               return x.toLowerCase() < y.toLowerCase() ? lesser : x.toLowerCase() > y.toLowerCase() ? -lesser : 0;
             }
           });
-        },
+        }
       });
     })();
   </script>
