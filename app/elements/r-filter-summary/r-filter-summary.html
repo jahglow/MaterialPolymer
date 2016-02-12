@@ -10,12 +10,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="..\..\bower_components/polymer/polymer.html">
 
-<dom-module id="reportal-filter-summary">
-  <template>
+<dom-module id="r-filter-summary">
+  <template strip-whitespace>
     <style>
       :host {
         display: block;
-        @apply(--reportal-filter-summary);
+        @apply(--r-filter-summary);
 
       }
       :host>::content table{display:none}
@@ -25,31 +25,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         line-height: 13px;
         padding-top: 2px;
         opacity:0.8;
-        @apply(--reportal-filter-summary-filter-label);
+        @apply(--r-filter-summary-filter-label);
       }
       .filterValue{
         font-size:16px;
-        @apply(--reportal-filter-summary-filter-value);
+        @apply(--r-filter-summary-filter-value);
       }
       .filterContainer, .breadcrumbGroup{
         display:inline-block;
         padding-right: 24px;
        }
       .filterContainer{
-        @apply(--reportal-filter-summary-filter-container);
+        @apply(--r-filter-summary-filter-container);
       }
       .breadcrumbGroup{
-        @apply(--reportal-filter-summary-group-container);
+        @apply(--r-filter-summary-group-container);
       }
       .bgBody{
-        @apply(--reportal-filter-summary-group-contents);
+        @apply(--r-filter-summary-group-contents);
       }
       .bgLabel{
         font-size:11px;
         text-transform: uppercase;
         font-weight: 500;
         opacity:0.8;
-        @apply(--reportal-filter-summary-group-label);
+        @apply(--r-filter-summary-group-label);
       }
 
     </style>
@@ -61,7 +61,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     'use strict';
 
     Polymer({
-      is: 'reportal-filter-summary',
+      is: 'r-filter-summary',
 
       properties: {
         useGrouping: {

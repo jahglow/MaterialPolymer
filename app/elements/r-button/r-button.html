@@ -18,33 +18,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <!--
 Example:
 
-    <reportal-button>Flat button</paper-button>
-    <reportal-button raised>Raised button</paper-button>
-    <reportal-button noink>No ripple effect</paper-button>
+    <r-button>Flat button</paper-button>
+    <r-button raised>Raised button</paper-button>
+    <r-button noink>No ripple effect</paper-button>
 
 You may use custom DOM in the button body to create a variety of buttons. For example, to
 create a button with an icon and some text:
 
-    <reportal-button>
+    <r-button>
       <iron-icon icon="favorite"></iron-icon>
       custom button content
-    </reportal-button>
+    </r-button>
 
 ### Styling
 
 Style the button with CSS as you would a normal DOM element.
 
-    reportal-button.fancy {
+    r-button.fancy {
       background: green;
       color: yellow;
     }
 
-    reportal-button.fancy:hover {
+    r-button.fancy:hover {
       background: lime;
     }
 
-    reportal-button[disabled],
-    reportal-button[toggles][active] {
+    r-button[disabled],
+    r-button[toggles][active] {
       background: red;
     }
 
@@ -55,16 +55,16 @@ The following custom properties and mixins are also available for styling:
 
 Custom property | Description | Default
 ----------------|-------------|----------
-`--reportal-button-ink-color` | Background color of the ripple | `Based on the button's color`
-`--reportal-button` | Mixin applied to the button | `{}`
-`--reportal-button-disabled` | Mixin applied to the disabled button. Note that you can also use the `paper-button[disabled]` selector | `{}`
-`--reportal-button-flat-keyboard-focus` | Mixin applied to a flat button after it's been focused using the keyboard | `{}`
-`--reportal-button-raised-keyboard-focus` | Mixin applied to a raised button after it's been focused using the keyboard | `{}`
+`--r-button-ink-color` | Background color of the ripple | `Based on the button's color`
+`--r-button` | Mixin applied to the button | `{}`
+`--r-button-disabled` | Mixin applied to the disabled button. Note that you can also use the `r-button[disabled]` selector | `{}`
+`--r-button-flat-keyboard-focus` | Mixin applied to a flat button after it's been focused using the keyboard | `{}`
+`--r-button-raised-keyboard-focus` | Mixin applied to a raised button after it's been focused using the keyboard | `{}`
 
 @demo demo/index.html
 -->
 
-<dom-module id="reportal-button">
+<dom-module id="r-button">
   <template strip-whitespace>
 
     <style include="paper-material">
@@ -93,12 +93,12 @@ Custom property | Description | Default
 
       :host([raised].keyboard-focus) {
         font-weight: bold;
-      @apply(--reportal-button-raised-keyboard-focus);
+      @apply(--r-button-raised-keyboard-focus);
       }
 
       :host(:not([raised]).keyboard-focus) {
         font-weight: bold;
-      @apply(--reportal-button-flat-keyboard-focus);
+      @apply(--r-button-flat-keyboard-focus);
       }
 
       :host([disabled]) {
@@ -107,14 +107,14 @@ Custom property | Description | Default
         cursor: auto;
         pointer-events: none;
 
-      @apply(--reportal-button-disabled);
+      @apply(--r-button-disabled);
       }
       :host([toggles][active]) {
         background: red;
       }
 
       paper-ripple {
-        color: var(--reportal-button-ink-color);
+        color: var(--r-button-ink-color);
       }
 
       :host > ::content * {
@@ -129,7 +129,7 @@ Custom property | Description | Default
 <script>
   (function(){
   Polymer({
-    is: 'reportal-button',
+    is: 'r-button',
 
     behaviors: [
       Polymer.PaperButtonBehavior

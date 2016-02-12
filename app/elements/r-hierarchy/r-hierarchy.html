@@ -12,13 +12,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="..\..\bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="..\..\bower_components/paper-styles/shadow.html">
 
-<dom-module id="reportal-hierarchy">
+<dom-module id="r-hierarchy">
   <template>
     <style>
       :host {
         display: block;
         /*padding:8px;*/
-        @apply(--reportal-hierarchy);
+        @apply(--r-hierarchy);
       }
       #hierarchyWrapper>::content .dd-target-button {
         position:relative;
@@ -192,7 +192,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </style>
     <span id="wrapperLabel">
-      <content select=".wrapper-label"></content>
+      <content select="#label"></content>
     </span>
     <div id="hierarchyWrapper">
       <content></content>
@@ -203,7 +203,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     (function() {
       'use strict';
       Polymer({
-        is: 'reportal-hierarchy',
+        is: 'r-hierarchy',
         listeners:{
           'tap':'_processTap'
         },
@@ -219,7 +219,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           label:String
         },
         ready: function(){
-          var inlineLabel = this.$.wrapperLabel.querySelector('.wrapper-label');
+          var inlineLabel = this.$.wrapperLabel.querySelector('#label');
           if(inlineLabel){this.label=inlineLabel.textContent;}
           if(this.label && this.label.length>0){
             this.$.wrapperLabel.textContent = this.label;

@@ -34,7 +34,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         left: 0;
       }
 
-      :host #micContainer[recognizing], :host #micContainer[speaking] {
+      :host #micContainer[listening], :host #micContainer[speaking] {
         z-index: 10;
       }
 
@@ -55,14 +55,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         pointer-events: none;
       }
 
-      :host [recognizing]>.micIconWrapper, :host [speaking]>.micIconWrapper {
+      :host [listening]>.micIconWrapper, :host [speaking]>.micIconWrapper {
         background-color: #d23f31;
         box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
       }
       :host [speaking]>.micIconWrapper {
         background-color: var(--accent-color, #1f8dd6);
       }
-      :host [recognizing]>.micIconWrapper>iron-icon, :host [speaking]>.micIconWrapper>iron-icon{
+      :host [listening]>.micIconWrapper>iron-icon, :host [speaking]>.micIconWrapper>iron-icon{
         color: #fff;
       }
 
@@ -76,7 +76,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         border-radius: 100%;
       }
 
-      :host [recognizing] > .ring, :host [speaking] > .ring {
+      :host [listening] > .ring, :host [speaking] > .ring {
         display: block;
         background-color: rgba(0, 0, 0 , 0.1);
         -webkit-animation: ring 1.2s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
@@ -107,7 +107,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         border: 1px solid rgba(0, 0, 0, 0.08);
       }
 
-      :host [recognizing] > .ring2, :host [speaking] > .ring2 {
+      :host [listening] > .ring2, :host [speaking] > .ring2 {
         display: block;
         -webkit-animation: ring2 1.5s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
       }
@@ -125,21 +125,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     </style>
 
-    <div id="micContainer" recognizing$="{{recognizing}}" speaking$="{{speaking}}">
+    <div id="micContainer" listening$="{{listening}}" speaking$="{{speaking}}">
       <div class="ring"></div>
       <div class="ring2"></div>
       <div class="micIconWrapper">
         <iron-icon id="micIcon" icon$="av:[[micIcon]]"></iron-icon>
       </div>
     </div>
-    <voice-recognition id="speechToText" accent$="{{accent}}" continuous="false"></voice-recognition>
-    <iron-ajax id="ajax"
-               url=""
-               handle-as="json"
-               last-response="{{lastResponse}}"
-               debounce-duration="300"
-               verbose></iron-ajax>
-    <voice-player id="textToSpeech"></voice-player>
+    <voice-recognition id="mic" accent$="{{accent}}" continuous="false"></voice-recognition>
+    <iron-ajax id="ajax" url="" handle-as="json" last-response="{{lastResponse}}" debounce-duration="300"></iron-ajax>
+    <voice-player id="speaker"></voice-player>
   </template>
   <script>
     (function() {
@@ -150,13 +145,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         is: 'r-speech-input-button',
         listeners:{
           'micContainer.tap':'micTap',
-          'speechToText.start':'_recognitionStarted',
-          'speechToText.end':'_recognitionEnded',
-          'speechToText.abort':'_recognitionAborted',
-          'speechToText.result':'_processResult',
-          'ajax.response':'handleResponse',
-          'textToSpeech.end':'endedPlayback',
-          'textToSpeech.cancel':'endedPlayback'
+          'mic.start':'_recognitionStarted',
+          'mic.end':'_recognitionEnded',
+          'mic.abort':'_recognitionAborted',
+          'mic.result':'_processResult',
+          'speaker.end':'_shutUp',
+          'speaker.cancel':'_shutUp'
         },
 
         properties: {
@@ -175,7 +169,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
           /* end of set up*/
 
-          recognizing: {
+          listening: {
             type: Boolean,
             value: false,
             notify: true
@@ -197,7 +191,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             notify:true
           },
           lastResponse:{
-            type:Object
+            type:Object,
+            observer:'handleResponse'
           },
           actionData:{
             type:Object,
@@ -206,44 +201,37 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           context:String
         },
         /* -- Lifecycle ------------------------------------------------- */
-        micTap:function(e){
-          if(!this.recognizing && !this.speaking){
-            this.$.speechToText.start();
-          } else if(this.recognizing){
-            this.$.speechToText.abort();
+        micTap:function(){
+          if(!this.listening && !this.speaking){
+            this.$.mic.start();
+          } else if(this.listening){
+            this.$.mic.abort();
           } else if(this.speaking){ // tap while speaking stops speaking
-            this.$.textToSpeech.cancel();
+            this.$.speaker.cancel();
           }
         },
         _recognitionStarted:function(e){
-          //console.log('recognition started');
+          console.log('recognition started');
           //console.log(e);
-          this.recognizing=true;
+          this.listening=true;
         },
         _recognitionEnded:function(e){
-          //console.log('recognition ended');
+          console.log('recognition ended');
           //console.log(e);
           this.micIcon='mic-none';
-          this.recognizing=false;
+          this.listening=false;
         },
         _recognitionAborted:function(e){
           //console.log('recognition aborted');
           //console.log(e);
-          this.recognizing=false;
+          this.listening=false;
         },
         _processResult:function(e){
-          //console.log('result received');
-          //console.log(e);
-          this.requestResponse(e);
-          this.$.speechToText.text="";
+          this.requestResponse(Polymer.dom(e).event.detail.result);
+          this.$.mic.text='';
         },
-
-        requestResponse:function(e){
-          console.log(e);
-          var text = e.detail.result;
-          //alert(text);
-          //var text = e;
-          this.$.speechToText.stop();
+        requestResponse:function(text){
+          this.$.mic.stop();
           console.log('recognized: '+text);
           /*var contexts=[];
           if(!this.lastResponse){
@@ -268,52 +256,54 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           var body = {};
           body.q = text;
           body.lang = this.findSupportedLang(this.accent).substring(0,2);
-          //body.v = '20151201';
           //if(!this.lastResponse){body.contexts = [this.context];}
           this.$.ajax.body = JSON.stringify(body);
-
-          console.log(this.$.ajax.body);
           this.$.ajax.headers = {"Authorization":"Bearer " + this.accessToken, "ocp-apim-subscription-key": this.subscriptionKey};
           this.$.ajax.contentType = 'application/json; charset=utf-8';
           this.$.ajax.method="POST";
           this.$.ajax.generateRequest();
         },
-        handleResponse:function(){
-          //alert('response received');
-          var r=this.lastResponse;
-          console.log(r);
-
-          if(r.status.code===200){
-            var speech = r.result.fulfillment.speech;
-            //alert(speech);
-            if(speech.length>0){ // we have follow-up
-              this.$.textToSpeech.text = speech;
-              this.micIcon='volume-up';
-              this.speaking=true;
-              this.$.textToSpeech.speak();
+        handleResponse:function(response){
+          console.log(response);
+          if(response.status.code===200){
+            var r=response.result;
+            if(r.fulfillment.speech.length>0){ // we have follow-up or just something to say
+              this._say(r.fulfillment.speech);
             } else {
               this.micIcon='mic';
             }
-            console.log(!r.result.actionIncomplete);
-            if(!r.result.actionIncomplete && r.result.hasOwnProperty('action') && r.result.action.length>0){ // we assume we have all answers
-              this.actionData = r;
-              console.log('applied latest data');
-              //this.fire('action-data-change',e);
-            } else {//we assume that the person has to provide answers to follow-ups
-              this.$.speechToText.start();
-            }
+            console.log(!r.actionIncomplete);
+            if(r.source==='agent' && !r.actionIncomplete){ //action is complete, will be no followup
+              if(this.hasAction){ // we assume we have all answers
+                this.actionData = r;
+                console.log('applied latest data');
+              }
+            } // if action is incomplete => start listening if not speaking, else _shutUp will provide turn on mic when stopped speaking
+            else if(r.actionIncomplete && !this.speaking ){this.$.mic.start();}
           }
         },
-        endedPlayback:function(){
-          this.$.textToSpeech.text='';
+        _say:function(text){
+          this.$.speaker.text = text;
+          this.micIcon='volume-up';
+          if(this.listening){this.$.mic.stop();} //stop listening
+          this.$.speaker.speak(); //start speaking
+          this.speaking=true;
+        },
+        get hasAction(){
+          var r=this.lastResponse.result;
+          return r.hasOwnProperty('action') && r.action.length>0 && r.action!== 'input.unknown';
+        },
+        _shutUp:function(){
+          this.text='';
           this.speaking=false;
           this.micIcon='mic';
-          if(!this.lastResponse.result.hasOwnProperty('action') || this.lastResponse.result.action.length===0){ //we assume that the person has to provide answers to follow-ups
-            this.$.speechToText.start();
+          var r=this.lastResponse.result;
+          if((r.source=='agent' && r.actionIncomplete) || (r.source==='domains' && r.metadata.listen)){ //we assume that the person has to provide answers to follow-ups or is just chatting
+            this.$.mic.start();
           }
         },
         _accentChanged: function() {
-          this.$.speechToText.accent = this.findSupportedLang(this.accent);
+          this.$.mic.accent = this.accent;//this.findSupportedLang(this.accent);
         },
         findSupportedLang: function(l) {
           if (SUPPORTED_LANGS.indexOf(l) >= 0) {

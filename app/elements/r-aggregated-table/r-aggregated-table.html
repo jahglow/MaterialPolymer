@@ -22,11 +22,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         width:100%;
         height:auto
       }
-      #source{display:none}
-      #grid>vaadin-grid .numeric{text-align: right}
+      :host ::content> table{display:none}
+      vaadin-grid#grid .numeric{text-align: right}
     </style>
-    <div id="source"><content select="table"></content></div>
-    <div id="grid"><vaadin-grid></vaadin-grid></div>
+    <content select="table" id="source"></content>
+    <vaadin-grid id="grid"></vaadin-grid>
   </template>
   <script>
     (function(){
@@ -66,69 +66,42 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         ready:function(){
           //var grid = document.createElement('vaadin-grid');
-          var grid = this.$.grid.firstChild;
-          var table = Polymer.dom(this).querySelector('table');
-          console.log(table);
+          var grid = this.grid = this.$.grid;
+          var table = Polymer.dom(this.$.source).getDistributedNodes()[0];
 
           if(table){
-            this.grid = grid;
             this._defineData(table);
             this._defineHeader(grid,table);
-            if(this.visibleRows){grid.rows=this.visibleRows;}
+            if(this.visibleRows){grid.visibleRows=this.visibleRows;}
             if(this.selectionMode){grid.selection.mode=this.selectionMode;}
             if(this.frozenColumns){
               if(this.indexed){this.frozenColumns+=1;}
               grid.frozenColumns=this.frozenColumns;
             }
-            Polymer.dom(grid).setAttribute('id','vgrid');
+            //Polymer.dom(grid).setAttribute('id','vgrid');
             //Polymer.dom(this.$.grid).appendChild(grid);
-            var that=this;
-            this.grid.addEventListener('sort-order-changed',function(e){return that._sortChange(e)})
+            grid.then(function(){this.notifyResize()}.bind(this));
+            this.grid.addEventListener('sort-order-changed',function(e){return this._sortChange(e)}.bind(this))
           }
         },
         attached:function(){
-          this.async(this.notifyResize,100);
+          //this.async(this.notifyResize,300);
         },
         _defineData:function(table){
-          this.data=[];
-          var rows;
-          for(var ch=0;ch<table.children.length;ch++){
-            // we want to get the topmost table and not its cells content tables if any
-            if(table.children[ch].localName==='tbody'){rows=table.children[ch].children; break;}
-          }
-          if(rows){
-            for(var i=0;i<rows.length;i++){
-              var curRow=[];
-              if(this.indexed){curRow.push(i+1);}//append index
-              for(var ri=0;ri<rows[i].children.length;ri++){
-                //checks if this cell has HTML tags inside, probably we need to keep them
-                curRow.push(rows[i].children[ri].children.length>0?rows[i].children[ri].innerHTML:rows[i].children[ri].textContent.trim());
-                var csp=rows[i].children[ri].getAttribute('colspan');
-                if(csp){
-                  for(var ci=1;ci<csp;ci++){
-                    curRow.push('');
-                  }
-                }
-              }
-              this.data.push(curRow);
-            }
-          }
-          this.grid.items = this.data;
-          //console.log(this.grid.items)
+          var rows = [].slice.call(table.children).filter(function(item){return item.localName==='tbody'})[0].children;
+          this.grid.items=this.data=[].slice.call(rows).map(function(tr,index){
+            var t=[].slice.call(tr.children).map(function(td){
+              return td.children.length>0?td.innerHTML.trim():td.textContent.trim()
+            });
+            if(this.indexed){t.unshift(index+1)}
+            return t
+          }.bind(this));
           // append conditional formatting from corresponding table cells
           this.grid.cellClassGenerator = function(cell){
             return rows[cell.row.index].children[cell.index].className;
           };
+
         },
-        /*_defineAttr:function(propN,propV){
-         if(propV){
-         if(typeof propV === 'string'){
-         return ' '+propN+'="'+propV+'"';
-         } else if (typeof propV === 'boolean') {
-         return ' '+propN;
-         }
-         }
-         },*/
         _defineHeader:function(host,source){
           Object.size = function(obj) {
             var size = 0, key;
@@ -144,66 +117,81 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           if(this.indexed){
             host.addColumn({headerContent:this.indexedHeader, maxWidth:'100px', sortable:true}); //append index column
-            columnsCount++;
+          }
+
+          this.colattr.forEach(function(item,index){
+            if(item.renderer && this.renderer.hasOwnProperty(item.renderer)){item.renderer=this.renderer[item.renderer];}//convert renderer string to function from functions list
+            //grid.header.getCell(0,index).content = item.hidingToggleText; //replace header content with proper title
+          }.bind(this));
+          if(columnsCount>0){
+            for(var cc=0;cc<columnsCount;cc++){
+              host.addColumn(this.colattr[cc]?this.colattr[cc]:{});
+            }
           }
           var thead = this._getImmediateChildrenByName(source,'thead')[0];
           if(thead){
+            var abstraction = this._headerAbstraction(thead);
             var rowcount = thead.children.length;
-            var abstraction = {};
-            for(var a=0;a<rowcount;a++){
-              var realRow = thead.children[a]; //real row
-              var aRow = abstraction[a] = abstraction[a] || {}; //abstraction row (might exist)
-              var aRowLength = 0;
-              for(var rowTD = 0; rowTD<realRow.children.length;rowTD++){
-                var curTD = realRow.children[rowTD]; //current cell
-                var colspan = curTD.colSpan, rowspan = curTD.rowSpan,label = curTD.textContent;
-                if(colspan||rowspan||label){
-                  var finalTDcellIndex=rowTD;
-                  /* if entry exists (there was a rowspan in previous row and it transferred label to next possible row), we need to find a new home for curTD
-                   * all cells are filled sequentially, so we need to find a break in indexing sequence*/
-                  if(aRow.hasOwnProperty(rowTD)) { //this entry exists (it can exist if was filled by previous row where a cell had a rowspan)
-                    var realTDindex = 0, cellIsFound = false;
-                    for (key in aRow) {
-                      if (parseInt(key) === realTDindex) { realTDindex++ } else { cellIsFound = true; finalTDcellIndex = realTDindex; break;}
-                    }
-                    if(!cellIsFound){ //we've ran out of options with  realTDindex  cell, let's make it a realTDindex+1 ?
-                      finalTDcellIndex = realTDindex++;
-                    }
-                  }
-                  var key = a; //is this current row or it has rowspan and we append label to the bottommost row?
-                  if(!rowspan){rowspan=1}
-                  for(var ri=0;ri<rowspan;ri++){
-                    if(rowspan){key=a+ri;}
-                    if(!abstraction.hasOwnProperty(key)){abstraction[key]={}}// is there such a row in abstraction?
-                    if(!abstraction[key].hasOwnProperty(finalTDcellIndex)){
-                      abstraction[key][finalTDcellIndex]={};
-                      if(ri===rowspan-1){ // if it's the last row
-                        abstraction[key][finalTDcellIndex].label = label.trim().length>0?label.trim():''; // use label if more than empty else empty string
-                      } else {abstraction[key][finalTDcellIndex].label = ''}
-                    }
-                    if(colspan>1){abstraction[key][finalTDcellIndex].colspan = colspan;}
-                  }
-                  if(abstraction[key]!==abstraction[a]){aRow[finalTDcellIndex].label = ''} // if there was rowspan, this cell is empty and needs empty label
-                } else {aRow[rowTD].label=''}
-                aRowLength++;
+            for(var idx in abstraction){
+              if(idx>0){
+                host.header.addRow();
               }
+              if(parseInt(idx)===(parseInt(rowcount)-1)){host.header.defaultRow = parseInt(rowcount)-1;}
+              this._fillHeaderRow(idx,parseInt(rowcount),abstraction[idx],host);
             }
           }
 
-          if(columnsCount>0){
-            while(columnsCount--){
-              host.addColumn(this.colattr[columnsCount]?this.colattr[columnsCount]:{})
-            }
-          }
-
-          for(var idx in abstraction){
-            if(idx>0){
-              host.header.addRow();
-            }
-            if(parseInt(idx)===(parseInt(rowcount)-1)){host.header.defaultRow = parseInt(rowcount)-1;}
-            this._fillHeaderRow(idx,parseInt(rowcount),abstraction[idx],host);
-          }
         },
+        _headerAbstraction:function(r){
+          var e,n,l,t,a,i,o,h,c,f,p,s,b,d,w={};
+          if(r&&r.children)for(e=0;e<r.children.length;e++)for(n=r.children[e],l=w[e]=w[e]||{},t=0,a=0;a<n.children.length;a++){if(i=n.children[a],o=i.colSpan,h=i.rowSpan,c=i.textContent,o||h||c){if(f=a,l.hasOwnProperty(a)){p=0,s=!1;for(b in l){if(parseInt(b)!==p){s=!0,f=p;break}p++}s||(f=p++)}for(b=e,h||(h=1),d=0;h>d;d++)h&&(b=e+d),w.hasOwnProperty(b)||(w[b]={}),w[b].hasOwnProperty(f)||(w[b][f]={},d===h-1?w[b][f].label=c.trim().length>0?c.trim():"":w[b][f].label=""),o>1&&(w[b][f].colspan=o);w[b]!==w[e]&&(l[f].label="")}else l[a].label="";t++}
+          return w
+        },
+        /*_headerAbstraction:function(thead){
+         var abstraction = {};
+         if(thead){
+         var rowcount = thead.children.length;
+         for(var a=0;a<rowcount;a++){
+         var realRow = thead.children[a]; //real row
+         var aRow = abstraction[a] = abstraction[a] || {}; //abstraction row (might exist)
+         var aRowLength = 0;
+         for(var rowTD = 0; rowTD<realRow.children.length;rowTD++){
+         var curTD = realRow.children[rowTD]; //current cell
+         var colspan = curTD.colSpan, rowspan = curTD.rowSpan,label = curTD.textContent;
+         if(colspan||rowspan||label){
+         var finalTDcellIndex=rowTD;
+         // if entry exists (there was a rowspan in previous row and it transferred label to next possible row), we need to find a new home for curTD
+         // all cells are filled sequentially, so we need to find a break in indexing sequence
+         if(aRow.hasOwnProperty(rowTD)) { //this entry exists (it can exist if was filled by previous row where a cell had a rowspan)
+         var realTDindex = 0, cellIsFound = false;
+         for (key in aRow) {
+         if (parseInt(key) === realTDindex) { realTDindex++ } else { cellIsFound = true; finalTDcellIndex = realTDindex; break;}
+         }
+         if(!cellIsFound){ //we've ran out of options with  realTDindex  cell, let's make it a realTDindex+1 ?
+         finalTDcellIndex = realTDindex++;
+         }
+         }
+         var key = a; //is this current row or it has rowspan and we append label to the bottommost row?
+         if(!rowspan){rowspan=1}
+         for(var ri=0;ri<rowspan;ri++){
+         if(rowspan){key=a+ri;}
+         if(!abstraction.hasOwnProperty(key)){abstraction[key]={}}// is there such a row in abstraction?
+         if(!abstraction[key].hasOwnProperty(finalTDcellIndex)){
+         abstraction[key][finalTDcellIndex]={};
+         if(ri===rowspan-1){ // if it's the last row
+         abstraction[key][finalTDcellIndex].label = label.trim().length>0?label.trim():''; // use label if more than empty else empty string
+         } else {abstraction[key][finalTDcellIndex].label = ''}
+         }
+         if(colspan>1){abstraction[key][finalTDcellIndex].colspan = colspan;}
+         }
+         if(abstraction[key]!==abstraction[a]){aRow[finalTDcellIndex].label = ''} // if there was rowspan, this cell is empty and needs empty label
+         } else {aRow[rowTD].label=''}
+         aRowLength++;
+         }
+         }
+         }
+         return abstraction;
+         },*/
         _fillHeaderRow:function(row,rowCount,data,host){
           for(var cellIdx in data){
             var trueCellIdx = !this.indexed?parseInt(cellIdx):parseInt(cellIdx)+1;
@@ -227,13 +215,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         },
         _sortChange:function(e){
-            var idx = this.grid.sortOrder[0].column;
-            if(this._sortedColumn === idx){
-              this.data.reverse(); /*if this column was sorted before just flip it*/
-            } else { //not sorted
-              this.sorter();
-            }
-            this._sortedColumn = this.grid.sortOrder[0].column;
+          var idx = this.grid.sortOrder[0].column;
+          if(this._sortedColumn === idx){
+            this.data.reverse(); /*if this column was sorted before just flip it*/
+          } else { //not sorted
+            this.sorter();
+          }
+          this._sortedColumn = this.grid.sortOrder[0].column;
         },
         sorter:function(){
           var grid = this.grid;

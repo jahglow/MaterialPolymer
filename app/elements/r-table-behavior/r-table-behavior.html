@@ -90,10 +90,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     },
     voiceControl:function(){
-      if(this.actionData.result.action && this.actionData.result.action.indexOf('table.')>-1){
+      if(this.actionData.action && this.actionData.action.indexOf('table.')>-1){
         console.log('we have the action');
-        var params = this.actionData.result.parameters;
-        var action = this.actionData.result.action.split('.')[1];
+        var params = this.actionData.parameters;
+        var action = this.actionData.action.split('.')[1];
         return this[action](params);
       }
     },
