@@ -80,21 +80,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <content></content>
     <template id="submenu">
       <paper-submenu>
-        <paper-icon-item class="menu-trigger" noicon$="[[!data.icon]]" rel$="[[data.rel]]">
+        <paper-icon-item class="menu-trigger" noicon$="[[!data.icon]]" id$="[[data.id]]">
           <iron-icon icon$="[[data.icon]]" item-icon></iron-icon>
           <div class="flex">{{data.label}}</div>
           <iron-icon icon="expand-more" class="expand-icon"></iron-icon>
         </paper-icon-item>
-        <paper-menu class="menu-content" attr-for-selected="rel" >
+        <paper-menu class="menu-content" attr-for-selected="id" >
         </paper-menu>
       </paper-submenu>
     </template>
     <template id="item">
-      <paper-icon-item onclick$="[[data.action]]" noicon$="[[!data.icon]]" rel$="[[data.rel]]"><iron-icon icon$="[[data.icon]]" item-icon></iron-icon>{{data.label}}</paper-icon-item>
+      <paper-icon-item onclick$="[[data.action]]" noicon$="[[!data.icon]]" id$="[[data.id]]"><iron-icon icon$="[[data.icon]]" item-icon></iron-icon>{{data.label}}</paper-icon-item>
     </template>
     <template id="tabs">
       <template is="dom-repeat" items="[[data]]">
-        <paper-tab rel$="[[item.rel]]" onclick$="[[item.action]]">{{item.label}}</paper-tab>
+        <paper-tab id$="[[item.id]]" onclick$="[[item.action]]">{{item.label}}</paper-tab>
       </template>
     </template>
 
@@ -140,7 +140,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   var liLength = items.children.length;
                   while(liLength--){//li items iteration
                     var item = {}, curLi = items.children[liLength], curLiLength = curLi.children.length;
-                    item.rel = window._UUID() || curLi.id; //assign a unique id to each element
+                    item.id = window._UUID() || curLi.id; //assign a unique id to each element
                     if(curLi.classList.contains('css-menu-child-selected') || curLi.classList.contains('css-menu-selected')){item.selected = true;}
                     while(curLiLength--){ // li children iteration (a|div)
                       var currentChild = curLi.children[curLiLength];
@@ -179,23 +179,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         },
         _openSubmenus:function(opened){
           if(opened && opened[0].hasOwnProperty('submenu')){
-            Polymer.dom(this.$$('[rel="'+opened[0].rel+'"]')).parentNode.toggle();
+            Polymer.dom(this.$$('[id="'+opened[0].id+'"]')).parentNode.toggle();
             this._openSubmenus(opened[0].submenu.filter(function(item){return item.selected===true}));
           }
         },
         mixed:function(){
           var menu = document.createElement('paper-menu');
-          menu.attrForSelected = 'rel';
           menu.addEventListener('iron-select',this.renderTabs);
-          for(var i=0;i<this.data.length;i++){
+          menu.attrForSelected = 'id';
+          this.data.forEach(function(item){
             this.templatize(this.$.item);
             var instance = this.stamp({});
-            instance.data = this.data[i];
-            if(instance.data.hasOwnProperty('selected')){
-              menu.selected = instance.data.rel;
+            instance.data = item;
+            if(item.selected){
+              menu.selected=item.id;
             }
             Polymer.dom(menu).appendChild(instance.root);
-          }
+          }.bind(this));
           Polymer.dom(this.root).appendChild(menu);
         },
         tabs:function(data, renderTo){
@@ -210,35 +210,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           } else { // renderTo exists as an element => us it, if not specified => use this.root
             var target; if(renderTo && renderTo.length>0){target = document.querySelector(renderTo); target.innerHTML = ''} else {target = this.root}
             var menu = document.createElement('paper-tabs');
-            menu.attrForSelected = 'rel'; menu.scrollable = true; menu.classList.add('flex');
+            menu.attrForSelected = 'id'; menu.scrollable = true; menu.classList.add('flex');
             this.templatize(this.$.tabs); var instance = this.stamp({}); instance.data = data || this.data;
             var selectedTab = instance.data.filter(function (item) {return item.selected === true;});
-            if (selectedTab && selectedTab.length > 0 && selectedTab[0].rel) {menu.selected = selectedTab[0].rel;}
+            if (selectedTab && selectedTab.length > 0 && selectedTab[0].id) {menu.selected = selectedTab[0].id;}
             Polymer.dom(menu).appendChild(instance.root); Polymer.dom(target).appendChild(menu);
           }
         },
         vertical:function(){
           var that = this;
           var menu = document.createElement('paper-menu');
-          menu.attrForSelected = 'rel';
+          menu.attrForSelected = 'id';
           var templatize = {
             submenu: function(data,host){
-              that.templatize(that.$.submenu);
+              this.templatize(that.$.submenu);
               var instance = that.stamp({});
               instance.data = data;
-              if(data.hasOwnProperty('selected')){host.selected = data.rel; }
+              if(data.selected){host.selected = data.id; }
               Polymer.dom(host).appendChild(instance.root);
-              for(var i=0;i<data.submenu.length;i++){
-                templatize[data.submenu[i].hasOwnProperty('submenu')?'submenu':'topItem'](data.submenu[i], Polymer.dom(Polymer.dom(host).querySelector('[rel="'+data.rel+'"]')).parentNode.children.collapse.firstElementChild);
-              }
-            },
+              data.submenu.forEach(function(sub){
+                templatize[sub.submenu?'submenu':'topItem'](sub, Polymer.dom(Polymer.dom(host).querySelector('[id="'+data.id+'"]')).parentNode.children.collapse.firstElementChild);
+              })
+            }.bind(this),
             topItem:function(data,host){
-              that.templatize(that.$.item);
+              this.templatize(this.$.item);
               var instance = that.stamp({});
               instance.data = data;
-              if(data.hasOwnProperty('selected')){host.selected = data.rel}
+              if(data.hasOwnProperty('selected')){host.selected = data.id}
               Polymer.dom(host).appendChild(instance.root);
-            },
+            }.bind(this),
             get lastMenu(){
               return Polymer.dom(menu).querySelectorAll('paper-menu').reverse()[0];
             }
@@ -250,11 +250,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this._openSubmenus(this.data.filter(function(item){return item.selected===true}));
         },
         renderTabs:function(e){
-          var rel = Polymer.dom(e).event.detail.item.attributes.getNamedItem('rel').value;
+          console.log(e);
+          var id = Polymer.dom(e).event.detail.item.id;
           var host = Polymer.dom(e).localTarget.localName!=='r-menu'? Polymer.dom(e).path.filter(function(item){return item.localName==='r-menu'})[0] : Polymer.dom(e).localTarget;
-          if(rel && host){
+          if(id && host){
             if(host.data && host.data.length>0){
-              var currentLevel = host.data.filter(function(item){return item.rel===rel});
+              var currentLevel = host.data.filter(function(item){return item.id===id});
               if(currentLevel && currentLevel.length>0 && currentLevel[0].hasOwnProperty('submenu') && host.renderTabsTo){
                 host.tabs(currentLevel[0].submenu, host.renderTabsTo);
               }

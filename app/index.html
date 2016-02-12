@@ -76,7 +76,7 @@
       </paper-tabs>
       <iron-pages id="drawerTabsContent" selected="{{LS.drawerTabsSelected::change}}">
         <div class="menu">
-          <r-menu data-provider data="{{menuData}}" >
+          <r-menu  render-tabs-to="#tabsPlaceHolder" icons-legacy="speaker-notes maps:directions-walk device:devices communication:comment av:equalizer history communication:contact-phone settings">
             <div id="ctl02_ctl00" class="yui3-menu yui3-menu-horizontal css-menu gray-tabs" role="menu">
               <div class="yui3-menu-content" role="presentation" id="yui_3_8_0_3_1453711006035_167">
                 <ul class="first-of-type reportal-clearfix" role="presentation" id="yui_3_8_0_3_1453711006035_166">
@@ -757,7 +757,7 @@
 
           <!-- Application sub title -->
           <div id="tabsPlaceHolder" class="bottom fit bottom-container" style="margin-left:0 !important">
-            <r-menu data="{{menuData}}" layout="tabs" icons-legacy="speaker-notes maps:directions-walk device:devices communication:comment av:equalizer history communication:contact-phone settings"></r-menu>
+            <!--r-menu data="{{menuData}}" layout="tabs" icons-legacy="speaker-notes maps:directions-walk device:devices communication:comment av:equalizer history communication:contact-phone settings"></r-menu-->
 
           </div>
 
@@ -766,7 +766,18 @@
         <div class="content">
 
           <!--reportal-hitlist setup></reportal-hitlist-->
-          <reportal-hitlist hitlist="00859fab-8c09-4186-8471-f21d23b8c185" language="9" long-text="5,3" colattr-legacy="hidable;name:responseid;headerText:responseid;hidingToggleText:responseid;sortable;renderer:html|hidable;name:interview_start;headerText:Date of the interview;hidingToggleText:Date of the interview;sortable|hidable;renderer:striphtml;name:FT_PT;headerText:Full time or part time students;hidingToggleText:Full time or part time students|hidable;name:q4_3;headerText:Overall satisfaction;hidingToggleText:Overall satisfaction;sortable|hidable;name:q159;headerText:Comments;hidingToggleText:Comments;sortable" frozen-columns="2"></reportal-hitlist>
+          <reportal-hitlist hitlist="00859fab-8c09-4186-8471-f21d23b8c185" language="9" long-text="5,3" colattr-legacy="hidable;name:responseid;headerText:responseid;hidingToggleText:responseid;sortable;renderer:html|hidable;name:interview_start;headerText:Date of the interview;hidingToggleText:Date of the interview;sortable|hidable;renderer:striphtml;name:FT_PT;headerText:Full time or part time students;hidingToggleText:Full time or part time students|hidable;name:q4_3;headerText:Overall satisfaction;hidingToggleText:Overall satisfaction;sortable|hidable;name:q159;headerText:Comments;hidingToggleText:Comments;sortable" frozen-columns="2">
+              <template class="cards">
+                <r-card heading="{{card.interview_start}}" class="flex">
+                  <div id="content">
+                    <div>{{card.q4_3}}</div>
+                    <div>{{card.q159}}</div>
+                    <div>{{card.FT_PT}}</div>
+                    <div>{{card.responseid}}</div>
+                  </div>
+                </r-card>
+              </template>
+          </reportal-hitlist>
 
 
           <render-to to="#filterPanel" action="innerHTML">
@@ -1011,7 +1022,7 @@
           <div class="layout horizontal wrap">
             <r-card heading="grid test 2">
               <div id="content">
-                <r-aggregated-table>
+                <r-aggregated-table colattr-legacy="headerContent:Column">
                   <table class="t1_table" cellpadding="" cellspacing=""><tbody><tr class="t1_ph"><td colspan="1">Why did you select this rating for the online application?</td></tr><tr class="t1_co"><td>If the customer cant communicate with staff then it can be hard</td></tr><tr class="t1_co"><td>Confusing and wrong information given by thewebsite still had to make 4 calls to the centre which has cost me a fortune!!</td></tr><tr class="t1_co"><td>Because it stops working</td></tr><tr class="t1_co"><td>Again, your website failed to provide the correct information on what I need to do for my application due to different circumstances, and only provides a basic option of applying and does not provide options that help your application if it's different, or if it did it wasn't easy to find. This led to me having to spend hours on the phone to your customer advisers to finally get somewhere</td></tr><tr class="t1_co"><td>The website is confusing and hard to understand, with the inclusion of father/mothers details within the student application itself causes problems as its hard to know when your filling in whose details.
 
                     Last page, as I have previously said, is misleading in the fact it makes you think your finished when in fact you have to press "save &amp; continue" and then "submit" to actually send the application off.</td></tr><tr class="t1_co"><td>Needs to be more straight forward, complicated website</td></tr><tr class="t1_co"><td>Can be confusing for first time use.
@@ -1024,7 +1035,7 @@
                 </r-aggregated-table>
               </div>
             </r-card>
-            <r-card heading="Promoters" class="flex-1" context="table" assisted style="display:none">
+            <r-card heading="Promoters" class="flex-1" context="table" assisted >
               <div id="content">
                 <div class="layout horizontal flex-12">
                   <r-aggregated-table indexed indexed-header="index" assisted colattr-legacy="sortable;headerContent:Sections;hidable;hidingToggleText:Sections|sortable;hidingToggleText:Marget;hidable|hidable|hidable|hidable;renderer:html;sortable|hidable;sortable">
